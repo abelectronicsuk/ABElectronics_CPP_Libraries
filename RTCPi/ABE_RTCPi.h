@@ -8,6 +8,11 @@ Required package{
 apt-get install libi2c-dev
 */
 
+#ifndef RTCPI_ABE_RTCPI_H_
+#define RTCPI_ABE_RTCPI_H_
+
+#endif /* RTCPI_ABE_RTCPI_H_ */
+
 namespace ABElectronics_CPP_Libraries
 {
 class RTCPi
@@ -15,6 +20,9 @@ class RTCPi
 
 public:
 
+/**
+* Initialise the RTC Pi Object
+*/
 RTCPi();
 
 /**
@@ -30,18 +38,15 @@ void set_date(struct tm date);
 */
 struct tm read_date();
 
-
 /**
 * Enable the squarewave output pin
 */
 void enable_output();
 
-
 /**
 * Disable the squarewave output pin
 */
 void disable_output();
-
 
 /**
 * Set the squarewave output frequency
@@ -49,14 +54,13 @@ void disable_output();
 */
 void set_frequency(unsigned char frequency);
 
-
 /**
 * write to the memory on the ds1307
 * the ds1307 contains 56 - Byte, battery - backed RAM with Unlimited Writes
 * @param address - 0x08 to 0x3F
 * @param valuearray - byte array containing data to be written to memory
 */
-void write_memory(unsigned char address, unsigned char valuearray[]);
+void write_memory(unsigned char address, unsigned char *valuearray);
 
 /**
 * read from the memory on the ds1307
@@ -70,19 +74,17 @@ unsigned char *read_memory(unsigned char address, int length);
 private:
 
 // Define local variables
-unsigned char rtcAddress;
 unsigned char rtcConfig;
 unsigned int rtcCentury;
 
 int i2cbus;
 unsigned char buf[10];
-
 unsigned char writebuffer[60];
 unsigned char readbuffer[60];
 
-void read_byte_array(unsigned char address, char reg, char length);
-void write_byte_data(unsigned char address, char reg, char value);
-void write_byte_array(unsigned char address, unsigned char buffer[], unsigned char length);
+void read_byte_array(char reg, char length);
+void write_byte_data(char reg, char value);
+void write_byte_array(unsigned char buffer[], unsigned char length);
 unsigned char bcd_to_dec(unsigned char bcd);
 unsigned char dec_to_bcd(char dec);
 char updatebyte(char byte, char bit, char value);

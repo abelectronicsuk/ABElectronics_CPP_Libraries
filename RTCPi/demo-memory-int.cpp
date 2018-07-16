@@ -10,6 +10,7 @@
 */
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdexcept>
 #include <time.h>
 #include <unistd.h>
@@ -36,7 +37,7 @@ int main(int argc, char **argv) {
 		bytearray[a] = (inval >> a * 8) & 0xFF;
 	}
 
-	rtc.write_memory(0x08, bytearray); // write the byte array to the RTC SRAM
+	//rtc.write_memory(0x08, bytearray); // write the byte array to the RTC SRAM
 	
 	
 	int outval = 0; // declare the output value

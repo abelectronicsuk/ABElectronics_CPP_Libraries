@@ -760,7 +760,7 @@ void ExpanderPi::rtc_set_frequency(unsigned char frequency) {
 	}
 }
 
-void ExpanderPi::rtc_write_memory(unsigned char address, unsigned char valuearray[]) {
+void ExpanderPi::rtc_write_memory(unsigned char address, unsigned char *valuearray) {
 	/**
 	* write to the memory on the ds1307
 	* the ds1307 contains 56 - Byte, battery - backed RAM with Unlimited Writes
@@ -937,6 +937,7 @@ void ExpanderPi::write_byte_array(unsigned char address, unsigned char buffer[],
 	/*
 	internal method for writing data to the i2c bus
 	*/
+
 	if ((i2cbus = open(fileName, O_RDWR)) < 0) {
 		throw std::runtime_error("Failed to open i2c port for write");
 		exit(1);

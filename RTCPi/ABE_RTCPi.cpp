@@ -2,6 +2,7 @@
 ================================================
 ABElectronics UK RTC Pi real-time clock
 Version 1.0 Created 12/06/2017
+Version 1.1 Updated 16/07/2018
 ================================================
 
 Required package{
@@ -9,16 +10,17 @@ apt-get install libi2c-dev
 */
 
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdexcept>
 #include <errno.h>
 #include <fcntl.h>
-#include <iostream>
-#include <unistd.h>
-#include <sys/ioctl.h>
+#include <cstring>
+#include <linux/types.h>
 #include <linux/i2c-dev.h>
+#include <time.h>
+#include <unistd.h>
 #include "ABE_RTCPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
@@ -26,6 +28,7 @@ using namespace ABElectronics_CPP_Libraries;
 #define fileName "/dev/i2c-1" // change to /dev/i2c-0 if you are using a Raspberry Pi revision 0002 or 0003 model B
 
 // Define registers values from datasheet
+#define RTCADDRESS 0x68
 #define SECONDS 0x00
 #define MINUTES 0x01
 #define HOURS 0x02
@@ -39,21 +42,21 @@ using namespace ABElectronics_CPP_Libraries;
 #define LO_NIBBLE(b) ((b) & 0x0F)
 
 RTCPi::RTCPi(){
-	rtcAddress = 0x68;
 	rtcConfig = 0x03;
 	rtcCentury = 2000;
-
 }
 
-void RTCPi::read_byte_array(unsigned char address, char reg, char length) {
-
+void RTCPi::read_byte_array(char reg, char length) {
+/*
+	internal method for reading data from the i2c bus
+	*/
 	if ((i2cbus = open(fileName, O_RDWR)) < 0) {
 		throw std::runtime_error("Failed to open i2c port for read");
 
 		exit(1);
 	}
 
-	if (ioctl(i2cbus, I2C_SLAVE, address) < 0) {
+	if (ioctl(i2cbus, I2C_SLAVE, RTCADDRESS) < 0) {
 		throw std::runtime_error("Failed to write to i2c port for read");
 		exit(1);
 	}
@@ -70,7 +73,7 @@ void RTCPi::read_byte_array(unsigned char address, char reg, char length) {
 	close(i2cbus);
 }
 
-void RTCPi::write_byte_data(unsigned char address, char reg, char value) {
+void RTCPi::write_byte_data(char reg, char value) {
 	/*
 	internal method for writing data to the i2c bus
 	*/
@@ -79,7 +82,7 @@ void RTCPi::write_byte_data(unsigned char address, char reg, char value) {
 		exit(1);
 	}
 
-	if (ioctl(i2cbus, I2C_SLAVE, address) < 0) {
+	if (ioctl(i2cbus, I2C_SLAVE, RTCADDRESS) < 0) {
 		throw std::runtime_error("Failed to write to i2c port for write");
 		exit(1);
 	}
@@ -95,16 +98,17 @@ void RTCPi::write_byte_data(unsigned char address, char reg, char value) {
 	close(i2cbus);
 }
 
-void RTCPi::write_byte_array(unsigned char address, unsigned char buffer[], unsigned char length) {
+void RTCPi::write_byte_array(unsigned char buffer[], unsigned char length) {
 	/*
 	internal method for writing data to the i2c bus
 	*/
+
 	if ((i2cbus = open(fileName, O_RDWR)) < 0) {
 		throw std::runtime_error("Failed to open i2c port for write");
 		exit(1);
 	}
 
-	if (ioctl(i2cbus, I2C_SLAVE, address) < 0) {
+	if (ioctl(i2cbus, I2C_SLAVE, RTCADDRESS) < 0) {
 		throw std::runtime_error("Failed to write to i2c port for write");
 		exit(1);
 	}
@@ -160,7 +164,7 @@ void RTCPi::set_date(struct tm date) {
 	writebuffer[6] = dec_to_bcd(date.tm_mon) + 1;// month
 	writebuffer[7] = dec_to_bcd(date.tm_year % 100); // strip the century from the date
 
-	write_byte_array(rtcAddress, writebuffer, 8);
+	write_byte_array(writebuffer, 8);
 }
 
 struct tm RTCPi::read_date() {
@@ -169,7 +173,7 @@ struct tm RTCPi::read_date() {
 	* @returns - date as a tm struct
 	*/
 
-	read_byte_array(rtcAddress, 0, 7);
+	read_byte_array(0, 7);
 	struct tm date;
 	date.tm_sec = bcd_to_dec(readbuffer[0]); // seconds
 	date.tm_min = bcd_to_dec(readbuffer[1]); // minutes
@@ -188,7 +192,7 @@ void RTCPi::enable_output() {
 	*/
 	rtcConfig = updatebyte(rtcConfig, 7, 1);
 	rtcConfig = updatebyte(rtcConfig, 4, 1);
-	write_byte_data(rtcAddress, CONTROL, rtcConfig);
+	write_byte_data(CONTROL, rtcConfig);
 }
 
 void RTCPi::disable_output() {
@@ -197,7 +201,7 @@ void RTCPi::disable_output() {
 	*/
 	rtcConfig = updatebyte(rtcConfig, 7, 0);
 	rtcConfig = updatebyte(rtcConfig, 4, 0);
-	write_byte_data(rtcAddress, CONTROL, rtcConfig);
+	write_byte_data(CONTROL, rtcConfig);
 }
 
 void RTCPi::set_frequency(unsigned char frequency) {
@@ -209,29 +213,29 @@ void RTCPi::set_frequency(unsigned char frequency) {
 		case 1:
 			rtcConfig = updatebyte(rtcConfig, 0, 0);
 			rtcConfig = updatebyte(rtcConfig, 1, 0);
-			write_byte_data(rtcAddress, CONTROL, rtcConfig);
+			write_byte_data(CONTROL, rtcConfig);
 			break;
 		case 2:
 			rtcConfig = updatebyte(rtcConfig, 0, 1);
 			rtcConfig = updatebyte(rtcConfig, 1, 0);
-			write_byte_data(rtcAddress, CONTROL, rtcConfig);
+			write_byte_data(CONTROL, rtcConfig);
 			break;
 		case 3:
 			rtcConfig = updatebyte(rtcConfig, 0, 0);
 			rtcConfig = updatebyte(rtcConfig, 1, 1);
-			write_byte_data(rtcAddress, CONTROL, rtcConfig);
+			write_byte_data(CONTROL, rtcConfig);
 			break;
 		case 4:
 			rtcConfig = updatebyte(rtcConfig, 0, 1);
 			rtcConfig = updatebyte(rtcConfig, 1, 1);
-			write_byte_data(rtcAddress, CONTROL, rtcConfig);
+			write_byte_data(CONTROL, rtcConfig);
 			break;
 		default:
 			throw std::out_of_range("Error: set_frequency() - value must be between 1 and 4");
 	}
 }
 
-void RTCPi::write_memory(unsigned char address, unsigned char valuearray[]) {
+void RTCPi::write_memory(unsigned char address, unsigned char *valuearray) {
 	/**
 	* write to the memory on the ds1307
 	* the ds1307 contains 56 - Byte, battery - backed RAM with Unlimited Writes
@@ -243,7 +247,7 @@ void RTCPi::write_memory(unsigned char address, unsigned char valuearray[]) {
 		if (address + sizeof(valuearray) <= 0x3F) {
 
 			int length = sizeof(valuearray);
-
+			
 			unsigned char *writearray = (unsigned char*)malloc(length + 1);
 
 			if (errno == ENOMEM) { // Fail!!!!
@@ -257,9 +261,9 @@ void RTCPi::write_memory(unsigned char address, unsigned char valuearray[]) {
 				for (a = 0; a < length; a++) {
 					writearray[a + 1] = valuearray[a];
 				}
-
-				write_byte_array(rtcAddress, writearray, (unsigned char)length + 1);
-
+				
+				write_byte_array(writearray, (unsigned char)length + 1);
+				
 				free(writearray);
 			}
 
@@ -292,7 +296,7 @@ unsigned char *RTCPi::read_memory(unsigned char address, int length) {
 				return NULL;
 			}
 			else {
-				read_byte_array(rtcAddress, address, length); // read the values from the SRAM into the read buffer
+				read_byte_array(address, length); // read the values from the SRAM into the read buffer
 
 				// copy the read buffer into the writearray
 				int i = 0;
@@ -312,5 +316,5 @@ unsigned char *RTCPi::read_memory(unsigned char address, int length) {
 	else {
 		throw std::out_of_range("address out of range");
 		return NULL;
-	}	
+	}		
 }

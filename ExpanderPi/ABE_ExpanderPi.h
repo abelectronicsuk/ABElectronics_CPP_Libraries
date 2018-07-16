@@ -261,7 +261,7 @@ void rtc_set_frequency(unsigned char frequency);
 * @param address - 0x08 to 0x3F
 * @param valuearray - byte array containing data to be written to memory
 */
-void rtc_write_memory(unsigned char address, unsigned char valuearray[]);
+void rtc_write_memory(unsigned char address, unsigned char *valuearray);
 
 /** 
 * read from the memory on the ds1307
