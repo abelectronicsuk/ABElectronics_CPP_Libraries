@@ -501,14 +501,23 @@ void IoPi::reset_interrupts()
 	read_interrupt_capture(1);
 }
 
-
+// stops file handle leakage on exceptions
+class ScopedFileHandle{
+public:
+    ScopedFileHandle(int fd) :_fd(fd){}
+    ~ScopedFileHandle(){ if(_fd >= 0) close(_fd); }
+    operator int() const { return _fd; }
+private:
+    int _fd;
+};
 
 int IoPi::read_byte_data(char reg)
 {
 	/**
 	* private method for reading a byte from the I2C port
 	*/
-	if ((i2cbus = open(fileName, O_RDWR)) < 0)
+    ScopedFileHandle i2cbus(open(fileName, O_RDWR));
+    if (i2cbus < 0)
 	{
 		throw std::runtime_error("Failed to open i2c port for read");
 	}
@@ -529,9 +538,6 @@ int IoPi::read_byte_data(char reg)
 	{ // Read back data into buf[]
 		throw std::runtime_error("Failed to read from slave");
 	}
-
-	close(i2cbus);
-
 	return (buf[0]);
 }
 
@@ -540,7 +546,8 @@ void IoPi::write_byte_data(char reg, char value)
 	/**
 	* private method for writing a byte to the I2C port
 	*/
-	if ((i2cbus = open(fileName, O_RDWR)) < 0)
+    ScopedFileHandle i2cbus(open(fileName, O_RDWR));
+    if (i2cbus < 0)
 	{
 		throw std::runtime_error("Failed to open i2c port for write");
 	}
@@ -557,8 +564,6 @@ void IoPi::write_byte_data(char reg, char value)
 	{
 		throw std::runtime_error("Failed to write to i2c device for write");
 	}
-
-	close(i2cbus);
 }
 
 char IoPi::updatebyte(char byte, char bit, char value)
