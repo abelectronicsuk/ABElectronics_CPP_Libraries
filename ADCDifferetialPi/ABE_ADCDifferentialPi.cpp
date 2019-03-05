@@ -26,6 +26,16 @@ Reads from the MCP3424 ADC on the ADC Differential Pi.
 
 using namespace ABElectronics_CPP_Libraries;
 
+// stops file handle leakage on exceptions
+class ScopedFileHandle{
+public:
+    ScopedFileHandle(int fd) :_fd(fd){}
+    ~ScopedFileHandle(){ if(_fd >= 0) close(_fd); }
+    operator int() const { return _fd; }
+private:
+    int _fd;
+};
+
 ADCDifferentialPi::ADCDifferentialPi(char address1, char address2, char rate)
 {
 	signbit = 0;
@@ -66,40 +76,37 @@ int ADCDifferentialPi::read_raw(char channel)
 	// get the config and i2c address for the selected channel
 	set_channel(channel);
 
-	if (channel < 5)
+	if (channel > 0 && channel < 5)
 	{
 		config = config1;
 		address = i2caddress1;
 	}
-	else
+	else if (channel < 9)
 	{
 		config = config2;
 		address = i2caddress2;
+	}else
+	{
+		throw std::out_of_range("read_raw() channel out of range: 1 to 8");
 	}
 
 	// if the conversion mode is set to one-shot update the ready bit to 1
 	if (conversionmode == 0)
 	{
-		config = update_byte(config, 7, 1);
+		config = config | (1 << 7);
 		write_byte(address, config);
-		config = update_byte(config, 7, 0);
+		config = config & ~(1 << 7);
 	}
 
 	// keep reading the ADC data until the conversion result is ready
-	int timeout = 1000; // number of reads before a timeout occurs
+	int timeout = 10000; // number of reads before a timeout occurs
 	int x = 0;
 	
-	// open the i2c bus
-	if ((i2cbus = open(fileName, O_RDWR)) < 0)
-	{
-		printf("Failed to open i2c port for read %s \n", strerror(errno));
-		exit(1);
-	}
 	do
 	{
 		if (bitrate == 18)
 		{
-			read_byte_array(address, config, 3);
+			read_byte_array(address, config, 4);
 			h = readbuffer[0];
 			m = readbuffer[1];
 			l = readbuffer[2];
@@ -107,14 +114,14 @@ int ADCDifferentialPi::read_raw(char channel)
 		}
 		else
 		{
-			read_byte_array(address, config, 2);
+			read_byte_array(address, config, 3);
 			h = readbuffer[0];
 			m = readbuffer[1];
 			s = readbuffer[2];
 		}
 
 		// check bit 7 of s to see if the conversion result is ready
-		if (!(s & (1 << 7)))
+		if ((s & (1 << 7)) == 0)
 		{
 			break;
 		}
@@ -122,21 +129,17 @@ int ADCDifferentialPi::read_raw(char channel)
 		if (x > timeout)
 		{
 			// timeout occurred
-			return (0);
+			throw std::runtime_error("read_raw() timeout occurred");
 		}
 
 		x++;
 	} while (1);
 
-	// close the i2c bus
-
-	close(i2cbus);
-
 	// extract the returned bytes and combine in the correct order
 	switch (bitrate)
 	{
 	case 18:
-		t = ((h & 3) << 16) | (m << 8) | l;
+		t = ((h & 0x03) << 16) | (m << 8) | l;
 		if ((t >> 17) & 1)
 		{
 			signbit = 1;
@@ -206,31 +209,23 @@ void ADCDifferentialPi::set_pga(char gain)
 	switch (gain)
 	{
 	case 1:
-		config1 = update_byte(config1, 0, 0);
-		config1 = update_byte(config1, 1, 0);
-		config2 = update_byte(config2, 0, 0);
-		config2 = update_byte(config2, 1, 0);
+		config1 = update_byte(config1, 0xFC, 0x00);
+		config2 = update_byte(config2, 0xFC, 0x00);
 		pga = 0.5;
 		break;
 	case 2:
-		config1 = update_byte(config1, 0, 1);
-		config1 = update_byte(config1, 1, 0);
-		config2 = update_byte(config2, 0, 1);
-		config2 = update_byte(config2, 1, 0);
+		config1 = update_byte(config1, 0xFC, 0x01);
+		config2 = update_byte(config2, 0xFC, 0x01);
 		pga = 1;
 		break;
 	case 4:
-		config1 = update_byte(config1, 0, 0);
-		config1 = update_byte(config1, 1, 1);
-		config2 = update_byte(config2, 0, 0);
-		config2 = update_byte(config2, 1, 1);
+		config1 = update_byte(config1, 0xFC, 0x02);
+		config2 = update_byte(config2, 0xFC, 0x02);
 		pga = 2;
 		break;
 	case 8:
-		config1 = update_byte(config1, 0, 1);
-		config1 = update_byte(config1, 1, 1);
-		config2 = update_byte(config2, 0, 1);
-		config2 = update_byte(config2, 1, 1);
+		config1 = update_byte(config1, 0xFC, 0x03);
+		config2 = update_byte(config2, 0xFC, 0x03);
 		pga = 4;
 		break;
 	default:
@@ -239,7 +234,7 @@ void ADCDifferentialPi::set_pga(char gain)
 	}
 
 	write_byte(i2caddress1, config1);
-	write_byte(i2caddress1, config2);
+	write_byte(i2caddress2, config2);
 }
 
 void ADCDifferentialPi::set_bit_rate(char rate)
@@ -251,34 +246,26 @@ void ADCDifferentialPi::set_bit_rate(char rate)
 	switch (rate)
 	{
 	case 12:
-		config1 = update_byte(config1, 2, 0);
-		config1 = update_byte(config1, 3, 0);
-		config2 = update_byte(config2, 2, 0);
-		config2 = update_byte(config2, 3, 0);
+		config1 = update_byte(config1, 0xF3, 0x00);
+		config2 = update_byte(config2, 0xF3, 0x00);
 		bitrate = 12;
 		lsb = 0.0005;
 		break;
 	case 14:
-		config1 = update_byte(config1, 2, 1);
-		config1 = update_byte(config1, 3, 0);
-		config2 = update_byte(config2, 2, 1);
-		config2 = update_byte(config2, 3, 0);
+		config1 = update_byte(config1, 0xF3, 0x04);
+		config2 = update_byte(config2, 0xF3, 0x04);
 		bitrate = 14;
 		lsb = 0.000125;
 		break;
 	case 16:
-		config1 = update_byte(config1, 2, 0);
-		config1 = update_byte(config1, 3, 1);
-		config2 = update_byte(config2, 2, 0);
-		config2 = update_byte(config2, 3, 1);
+		config1 = update_byte(config1, 0xF3, 0x08);
+		config2 = update_byte(config2, 0xF3, 0x08);
 		bitrate = 16;
 		lsb = 0.00003125;
 		break;
 	case 18:
-		config1 = update_byte(config1, 2, 1);
-		config1 = update_byte(config1, 3, 1);
-		config2 = update_byte(config2, 2, 1);
-		config2 = update_byte(config2, 3, 1);
+		config1 = update_byte(config1, 0xF3, 0x0C);
+		config2 = update_byte(config2, 0xF3, 0x0C);
 		bitrate = 18;
 		lsb = 0.0000078125;
 		break;
@@ -288,7 +275,7 @@ void ADCDifferentialPi::set_bit_rate(char rate)
 	}
 
 	write_byte(i2caddress1, config1);
-	write_byte(i2caddress1, config2);
+	write_byte(i2caddress2, config2);
 }
 
 void ADCDifferentialPi::set_conversion_mode(char mode)
@@ -300,14 +287,14 @@ void ADCDifferentialPi::set_conversion_mode(char mode)
 
 	if (mode == 0)
 	{
-		config1 = update_byte(config1, 4, 0);
-		config1 = update_byte(config1, 4, 0);
+		config1 = update_byte(config1, 0xEF, 0x00);
+		config2 = update_byte(config2, 0xEF, 0x00);
 		conversionmode = 0;
 	}
 	else if (mode == 1)
 	{
-		config2 = update_byte(config2, 4, 1);
-		config2 = update_byte(config2, 4, 1);
+		config1 = update_byte(config1, 0xEF, 0x10);
+		config2 = update_byte(config2, 0xEF, 0x10);
 		conversionmode = 1;
 	}
 	else
@@ -318,6 +305,8 @@ void ADCDifferentialPi::set_conversion_mode(char mode)
 
 // private methods
 
+
+
 void ADCDifferentialPi::write_byte(char address, char value)
 {
 	/**
@@ -325,10 +314,10 @@ void ADCDifferentialPi::write_byte(char address, char value)
 	*/
 
 	// open the i2c bus
-	if ((i2cbus = open(fileName, O_RDWR)) < 0)
+	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
+    if (i2cbus < 0)
 	{
-		printf("Failed to open i2c port for read %s \n", strerror(errno));
-		exit(1);
+		throw std::runtime_error("Failed to open i2c port for write");
 	}
 
 	if (ioctl(i2cbus, I2C_SLAVE, address) < 0)
@@ -351,6 +340,12 @@ void ADCDifferentialPi::read_byte_array(char address, char reg, char length)
 	/**
 	* private method for reading bytes from the I2C port
 	*/
+	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
+	if (i2cbus < 0)
+	{
+		throw std::runtime_error("Failed to open i2c port for read");
+	}
+
 	if (ioctl(i2cbus, I2C_SLAVE, address) < 0)
 	{
 		throw std::runtime_error("Failed to write to i2c port for read");
@@ -363,25 +358,19 @@ void ADCDifferentialPi::read_byte_array(char address, char reg, char length)
 		throw std::runtime_error("Failed to write to i2c device for read");
 	}
 
-	read(i2cbus, readbuffer, 4);
+	read(i2cbus, readbuffer, length);
+
+	close(i2cbus);
 }
 
-char ADCDifferentialPi::update_byte(char byte, char bit, char value)
+char ADCDifferentialPi::update_byte(char byte, char mask, char value)
 {
 	/**
-	* private method for setting the value of a single bit within a byte
+	* private method for setting the value of bits within a byte
 	*/
-	if (value == 0)
-	{
-		return (byte &= ~(1 << bit));
-	}
-	else if (value == 1)
-	{
-		return (byte |= 1 << bit);
-	}
-	else{
-		throw std::out_of_range("update_byte() value out of range: 0 or 1");
-	}
+	byte &= mask;
+    byte |= value;
+    return byte;
 }
 
 void ADCDifferentialPi::set_channel(char channel)
@@ -393,27 +382,20 @@ void ADCDifferentialPi::set_channel(char channel)
 	{
 		if (channel != currentchannel1)
 		{
+			currentchannel1 = channel;
 			switch (channel)
 			{
 			case 1:
-				config1 = update_byte(config1, 5, 0);
-				config1 = update_byte(config1, 6, 0);
-				currentchannel1 = 1;
+				config1 = update_byte(config1, 0x9F, 0x00);
 				break;
 			case 2:
-				config1 = update_byte(config1, 5, 1);
-				config1 = update_byte(config1, 6, 0);
-				currentchannel1 = 2;
+				config1 = update_byte(config1, 0x9F, 0x20);
 				break;
 			case 3:
-				config1 = update_byte(config1, 5, 0);
-				config1 = update_byte(config1, 6, 1);
-				currentchannel1 = 3;
+				config1 = update_byte(config1, 0x9F, 0x40);
 				break;
 			case 4:
-				config1 = update_byte(config1, 5, 1);
-				config1 = update_byte(config1, 6, 1);
-				currentchannel1 = 4;
+				config1 = update_byte(config1, 0x9F, 0x60);
 				break;
 			}
 		}
@@ -422,27 +404,20 @@ void ADCDifferentialPi::set_channel(char channel)
 	{
 		if (channel != currentchannel2)
 		{
+			currentchannel2 = channel;
 			switch (channel)
 			{
 			case 5:
-				config2 = update_byte(config2, 5, 0);
-				config2 = update_byte(config2, 6, 0);
-				currentchannel2 = 5;
+				config2 = update_byte(config2, 0x9F, 0x00);
 				break;
 			case 6:
-				config2 = update_byte(config2, 5, 1);
-				config2 = update_byte(config2, 6, 0);
-				currentchannel2 = 6;
+				config2 = update_byte(config2, 0x9F, 0x20);
 				break;
 			case 7:
-				config2 = update_byte(config2, 5, 0);
-				config2 = update_byte(config2, 6, 1);
-				currentchannel2 = 7;
+				config2 = update_byte(config2, 0x9F, 0x40);
 				break;
 			case 8:
-				config2 = update_byte(config2, 5, 1);
-				config2 = update_byte(config2, 6, 1);
-				currentchannel2 = 8;
+				config2 = update_byte(config2, 0x9F, 0x60);
 				break;
 			}
 		}
