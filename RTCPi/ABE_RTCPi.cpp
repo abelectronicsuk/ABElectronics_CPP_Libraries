@@ -46,26 +46,36 @@ RTCPi::RTCPi(){
 	rtcCentury = 2000;
 }
 
+// stops file handle leakage on exceptions
+class ScopedFileHandle{
+public:
+    ScopedFileHandle(int fd) :_fd(fd){}
+    ~ScopedFileHandle(){ if(_fd >= 0) close(_fd); }
+    operator int() const { return _fd; }
+private:
+    int _fd;
+};
+
 void RTCPi::read_byte_array(char reg, char length) {
-/*
+	/*
 	internal method for reading data from the i2c bus
 	*/
-	if ((i2cbus = open(fileName, O_RDWR)) < 0) {
-		throw std::runtime_error("Failed to open i2c port for read");
-
-		exit(1);
+	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
+    if (i2cbus < 0)
+	{
+		throw std::runtime_error("read_byte_array: Failed to open i2c port for read");
 	}
 
-	if (ioctl(i2cbus, I2C_SLAVE, RTCADDRESS) < 0) {
-		throw std::runtime_error("Failed to write to i2c port for read");
-		exit(1);
+	if (ioctl(i2cbus, I2C_SLAVE, RTCADDRESS) < 0)
+	{
+		throw std::runtime_error("read_byte_array: Failed to write to i2c port for read");
 	}
 
-	writebuffer[0] = reg;
+	buf[0] = reg;
 
-	if ((write(i2cbus, writebuffer, 1)) != 1) {
-		throw std::runtime_error("Failed to write to i2c device for read");
-		exit(1);
+	if ((write(i2cbus, buf, 1)) != 1)
+	{
+		throw std::runtime_error("read_byte_array: Failed to write to i2c device for read");
 	}
 
 	read(i2cbus, readbuffer, length);
@@ -74,25 +84,26 @@ void RTCPi::read_byte_array(char reg, char length) {
 }
 
 void RTCPi::write_byte_data(char reg, char value) {
-	/*
-	internal method for writing data to the i2c bus
+	/**
+	* private method for writing a byte to the I2C port
 	*/
-	if ((i2cbus = open(fileName, O_RDWR)) < 0) {
-		throw std::runtime_error("Failed to open i2c port for write");
-		exit(1);
+    ScopedFileHandle i2cbus(open(fileName, O_RDWR));
+    if (i2cbus < 0)
+	{
+		throw std::runtime_error("write_byte_data: Failed to open i2c port for write");
 	}
 
-	if (ioctl(i2cbus, I2C_SLAVE, RTCADDRESS) < 0) {
-		throw std::runtime_error("Failed to write to i2c port for write");
-		exit(1);
+	if (ioctl(i2cbus, I2C_SLAVE, RTCADDRESS) < 0)
+	{
+		throw std::runtime_error("write_byte_data: Failed to write to i2c port for write");
 	}
 
 	buf[0] = reg;
 	buf[1] = value;
 
-	if ((write(i2cbus, buf, 2)) != 2) {
-		throw std::runtime_error("Failed to write to i2c device for write");
-		exit(1);
+	if ((write(i2cbus, buf, 2)) != 2)
+	{
+		throw std::runtime_error("write_byte_data: Failed to write to i2c device for write");
 	}
 
 	close(i2cbus);
@@ -103,18 +114,19 @@ void RTCPi::write_byte_array(unsigned char buffer[], unsigned char length) {
 	internal method for writing data to the i2c bus
 	*/
 
-	if ((i2cbus = open(fileName, O_RDWR)) < 0) {
-		throw std::runtime_error("Failed to open i2c port for write");
-		exit(1);
+	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
+    if (i2cbus < 0)
+	{
+		throw std::runtime_error("write_byte_array: Failed to open i2c port for write");
 	}
 
-	if (ioctl(i2cbus, I2C_SLAVE, RTCADDRESS) < 0) {
-		throw std::runtime_error("Failed to write to i2c port for write");
-		exit(1);
+	if (ioctl(i2cbus, I2C_SLAVE, RTCADDRESS) < 0)
+	{
+		throw std::runtime_error("write_byte_array: Failed to write to i2c port for write");
 	}
 
 	if ((write(i2cbus, buffer, length)) != length) {
-		throw std::runtime_error("Failed to write to i2c device for write");
+		throw std::runtime_error("write_byte_array: Failed to write to i2c device for write");
 		exit(1);
 	}
 

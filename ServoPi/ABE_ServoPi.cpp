@@ -206,29 +206,42 @@ void ServoPi::disable_allcall_address(char address)
 
 // private methods
 
+// stops file handle leakage on exceptions
+class ScopedFileHandle{
+public:
+    ScopedFileHandle(int fd) :_fd(fd){}
+    ~ScopedFileHandle(){ if(_fd >= 0) close(_fd); }
+    operator int() const { return _fd; }
+private:
+    int _fd;
+};
+
 int ServoPi::read_byte_data(char address, char reg)
 {
-
-	if ((i2cbus = open(fileName, O_RDWR)) < 0)
+	/*
+	internal method for reading data from the i2c bus
+	*/
+	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
+    if (i2cbus < 0)
 	{
-		throw std::runtime_error("Failed to open i2c port for read");
+		throw std::runtime_error("read_byte_data: Failed to open i2c port for read");
 	}
 
 	if (ioctl(i2cbus, I2C_SLAVE, address) < 0)
 	{
-		throw std::runtime_error("Failed to write to i2c port for read");
+		throw std::runtime_error("read_byte_data: Failed to write to i2c port for read");
 	}
 
 	buf[0] = reg;
 
 	if ((write(i2cbus, buf, 1)) != 1)
 	{
-		throw std::runtime_error("Failed to write to i2c device for read");
+		throw std::runtime_error("read_byte_data: Failed to write to i2c device for read");
 	}
 
 	if (read(i2cbus, buf, 1) != 1)
 	{ // Read back data into buf[]
-		throw std::runtime_error("Failed to read from slave");
+		throw std::runtime_error("read_byte_data: Failed to read from slave");
 	}
 
 	close(i2cbus);
@@ -238,14 +251,18 @@ int ServoPi::read_byte_data(char address, char reg)
 
 void ServoPi::write_byte_data(char address, char reg, char value)
 {
-	if ((i2cbus = open(fileName, O_RDWR)) < 0)
+	/**
+	* private method for writing a byte to the I2C port
+	*/
+    ScopedFileHandle i2cbus(open(fileName, O_RDWR));
+    if (i2cbus < 0)
 	{
-		throw std::runtime_error("Failed to open i2c port for write");
+		throw std::runtime_error("write_byte_data: Failed to open i2c port for write");
 	}
 
 	if (ioctl(i2cbus, I2C_SLAVE, address) < 0)
 	{
-		throw std::runtime_error("Failed to write to i2c port for write");
+		throw std::runtime_error("write_byte_data: Failed to write to i2c port for write");
 	}
 
 	buf[0] = reg;
@@ -253,7 +270,7 @@ void ServoPi::write_byte_data(char address, char reg, char value)
 
 	if ((write(i2cbus, buf, 2)) != 2)
 	{
-		throw std::runtime_error("Failed to write to i2c device for write");
+		throw std::runtime_error("write_byte_data: Failed to write to i2c device for write");
 	}
 
 	close(i2cbus);
