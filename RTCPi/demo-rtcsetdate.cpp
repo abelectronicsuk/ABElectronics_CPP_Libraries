@@ -1,9 +1,9 @@
 /*
 * demo-rtcsetdate.cpp
 *
-*  Created on: 12 June 2017
+*  Version 1.1 Updated 21/04/2020
 *
-*      compile with "g++ ABE_RTCPi.cpp demo-rtcsetdate.cpp -o demo-rtcsetdate"
+*      compile with "g++ ABE_RTCPi.cpp demo-rtcsetdate.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-rtcsetdate"
 *      run with "./demo-rtcsetdate"
 *
 *  This demo shows how to write a date to the RTC and read it back again.
@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 	datetime.tm_wday = 4;// dayofweek
 	datetime.tm_mday = 10;// day
 	datetime.tm_mon = 06;// month - 1
-	datetime.tm_year = 117; // years since 1900
+	datetime.tm_year = 120; // years since 1900
 
 	rtc.set_date(datetime);  // send the date to the RTC Pi
 	
@@ -48,10 +48,10 @@ int main(int argc, char **argv) {
 			puts("strftime failed");
 		}
 
-		//usleep(1000000); // sleep for a second
-
-		usleep(10000); // sleep for a second
+		usleep(1000000); // sleep for a second
 	}
 
+	(void)argc;
+	(void)argv;
 	return (0);
 }

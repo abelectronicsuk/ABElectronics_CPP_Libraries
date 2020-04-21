@@ -1,7 +1,7 @@
 /*
 ================================================
 ABElectronics UK RTC Pi real-time clock
-Version 1.0 Created 12/06/2017
+Version 1.1 Updated 21/04/2020
 ================================================
 
 Required package{
@@ -82,12 +82,12 @@ unsigned char buf[10];
 unsigned char writebuffer[60];
 unsigned char readbuffer[60];
 
-void read_byte_array(char reg, char length);
-void write_byte_data(char reg, char value);
+void read_byte_array(unsigned char reg, unsigned char length);
+void write_byte_data(unsigned char reg, unsigned char value);
 void write_byte_array(unsigned char buffer[], unsigned char length);
 unsigned char bcd_to_dec(unsigned char bcd);
-unsigned char dec_to_bcd(char dec);
-char updatebyte(char byte, char bit, char value);
+unsigned char dec_to_bcd(unsigned char dec);
+unsigned char updatebyte(unsigned char byte, unsigned char bit, unsigned char value);
 
 };
 }

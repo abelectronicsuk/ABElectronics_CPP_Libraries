@@ -1,7 +1,7 @@
 /*
 ================================================
 ABElectronics UK Expander Pi
-Version 1.0 Created 25/06/2017
+Version 1.1 Updated 21/04/2020
 ================================================
 
 Required package{
@@ -101,89 +101,89 @@ void dac_set_voltage(double voltage, int channel, int gain);
 * @param pins - 1 to 16
 * @param direction - 1 = input, 0 = output
 */
-void io_set_pin_direction(char pin, char direction);
+void io_set_pin_direction(unsigned char pin, unsigned char direction);
 
 /** 
 * set direction for an IO port
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 * @param direction - 1 = input, 0 = output
 */
-void io_set_port_direction(char port, char direction);
+void io_set_port_direction(unsigned char port, unsigned char direction);
 
 /** 
 * set the internal 100K pull-up resistors for an individual pin
 * @param pin - 1 to 16
 * @param value - 1 = enabled, 0 = disabled
 */
-void io_set_pin_pullup(char pin, char value);
+void io_set_pin_pullup(unsigned char pin, unsigned char value);
 
 /** 
 * set the internal 100K pull-up resistors for the selected IO port
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 * @param value - number between 0 and 255 or 0x00 and 0xFF
 */
-void io_set_port_pullups(char port, char value);
+void io_set_port_pullups(unsigned char port, unsigned char value);
 
 /** 
 * write to an individual pin 1 - 16
 * @param pin - 1 to 16
 * @param value - 0 = logic level low, 1 = logic level high
 */
-void io_write_pin(char pin, char value);
+void io_write_pin(unsigned char pin, unsigned char value);
 
 /** 
 * write to all pins on the selected port
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 * @param value - number between 0 and 255 or 0x00 and 0xFF
 */
-void io_write_port(char port, char value);
+void io_write_port(unsigned char port, unsigned char value);
 
 /** 
 * read the value of an individual pin
 * @param pin - 1 to 16
 * @returns - 0 = logic level low, 1 = logic level high
 */
-int io_read_pin(char pin);
+int io_read_pin(unsigned char pin);
 
 /** 
 * read all pins on the selected port
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 * @returns - number between 0 and 255 or 0x00 and 0xFF
 */
-char io_read_port(char port);
+char io_read_port(unsigned char port);
 
 /** 
 * invert the polarity of the pins on a selected port
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 * @param polarity - 0 = same logic state of the input pin, 1 = inverted logic	state of the input pin
 */
-void io_invert_port(char port, char polarity);
+void io_invert_port(unsigned char port, unsigned char polarity);
 
 /** 
 * invert the polarity of the selected pin
 * @param pin - 1 to 16
 * @param polarity - 0 = same logic state of the input pin, 1 = inverted logic	state of the input pin
 */
-void io_invert_pin(char pin, char polarity);
+void io_invert_pin(unsigned char pin, unsigned char polarity);
 
 /** 
 * Set the interrupt pins to be mirrored or for separate ports
 * @param value - 1 = The char pins are internally connected, 0 = The char pins are not connected. INTA is associated with PortA and INTB is associated with PortB
 */
-void io_mirror_interrupts(char value);
+void io_mirror_interrupts(unsigned char value);
 
 /** 
 * This sets the polarity of the char output pins.
 * @param value - 1 = Active-high, 0 = Active-low.
 */
-void io_set_interrupt_polarity(char value);
+void io_set_interrupt_polarity(unsigned char value);
 
 /** 
 * Sets the type of interrupt for each pin on the selected port
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 * @param value - 1 = interrupt is fired when the pin matches the default value, 0 = the interrupt is fired on state change
 */
-void io_set_interrupt_type(char port, char value);
+void io_set_interrupt_type(unsigned char port, unsigned char value);
 
 /** 
 * These bits set the compare value for pins configured for interrupt-on-change on the selected port.
@@ -191,34 +191,34 @@ void io_set_interrupt_type(char port, char value);
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 * @param value - default state for the port
 */
-void io_set_interrupt_defaults(char port, char value);
+void io_set_interrupt_defaults(unsigned char port, unsigned char value);
 
 /** 
 * Enable interrupts for the pins on the selected port
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 * @param value - number between 0 and 255 or 0x00 and 0xFF
 */
-void io_set_interrupt_on_port(char port, char value);
+void io_set_interrupt_on_port(unsigned char port, unsigned char value);
 
 /** 
 * Enable interrupts for the selected pin
 * @param pin - 1 to 16
 * @param value - 0 = interrupt disabled, 1 = interrupt enabled
 */
-void io_set_interrupt_on_pin(char pin, char value);
+void io_set_interrupt_on_pin(unsigned char pin, unsigned char value);
 
 /** 
 * read the interrupt status for the pins on the selected port
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 */
-char io_read_interrupt_status(char port);
+char io_read_interrupt_status(unsigned char port);
 
 /** 
 * read the value from the selected port at the time of the last
 * interrupt trigger
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 */
-char io_read_interrupt_capture(char port);
+char io_read_interrupt_capture(unsigned char port);
 
 /** 
 * set the interrupts A and B to 0
@@ -316,13 +316,13 @@ int rtcCentury;
 
 // Private Members
 
-int read_byte_data(char address, char reg);
-void read_byte_array(char address, char reg, char length);
-void write_byte_data(char address, char reg, char value);
+int read_byte_data(unsigned char address, unsigned char reg);
+void read_byte_array(unsigned char address, unsigned char reg, unsigned char length);
+void write_byte_data(unsigned char address, unsigned char reg, unsigned char value);
 void write_byte_array(unsigned char address, unsigned char buffer[], unsigned char length);
 unsigned char bcd_to_dec(unsigned char bcd);
-unsigned char dec_to_bcd(char dec);
-char updatebyte(char byte, char bit, char value);
-char checkbit(char byte, char bit);
+unsigned char dec_to_bcd(unsigned char dec);
+char updatebyte(unsigned char byte, unsigned char bit, unsigned char value);
+char checkbit(unsigned char byte, unsigned char bit);
 };
 }

@@ -1,17 +1,17 @@
 /*
  * demo-pwm.cpp
  *
- *  Created on: 26 June 2017
+ *  Version 1.1 Updated 21/04/2020
  *
  *	Set the PWM output on channel 1 and change the pulse width between 0 and 4095
- *	The demo needs to be run as sudo.  This is because the Servo Pi uses the GPIO port to control
- *	the Output Enable function and GPIO needs to be accessed as root.
  *
- *	To run without sudo privileges change "servopi_init(0x40, 1);" to "servopi_init(0x40, 0);"
- *	to disable the output enable pin and remove "output_enable(0x40);"
+ *	The ServoPi library uses Wiring Pi to access the GPIO port.  This is because the Servo Pi uses the GPIO port to control
+ *	the Output Enable function.  
+ *	
+ *	If Wiring Pi is not installed you can install it using the command "sudo apt-get install wiringpi"
  *
- *  compile with "g++ demo-pwm.cpp ABE_ServoPi.cpp -o demo-pwm"
- *  run with "sudo ./demo-pwm"
+ *  compile with "g++ demo-pwm.cpp ABE_ServoPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-pwm -L/usr/local/lib -lwiringPi"
+ *  run with "./demo-pwm"
  */
 
 #include <stdint.h>
@@ -58,5 +58,7 @@ int main(int argc, char **argv) {
 
 	}
 
+	(void)argc;
+	(void)argv;
 	return (0);
 }

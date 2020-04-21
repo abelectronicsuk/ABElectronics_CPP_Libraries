@@ -1,9 +1,8 @@
 /*
 ================================================
 ABElectronics UK ADC-DAC Pi
-Version 1.0 Created 23/06/2017
+Version 1.1 Updated 21/04/2020
 ================================================
-
 */
 
 #ifndef ADCDACPI_ABE_ADCDACPI_H_

@@ -1,9 +1,8 @@
 /*
 ================================================
 ABElectronics UK ADC-DAC Pi
-Version 1.0 Created 23/06/2017
+Version 1.1 Updated 21/04/2020
 ================================================
-
 */
 
 #include <stdint.h>
@@ -145,7 +144,8 @@ int ADCDACPi::read_adc_raw(int channel, int mode) {
 	spi.bits_per_word = 8;
 
 
-	int ret = ioctl(adc, SPI_IOC_MESSAGE(1), &spi);
+	if (ioctl(adc, SPI_IOC_MESSAGE(1), &spi) == -1)
+		return (0);
 
 	return (((adcrx[1] & 0x0F) << 8) + (adcrx[2]));
 
@@ -184,11 +184,14 @@ void ADCDACPi::set_dac_raw(uint16_t raw, int channel) {
 	* @param channel - 1 or 2
 	*/
 	
+	uint16_t dactx[2];
+
 	dactx[1] = (raw & 0xff);
 	dactx[0] = (((raw >> 8) & 0xff) | (channel - 1) << 7 | 0x1 << 5 | 1 << 4);
 
 	if (dacgain == 2) {
-        dactx[0] = (dactx[0] &= ~(1 << 5));
+		uint16_t x = dactx[0];
+        dactx[0] = (x &= ~(1 << 5));
     }
 
 	struct spi_ioc_transfer tr;
@@ -203,7 +206,7 @@ void ADCDACPi::set_dac_raw(uint16_t raw, int channel) {
 	tr.cs_change = 0;
 
 	// Write data
-	int ret = ioctl(dac, SPI_IOC_MESSAGE(1), &tr);
+	if (ioctl(dac, SPI_IOC_MESSAGE(1), &tr) == -1) throw std::runtime_error("error setting dac raw value");;
 	return;
 		
 }

@@ -1,11 +1,11 @@
 /*
  * demo-dacsinewave.cpp
  *
- *  Created on: 25 June 2017
+ *  Version 1.1 Updated 21/04/2020
  *
  *  	This demonstration uses an array of 256 data points to generate a sine wave.
  *
- *      compile with "g++ demo-dacsinewave.cpp ABE_ExpanderPi.cpp -o demo-dacsinewave"
+ *      compile with "g++ demo-dacsinewave.cpp ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-dacsinewave"
  *      run with "./demo-dacsinewave"
  */
 
@@ -43,5 +43,8 @@ int main(int argc, char **argv){
 	}
 
 	expi.dac_close();
+
+	(void)argc;
+	(void)argv;
 	return (0);
 }

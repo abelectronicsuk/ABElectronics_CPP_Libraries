@@ -1,18 +1,17 @@
 /*
  * demo-servomove.cpp
  *
- *  Created on: 26 June 2017
+ *  Version 1.1 Updated 21/04/2020
  *
  *	Control a servo on channel 1 and change the position between three positions.
  *
- *	The demo needs to be run as sudo.  This is because the Servo Pi uses the GPIO port to control
- *	the Output Enable function and GPIO needs to be accessed as root.
+ *	The ServoPi library uses Wiring Pi to access the GPIO port.  This is because the Servo Pi uses the GPIO port to control
+ *	the Output Enable function.  
+ *	
+ *	If Wiring Pi is not installed you can install it using the command "sudo apt-get install wiringpi"
  *
- *	To run without sudo privileges change "servopi_init(0x40, 1);" to "servopi_init(0x40, 0);"
- *	to disable the output enable pin and remove "output_enable(0x40);"
- *
- *  compile with "g++ demo-servomove.cpp ABE_ServoPi.cpp -o demo-servomove"
- *  run with "sudo ./demo-servomove"
+ *  compile with "g++ demo-servomove.cpp ABE_ServoPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-servomove -L/usr/local/lib -lwiringPi"
+ *  run with "./demo-servomove"
  */
 
 #include <stdint.h>
@@ -57,5 +56,7 @@ int main(int argc, char **argv)
 		usleep(500000);						 // sleep 0.5 seconds
 	}
 
+	(void)argc;
+	(void)argv;
 	return (0);
 }

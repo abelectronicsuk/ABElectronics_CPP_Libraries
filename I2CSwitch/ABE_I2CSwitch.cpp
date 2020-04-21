@@ -1,12 +1,12 @@
 /*
 ================================================
 ABElectronics UK I2C Switch
- Version 1.0 Created 26/11/2019
+Version 1.1 Updated 21/04/2020
 ================================================
 
 
- Required package{
- apt-get install libi2c-dev
+ Required packages: i2c-dev and wiringPi
+ apt-get install libi2c-dev wiringpi
  */
 
 //#include <stdint.h>
@@ -20,7 +20,7 @@ ABElectronics UK I2C Switch
 #include <linux/types.h>
 #include <linux/i2c-dev.h>
 #include <time.h>
-//#include <math.h>
+#include <wiringPi.h>
 #include <unistd.h>
 
 #include "ABE_I2CSwitch.h"
@@ -30,7 +30,7 @@ using namespace ABElectronics_CPP_Libraries;
 #define fileName "/dev/i2c-1"
 // change to /dev/i2c-0 if you are using a revision 0002 or 0003 model B
 
-#define RESETPIN 27 // GPIO Reset Pin
+#define RESETPIN 2 // GPIO Reset Pin
 
 // values used for I2C and GPIO communication
 #define OUT 1
@@ -44,7 +44,7 @@ using namespace ABElectronics_CPP_Libraries;
 
 // public methods
 
-I2CSwitch::I2CSwitch(char address)
+I2CSwitch::I2CSwitch(unsigned char address)
 {
 	/**
 	* Initialise the Servo Pi - run before calling any other methods
@@ -52,9 +52,18 @@ I2CSwitch::I2CSwitch(char address)
 	*/
 
 	i2caddress = address;
+
+	//Enable GPIO Reset pin
+
+	if (wiringPiSetup () == -1) throw std::runtime_error("reset: Failed to reset switch. GPIO error!");
+
+	pinMode (RESETPIN, OUTPUT) ;
+	
+	// set reset pin high
+	digitalWrite (RESETPIN, 1);
 }
 
-void I2CSwitch::switch_channel(char channel) {
+void I2CSwitch::switch_channel(unsigned char channel) {
 	/**
 	* Enable the specified I2C channel and disable other channels
 	* @param channel - 1 to 4
@@ -62,12 +71,12 @@ void I2CSwitch::switch_channel(char channel) {
 	if (channel < 1 || channel > 4){
 		throw std::runtime_error("switch_channel: channel out of range. 1 - 4");
 	}
-	char cval = 0;
+	unsigned char cval = 0;
 	cval = updatebyte(cval, channel - 1, 1);
 	write_byte_data(cval);
 }
 
-void I2CSwitch::set_channel_state(char channel, char state) {
+void I2CSwitch::set_channel_state(unsigned char channel, unsigned char state) {
 	/**
 	* Sets the state of the specified I2C channel.
 	* All other channels keep their existing state.
@@ -77,16 +86,16 @@ void I2CSwitch::set_channel_state(char channel, char state) {
 	if (channel < 1 || channel > 4){
 		throw std::runtime_error("set_channel_state: channel out of range. 1 - 4");
 	}
-	if (state < 0 || state > 1){
+	if (state > 1){
 		throw std::runtime_error("set_channel_state: state out of range. 0 or 1");
 		fprintf(stderr, "state out of range. 0 or 1\n");
 	}
-	char cval = read_byte_data();
+	unsigned char cval = read_byte_data();
 	cval = updatebyte(cval, channel -1, state);
 	write_byte_data(cval);
 }
 
-char I2CSwitch::get_channel_state(char channel) {
+unsigned char I2CSwitch::get_channel_state(unsigned char channel) {
 	/**
 	* Gets the state of the specified I2C channel
 	* @param channel - 1 to 4
@@ -95,7 +104,7 @@ char I2CSwitch::get_channel_state(char channel) {
 	if (channel < 1 || channel > 4){
 		throw std::runtime_error("get_channel_state: channel out of range. 1 - 4");
 	}
-	char cval = read_byte_data();
+	unsigned char cval = read_byte_data();
 	return (checkbit(cval, channel - 1));
 }
 
@@ -103,37 +112,23 @@ void I2CSwitch::reset(){
 	/**
 	* Reset the I2C switch.  All channels are set to off.
 	*/
-	char failed = 0;
 
 	//Enable GPIO pins
 
-		if (-1 == gpio_export(RESETPIN))
-			failed = 1;
+	if (wiringPiSetup () == -1) throw std::runtime_error("reset: Failed to reset switch. GPIO error!");
 
-		/*
-		 * Set GPIO directions
-		 */
-		if (-1 == gpio_direction(RESETPIN, OUT))
-			failed = 1;
+	pinMode (RESETPIN, OUTPUT) ;
 	
 	// set reset pin low
-	if (-1 == gpio_write(RESETPIN, 0)) {
-		failed = 1;	
-	}
+	digitalWrite (RESETPIN, 0);
 	
 	// wait 1ms before setting reset pin high
 	usleep (1000);  
 
-	if (-1 == gpio_write(RESETPIN, 1)) {
-		failed = 1;	
-	}
+	digitalWrite (RESETPIN, 1);
 
 	// wait 1ms for the switch to reset
 	usleep (1000);  
-
-	if (failed == 1){
-		throw std::runtime_error("reset: Failed to reset switch. GPIO error!");
-	}
 }
 
 // private methods
@@ -174,7 +169,7 @@ int I2CSwitch::read_byte_data()
 	return (buf[0]);
 }
 
-void I2CSwitch::write_byte_data(char value)
+void I2CSwitch::write_byte_data(unsigned char value)
 {
 	/**
 	* private method for writing a byte to the I2C port
@@ -200,7 +195,7 @@ void I2CSwitch::write_byte_data(char value)
 	close(i2cbus);
 }
 
-char I2CSwitch::updatebyte(char byte, char bit, char value) {
+unsigned char I2CSwitch::updatebyte(unsigned char byte, unsigned char bit, unsigned char value) {
 	/*
 	 internal method for setting the value of a single bit within a byte
 	 */
@@ -213,7 +208,7 @@ char I2CSwitch::updatebyte(char byte, char bit, char value) {
 
 }
 
-char I2CSwitch::checkbit(char byte, char bit) {
+unsigned char I2CSwitch::checkbit(unsigned char byte, unsigned char bit) {
 	/*
 	 internal method for reading the value of a single bit within a byte
 	 */
@@ -222,68 +217,4 @@ char I2CSwitch::checkbit(char byte, char bit) {
 	} else {
 		return (0);
 	}
-}
-
-int I2CSwitch::gpio_export(int pin)
-{
-
-	char buffer[BUFFER_MAX];
-	ssize_t bytes_written;
-	int fd;
-
-	fd = open("/sys/class/gpio/export", O_WRONLY);
-	if (-1 == fd)
-	{
-		throw std::runtime_error("Failed to open export for writing");
-	}
-
-	bytes_written = snprintf(buffer, BUFFER_MAX, "%d", pin);
-	write(fd, buffer, bytes_written);
-	close(fd);
-	return (0);
-}
-
-int I2CSwitch::gpio_direction(int pin, int dir)
-{
-	static const char s_directions_str[] = "in\0out";
-	char path[DIRECTION_MAX];
-	int fd;
-
-	snprintf(path, DIRECTION_MAX, "/sys/class/gpio/gpio%d/direction", pin);
-	fd = open(path, O_WRONLY);
-	if (-1 == fd)
-	{
-		throw std::runtime_error("Failed to open gpio direction for writing");
-	}
-
-	if (-1 == write(fd, &s_directions_str[IN == dir ? 0 : 3], IN == dir ? 2 : 3))
-	{
-		throw std::runtime_error("Failed to set direction");
-	}
-
-	close(fd);
-	return (0);
-}
-
-int I2CSwitch::gpio_write(int pin, int value)
-{
-	static const char s_values_str[] = "01";
-
-	char path[VALUE_MAX];
-	int fd;
-
-	snprintf(path, VALUE_MAX, "/sys/class/gpio/gpio%d/value", pin);
-	fd = open(path, O_WRONLY);
-	if (-1 == fd)
-	{
-		throw std::runtime_error("Failed to open gpio value for writing");
-	}
-
-	if (1 != write(fd, &s_values_str[LOW == value ? 0 : 1], 1))
-	{
-		throw std::runtime_error("Failed to write value");
-	}
-
-	close(fd);
-	return (0);
 }

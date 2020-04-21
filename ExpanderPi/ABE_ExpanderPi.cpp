@@ -1,7 +1,7 @@
 /*
 ================================================
 ABElectronics UK Expander Pi
-Version 1.0 Created 16/06/2017
+Version 1.1 Updated 21/04/2020
 ================================================
 
 
@@ -100,8 +100,8 @@ ExpanderPi::ExpanderPi(){
 	write_byte_data(IOADDRESS, IOCON, config);
 	portaval = read_byte_data(IOADDRESS, GPIOA);
 	portbval = read_byte_data(IOADDRESS, GPIOB);
-	write_byte_data(IOADDRESS, IODIRA, 0xFF);
-	write_byte_data(IOADDRESS, IODIRB, 0xFF);
+	write_byte_data(IOADDRESS, IODIRA, (unsigned char)0xFF);
+	write_byte_data(IOADDRESS, IODIRB, (unsigned char)0xFF);
 	io_set_port_pullups(0, 0x00);
 	io_set_port_pullups(1, 0x00);
 	io_invert_port(0, 0x00);
@@ -182,10 +182,12 @@ int ExpanderPi::adc_read_raw(int channel, int mode) {
 	spi.bits_per_word = 8;
 
 
-	int ret = ioctl(adc, SPI_IOC_MESSAGE(1), &spi);
-
-	return (((adcrx[1] & 0x0F) << 8) + (adcrx[2]));
-
+	if (ioctl(adc, SPI_IOC_MESSAGE(1), &spi) == -1){
+		return(0);
+	}
+	else{
+		return (((adcrx[1] & 0x0F) << 8) + (adcrx[2]));
+	}
 }
 
 void ExpanderPi::adc_set_refvoltage(double ref) {
@@ -235,11 +237,14 @@ void ExpanderPi::dac_set_raw(uint16_t raw, int channel, int gain) {
 	* @param gain - 1 or 2  - The output voltage will be between 0 and 2.048V when gain is set to 1,  0 and 4.096V when gain is set to 2
 	*/
 
+	uint16_t dactx[2];
+
 	dactx[1] = (raw & 0xff);
 	dactx[0] = (((raw >> 8) & 0xff) | (channel - 1) << 7 | 0x1 << 5 | 1 << 4);
 
 	if (gain == 2) {
-        dactx[0] = (dactx[0] &= ~(1 << 5));
+		uint16_t x = dactx[0];
+        dactx[0] = (x &= ~(1 << 5));
     }
 
 	struct spi_ioc_transfer tr;
@@ -254,7 +259,9 @@ void ExpanderPi::dac_set_raw(uint16_t raw, int channel, int gain) {
 	tr.cs_change = 0;
 
 	// Write data
-	int ret = ioctl(dac, SPI_IOC_MESSAGE(1), &tr);
+	if (ioctl(dac, SPI_IOC_MESSAGE(1), &tr) == -1){
+		throw std::runtime_error("error setting dac raw value");
+	}
 	return;
 }
 
@@ -285,14 +292,14 @@ void ExpanderPi::dac_set_voltage(double voltage, int channel, int gain) {
 
 /*===================IO Methods Begin ===================*/
 
-void ExpanderPi::io_set_pin_direction(char pin, char direction) {
+void ExpanderPi::io_set_pin_direction(unsigned char pin,unsigned char direction) {
 	/**
 	* set IO direction for an individual pin
 	* @param pins - 1 to 16
 	* @param direction - 1 = input, 0 = output
 	*/
 	pin = pin - 1;
-	if (pin >= 0 && pin < 8)
+	if (pin < 8)
 	{
 		port_a_dir = updatebyte(port_a_dir, pin, direction);
 		write_byte_data(IOADDRESS, IODIRA, port_a_dir);
@@ -307,7 +314,7 @@ void ExpanderPi::io_set_pin_direction(char pin, char direction) {
 	}
 }
 
-void ExpanderPi::io_set_port_direction(char port, char direction) {
+void ExpanderPi::io_set_port_direction(unsigned char port, unsigned char direction) {
 	/**
 	* set direction for an IO port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
@@ -329,14 +336,14 @@ void ExpanderPi::io_set_port_direction(char port, char direction) {
 
 }
 
-void ExpanderPi::io_set_pin_pullup(char pin, char value) {
+void ExpanderPi::io_set_pin_pullup(unsigned char pin, unsigned char value) {
 	/**
 	* set the internal 100K pull-up resistors for an individual pin
 	* @param pin - 1 to 16
 	* @param value - 1 = enabled, 0 = disabled
 	*/
 	pin = pin - 1;
-	if (pin >= 0 && pin < 8)
+	if (pin < 8)
 	{
 		porta_pullup = updatebyte(porta_pullup, pin, value);
 		write_byte_data(IOADDRESS, GPPUA, porta_pullup);
@@ -351,7 +358,7 @@ void ExpanderPi::io_set_pin_pullup(char pin, char value) {
 	}
 }
 
-void ExpanderPi::io_set_port_pullups(char port, char value) {
+void ExpanderPi::io_set_port_pullups(unsigned char port, unsigned char value) {
 	/**
 	* set the internal 100K pull-up resistors for the selected IO port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
@@ -372,14 +379,14 @@ void ExpanderPi::io_set_port_pullups(char port, char value) {
 	}
 }
 
-void ExpanderPi::io_write_pin(char pin, char value) {
+void ExpanderPi::io_write_pin(unsigned char pin, unsigned char value) {
 	/**
 	* write to an individual pin 1 - 16
 	* @param pin - 1 to 16
 	* @param value - 0 = logic level low, 1 = logic level high
 	*/
 	pin = pin - 1;
-	if (pin >= 0 && pin < 8)
+	if (pin < 8)
 	{
 		portaval = updatebyte(portaval, pin, value);
 		write_byte_data(IOADDRESS, GPIOA, portaval);
@@ -394,7 +401,7 @@ void ExpanderPi::io_write_pin(char pin, char value) {
 	}
 }
 
-void ExpanderPi::io_write_port(char port, char value) {
+void ExpanderPi::io_write_port(unsigned char port, unsigned char value) {
 	/**
 	* write to all pins on the selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
@@ -415,14 +422,14 @@ void ExpanderPi::io_write_port(char port, char value) {
 	}
 }
 
-int ExpanderPi::io_read_pin(char pin) {
+int ExpanderPi::io_read_pin(unsigned char pin) {
 	/**
 	* read the value of an individual pin
 	* @param pin - 1 to 16
 	* @returns - 0 = logic level low, 1 = logic level high
 	*/
 	pin = pin - 1;
-	if (pin >= 0 && pin < 8)
+	if (pin < 8)
 	{
 		portaval = read_byte_data(IOADDRESS, GPIOA);
 		return (checkbit(portaval, pin));
@@ -438,7 +445,7 @@ int ExpanderPi::io_read_pin(char pin) {
 	}
 }
 
-char ExpanderPi::io_read_port(char port) {
+char ExpanderPi::io_read_port(unsigned char port) {
 	/**
 	* read all pins on the selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
@@ -459,7 +466,7 @@ char ExpanderPi::io_read_port(char port) {
 	}
 }
 
-void ExpanderPi::io_invert_port(char port, char polarity) {
+void ExpanderPi::io_invert_port(unsigned char port, unsigned char polarity) {
 	/**
 	* invert the polarity of the pins on a selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
@@ -480,14 +487,14 @@ void ExpanderPi::io_invert_port(char port, char polarity) {
 	}
 }
 
-void ExpanderPi::io_invert_pin(char pin, char polarity) {
+void ExpanderPi::io_invert_pin(unsigned char pin, unsigned char polarity) {
 	/**
 	* invert the polarity of the selected pin
 	* @param pin - 1 to 16
 	* @param polarity - 0 = same logic state of the input pin, 1 = inverted logic	state of the input pin
 	*/
 	pin = pin - 1;
-	if (pin >= 0 && pin < 8)
+	if (pin < 8)
 	{
 
 		porta_polarity = updatebyte(porta_polarity, pin, polarity);
@@ -503,7 +510,7 @@ void ExpanderPi::io_invert_pin(char pin, char polarity) {
 	}
 }
 
-void ExpanderPi::io_mirror_interrupts(char value) {
+void ExpanderPi::io_mirror_interrupts(unsigned char value) {
 	/**
 	* Set the interrupt pins to be mirrored or for separate ports
 	* @param value - 1 = The char pins are internally connected, 0 = The char pins are not connected. INTA is associated with PortA and INTB is associated with PortB
@@ -523,7 +530,7 @@ void ExpanderPi::io_mirror_interrupts(char value) {
 	}
 }
 
-void ExpanderPi::io_set_interrupt_polarity(char value) {
+void ExpanderPi::io_set_interrupt_polarity(unsigned char value) {
 	/**
 	* This sets the polarity of the char output pins.
 	* @param value - 1 = Active-high, 0 = Active-low.
@@ -543,7 +550,7 @@ void ExpanderPi::io_set_interrupt_polarity(char value) {
 	}
 }
 
-void ExpanderPi::io_set_interrupt_type(char port, char value) {
+void ExpanderPi::io_set_interrupt_type(unsigned char port, unsigned char value) {
 	/**
 	* Sets the type of interrupt for each pin on the selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
@@ -562,7 +569,7 @@ void ExpanderPi::io_set_interrupt_type(char port, char value) {
 	}
 }
 
-void ExpanderPi::io_set_interrupt_defaults(char port, char value) {
+void ExpanderPi::io_set_interrupt_defaults(unsigned char port, unsigned char value) {
 	/**
 	* These bits set the compare value for pins configured for interrupt-on-change on the selected port.
 	* If the associated pin level is the opposite from the register bit, an interrupt occurs.
@@ -582,7 +589,7 @@ void ExpanderPi::io_set_interrupt_defaults(char port, char value) {
 	}
 }
 
-void ExpanderPi::io_set_interrupt_on_port(char port, char value) {
+void ExpanderPi::io_set_interrupt_on_port(unsigned char port, unsigned char value) {
 	/**
 	* Enable interrupts for the pins on the selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
@@ -603,14 +610,14 @@ void ExpanderPi::io_set_interrupt_on_port(char port, char value) {
 	}
 }
 
-void ExpanderPi::io_set_interrupt_on_pin(char pin, char value) {
+void ExpanderPi::io_set_interrupt_on_pin(unsigned char pin, unsigned char value) {
 	/**
 	* Enable interrupts for the selected pin
 	* @param pin - 1 to 16
 	* @param value - 0 = interrupt disabled, 1 = interrupt enabled
 	*/
 	pin = pin - 1;
-	if (pin >= 0 && pin < 8)
+	if (pin < 8)
 	{
 		intA = updatebyte(intA, pin, value);
 		write_byte_data(IOADDRESS, GPINTENA, intA);
@@ -625,7 +632,7 @@ void ExpanderPi::io_set_interrupt_on_pin(char pin, char value) {
 	}
 }
 
-char ExpanderPi::io_read_interrupt_status(char port) {
+char ExpanderPi::io_read_interrupt_status(unsigned char port) {
 	/**
 	* read the interrupt status for the pins on the selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
@@ -643,7 +650,7 @@ char ExpanderPi::io_read_interrupt_status(char port) {
 	}
 }
 
-char ExpanderPi::io_read_interrupt_capture(char port) {
+char ExpanderPi::io_read_interrupt_capture(unsigned char port) {
 	/**
 	* read the value from the selected port at the time of the last interrupt trigger
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
@@ -859,7 +866,7 @@ private:
     int _fd;
 };
 
-int ExpanderPi::read_byte_data(char address, char reg) {
+int ExpanderPi::read_byte_data(unsigned char address, unsigned char reg) {
 	/*
 	internal method for reading data from the i2c bus
 	*/
@@ -891,7 +898,7 @@ int ExpanderPi::read_byte_data(char address, char reg) {
 	return (buf[0]);
 }
 
-void ExpanderPi::read_byte_array(char address, char reg, char length) {
+void ExpanderPi::read_byte_array(unsigned char address, unsigned char reg, unsigned char length) {
 	/*
 	internal method for reading data from the i2c bus
 	*/
@@ -918,7 +925,7 @@ void ExpanderPi::read_byte_array(char address, char reg, char length) {
 	close(i2cbus);
 }
 
-void ExpanderPi::write_byte_data(char address, char reg, char value) {
+void ExpanderPi::write_byte_data(unsigned char address, unsigned char reg, unsigned char value) {
 	/**
 	* private method for writing a byte to the I2C port
 	*/
@@ -973,12 +980,12 @@ unsigned char ExpanderPi::bcd_to_dec(unsigned char bcd) {
 	return (unsigned char)((HI_NIBBLE(bcd) * 10) + (LO_NIBBLE(bcd)));
 }
 
-unsigned char ExpanderPi::dec_to_bcd(char dec) {
+unsigned char ExpanderPi::dec_to_bcd(unsigned char dec) {
 	// internal method for converting a decimal formatted number to bcd
 	return (unsigned char)((dec / 10) * 16) + (dec % 10);
 }
 
-char ExpanderPi::updatebyte(char byte, char bit, char value) {
+char ExpanderPi::updatebyte(unsigned char byte, unsigned char bit, unsigned char value) {
 	// internal method for setting the value of a single bit within a byte
 	if (value == 0) {
 		return (byte &= ~(1 << bit));
@@ -990,7 +997,7 @@ char ExpanderPi::updatebyte(char byte, char bit, char value) {
 
 }
 
-char ExpanderPi::checkbit(char byte, char bit) {
+char ExpanderPi::checkbit(unsigned char byte, unsigned char bit) {
 	// internal method for reading the value of a single bit within a byte
 	if (byte & (1 << bit)) {
 		return (1);

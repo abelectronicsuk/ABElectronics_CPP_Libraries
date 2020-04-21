@@ -1,9 +1,9 @@
 /*
 * demo-rtcout.cpp
 *
-*  Created on: 12 June 2017
+*  Version 1.1 Updated 21/04/2020
 *
-*      compile with "g++ ABE_RTCPi.cpp demo-rtcout.cpp -o demo-rtcout"
+*      compile with "g++ ABE_RTCPi.cpp demo-rtcout.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-rtcout"
 *      run with "./demo-rtcout"
 *
 *  This demo shows how to enable the clock square wave output on the RTC Pi and set the frequency
@@ -31,5 +31,7 @@ int main(int argc, char **argv) {
 	// enable the square-wave output
 	rtc.enable_output();
 
+	(void)argc;
+	(void)argv;
 	return (0);
 }

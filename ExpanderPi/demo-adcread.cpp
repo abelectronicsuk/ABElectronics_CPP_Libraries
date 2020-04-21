@@ -1,9 +1,9 @@
 /*
  * demo-adcread.cpp
  *
- *  Created on: 25 June 2017
+ *  Version 1.1 Updated 21/04/2020
  *
- *      compile with "g++ demo-adcread.cpp ABE_ExpanderPi.cpp  -o demo-adcread"
+ *      compile with "g++ demo-adcread.cpp ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-adcread"
  *      run with "./demo-adcread"
  */
 
@@ -47,5 +47,7 @@ int main(int argc, char **argv){
 
 	}
 
+	(void)argc;
+	(void)argv;
 	return (0);
 }

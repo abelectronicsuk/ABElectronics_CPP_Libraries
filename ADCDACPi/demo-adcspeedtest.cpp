@@ -1,13 +1,13 @@
 /*
  * demo-adcread.cpp
  *
- *  Created on: 20 Jan 2016
+ *  Version 1.1 Updated 21/04/2020
  *
- *      compile with "g++ demo-adcspeedtest.cpp ABE_ADCDACPi.cpp  -o demo-adcspeedtest"
+ *      compile with "g++ demo-adcspeedtest.cpp ABE_ADCDACPi.cpp -Wall -Wextra -Wpedantic -Woverflow  -o demo-adcspeedtest"
  *      run with "./demo-adcspeedtest"
  */
 
-#define _BSD_SOURCE
+#define _DEFAULT_SOURCE
 #define numberofsamples 100000
 
 #include <stdint.h>
@@ -47,7 +47,6 @@ int main(int argc, char **argv)
 	gettimeofday(&t1, NULL);
 
 	int x;
-	int channel = 1;
 	for (x = 0; x <= numberofsamples; x++)
 	{
 		samplearray[x] = adcdac.read_adc_voltage(1, 0); // read from adc channel 1
@@ -74,5 +73,7 @@ int main(int argc, char **argv)
 
 	printf("%d samples in %G ms.\nThe sample rate was %G samples per second\nThe average voltage was %Gv", numberofsamples, elapsedTime, samplerate, average);
 
+	(void)argc;
+	(void)argv;
 	return (0);
 }

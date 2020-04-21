@@ -1,13 +1,13 @@
 /*
  * demo-speedtest.cpp
  *
- *  Created on: 22 June 2017
+ *  Version 1.1 Updated 21/04/2020
  *
- *      compile with "g++ demo-speedtest.cpp ABE_ADCDifferentialPi.cpp -o demo-speedtest"
+ *      compile with "g++ demo-speedtest.cpp ABE_ADCDifferentialPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-speedtest"
  *      run with "./demo-speedtest"
  */
 
-#define _BSD_SOURCE
+#define _DEFAULT_SOURCE
 #define numberofsamples 100
 
 #include <stdio.h>
@@ -46,7 +46,7 @@ int main(int argc, char **argv){
 	gettimeofday(&t1, NULL);
 
 	int x;
-	int channel = 1;
+
 	for (x = 0; x <= numberofsamples; x++){
 		samplearray[x] = adc.read_voltage(1); // read from adc channel 1
 
@@ -72,7 +72,8 @@ int main(int argc, char **argv){
 
 	    printf("%d samples in %G ms.\nThe sample rate was %G samples per second\nThe average voltage was %Gv",numberofsamples,elapsedTime,samplerate,average);
 
-
+	(void)argc;
+	(void)argv;
 	return (0);
 }
 

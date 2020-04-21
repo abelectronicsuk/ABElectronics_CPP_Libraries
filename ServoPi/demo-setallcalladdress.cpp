@@ -1,19 +1,18 @@
 /*
  * demo-setallcalladdress.cpp
  *
- *  Created on: 26 June 2017
+ *  Version 1.1 Updated 21/04/2020
  *
  *  Set the All Call I2C address to be 0x60 and enable All Call functionality.  This allows you to
  *  access several Servo Pi boards at the same time from a single I2C address.
  *
- *	The demo needs to be run as sudo.  This is because the Servo Pi uses the GPIO port to control
- *	the Output Enable function and GPIO needs to be accessed as root.
+ *	The ServoPi library uses Wiring Pi to access the GPIO port.  This is because the Servo Pi uses the GPIO port to control
+ *	the Output Enable function.  
+ *	
+ *	If Wiring Pi is not installed you can install it using the command "sudo apt-get install wiringpi"
  *
- *	To run without sudo privileges change "servopi_init(0x40, 1);" to "servopi_init(0x40, 0);"
- *	to disable the output enable pin and remove "output_enable(0x40);"
- *
- *      compile with "g++ demo-setallcalladdress.cpp ABE_ServoPi.cpp -o demo-setallcalladdress"
- *      run with "sudo ./demo-setallcalladdress"
+ *      compile with "g++ demo-setallcalladdress.cpp ABE_ServoPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-setallcalladdress -L/usr/local/lib -lwiringPi"
+ *      run with "./demo-setallcalladdress"
  */
 
 #include <stdint.h>
@@ -44,5 +43,7 @@ int main(int argc, char **argv) {
 	servo.set_allcall_address(0x60, 0x40);
 	servo.enable_allcall_address(0x40);
 
+	(void)argc;
+	(void)argv;
 	return (0);
 }

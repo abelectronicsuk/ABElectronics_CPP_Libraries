@@ -1,12 +1,12 @@
 /*
  * demo-drawtree.cpp
  *
- *  Created on: 23 June 2017
+ *  Version 1.1 Updated 21/04/2020
  *
  *  	This demonstration uses an array of data points to draw a tree on an oscilloscope.
  *      The oscilloscope will need to be set into x-y mode with probes on channels 1 and 2 to display the picture.
  *
- *      compile with "g++ demo-drawtree.cpp ABE_ADCDACPi.cpp -o demo-drawtree"
+ *      compile with "g++ demo-drawtree.cpp ABE_ADCDACPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-drawtree"
  *      run with "./demo-drawtree"
  */
 
@@ -54,5 +54,8 @@ int main(int argc, char **argv){
 	}
 
 	adcdac.close_dac();
+
+	(void)argc;
+	(void)argv;
 	return (0);
 }

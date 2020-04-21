@@ -1,10 +1,10 @@
 /*
  * demo-ioread.cpp
  *
- *  Created on: 25 June 2017
+ *  Version 1.1 Updated 21/04/2020
  *
- *      compile with "g++ demo-ioread.cpp ABE_ExpanderPi.cpp  -o demo-iopiread"
- *      run with "./demo-iopiread"
+ *      compile with "g++ demo-ioread.cpp ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow  -o demo-ioread"
+ *      run with "./demo-ioread"
  */
 #include <stdint.h>
 #include <stdio.h>
@@ -59,6 +59,7 @@ int main(int argc, char **argv)
 			printf("Bus 1 Pin 14: %x\n", expi.io_read_pin(14));
 			printf("Bus 1 Pin 15: %x\n", expi.io_read_pin(15));
 			printf("Bus 1 Pin 16: %x\n", expi.io_read_pin(16));
+			usleep(100000);
 		}
 	}
 	catch (exception &e)
@@ -66,5 +67,7 @@ int main(int argc, char **argv)
 		cout << e.what();
 	}
 
+	(void)argc;
+	(void)argv;
 	return (0);
 }

@@ -3,8 +3,8 @@
  *
  *  Created on: 25 June 2017
  *
- *      compile with "g++ demo-iowrite.cpp ABE_ExpanderPi.cpp  -o demo-iopiwrite"
- *      run with "./demo-iopiwrite"
+ *      compile with "g++ demo-iowrite.cpp ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow  -o demo-iowrite"
+ *      run with "./demo-iowrite"
  */
 #include <stdint.h>
 #include <stdio.h>
@@ -38,5 +38,7 @@ int main(int argc, char **argv){
 		cout << e.what();
 	}
 
+	(void)argc;
+	(void)argv;
 	return (0);
 }

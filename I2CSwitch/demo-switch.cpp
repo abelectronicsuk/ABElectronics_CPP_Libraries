@@ -1,11 +1,11 @@
 /*
  * demo-switch.cpp
  *
- *  Created on: 26 November 2019
+ *  Version 1.1 Updated 21/04/2020
  *
  *	Set the I2C output to the specified channel.
  *
- *  compile with "g++ demo-switch.cpp ABE_I2CSwitch.cpp -o demo-switch"
+ *  compile with "g++ demo-switch.cpp ABE_I2CSwitch.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-switch -L/usr/local/lib -lwiringPi"
  *  run with "sudo ./demo-switch"
  */
 
@@ -33,7 +33,10 @@ int main(int argc, char **argv) {
 	I2CSwitch i2cswitch(0x70);
 
 	// channel to select
-	char channel = 1; 
+	unsigned char channel = 1; 
+
+	// reset the i2c switch
+	i2cswitch.reset();
 
 	// switch to the selected channel
 	i2cswitch.switch_channel(channel); 
@@ -46,5 +49,7 @@ int main(int argc, char **argv) {
 		printf("Failed to change I2C switch to channel %d \n", channel);
 	}
 
+	(void)argc;
+	(void)argv;
 	return (0);
 }

@@ -1,7 +1,7 @@
 /*
  ================================================
  ABElectronics UK IO Pi 32-Channel Port Expander
- Version 1.1 Created 23/01/2015 - Updated 27/05/2015
+ Version 1.1 Updated 21/04/2020
  ================================================
 
 
@@ -83,22 +83,22 @@
 using namespace ABElectronics_CPP_Libraries;
 
 
-IoPi::IoPi(char address)
+IoPi::IoPi(unsigned char address)
 {
 		config = 0x22;
 		i2caddress = address;
 	 	write_byte_data(IOCON, config);
 		portaval = read_byte_data(GPIOA);
 		portbval = read_byte_data(GPIOB);
-		write_byte_data(IODIRA, 0xFF);
-		write_byte_data(IODIRB, 0xFF);
-		set_port_pullups(0, 0x00);
-		set_port_pullups(1, 0x00);
-		invert_port(0, 0x00);
-		invert_port(1, 0x00);
+		write_byte_data(IODIRA, (unsigned char)0xFF);
+		write_byte_data(IODIRB, (unsigned char)0xFF);
+		set_port_pullups(0, (unsigned char)0x00);
+		set_port_pullups(1, (unsigned char)0x00);
+		invert_port(0, (unsigned char)0x00);
+		invert_port(1, (unsigned char)0x00);
 }
 
-void IoPi::set_pin_direction(char pin, char direction)
+void IoPi::set_pin_direction(unsigned char pin, unsigned char direction)
 {
 	/**
 	* set IO direction for an individual pin
@@ -106,7 +106,7 @@ void IoPi::set_pin_direction(char pin, char direction)
 	* @param direction - 1 = input, 0 = output
 	*/
 	pin = pin - 1;
-	if (pin >= 0 && pin < 8)
+	if (pin < 8)
 	{
 		port_a_dir = updatebyte(port_a_dir, pin, direction);
 		write_byte_data(IODIRA, port_a_dir);
@@ -121,7 +121,7 @@ void IoPi::set_pin_direction(char pin, char direction)
 	}
 }
 
-void IoPi::set_port_direction(char port, char direction)
+void IoPi::set_port_direction(unsigned char port, unsigned char direction)
 {	
 	/**
 	* set direction for an IO port
@@ -143,7 +143,7 @@ void IoPi::set_port_direction(char port, char direction)
 	}
 }
 
-void IoPi::set_pin_pullup(char pin, char value)
+void IoPi::set_pin_pullup(unsigned char pin, unsigned char value)
 {
 	/**
 	* set the internal 100K pull-up resistors for an individual pin
@@ -151,7 +151,7 @@ void IoPi::set_pin_pullup(char pin, char value)
 	* @param value - 1 = enabled, 0 = disabled
 	*/
 	pin = pin - 1;
-	if (pin >= 0 && pin < 8)
+	if (pin < 8)
 	{
 		porta_pullup = updatebyte(porta_pullup, pin, value);
 		write_byte_data(GPPUA, porta_pullup);
@@ -167,7 +167,7 @@ void IoPi::set_pin_pullup(char pin, char value)
 	
 }
 
-void IoPi::set_port_pullups(char port, char value)
+void IoPi::set_port_pullups(unsigned char port, unsigned char value)
 {	
 	/**
 	* set the internal 100K pull-up resistors for the selected IO port
@@ -189,7 +189,7 @@ void IoPi::set_port_pullups(char port, char value)
 	}
 }
 
-void IoPi::write_pin(char pin, char value)
+void IoPi::write_pin(unsigned char pin, unsigned char value)
 {
 	/**
 	* write to an individual pin 1 - 16
@@ -197,7 +197,7 @@ void IoPi::write_pin(char pin, char value)
 	* @param value - 0 = logic level low, 1 = logic level high
 	*/
 	pin = pin - 1;
-	if (pin >= 0 && pin < 8)
+	if (pin < 8)
 	{
 		portaval = updatebyte(portaval, pin, value);
 		write_byte_data(GPIOA, portaval);
@@ -212,7 +212,7 @@ void IoPi::write_pin(char pin, char value)
 	}
 }
 
-void IoPi::write_port(char port, char value)
+void IoPi::write_port(unsigned char port, unsigned char value)
 {	
 	/**
 	* write to all pins on the selected port
@@ -234,7 +234,7 @@ void IoPi::write_port(char port, char value)
 	}
 }
 
-int IoPi::read_pin(char pin)
+int IoPi::read_pin(unsigned char pin)
 {
 	/**
 	* read the value of an individual pin
@@ -242,7 +242,7 @@ int IoPi::read_pin(char pin)
 	* @returns - 0 = logic level low, 1 = logic level high
 	*/
 	pin = pin - 1;
-	if (pin >= 0 && pin < 8)
+	if (pin < 8)
 	{
 		portaval = read_byte_data(GPIOA);
 		return (checkbit(portaval, pin));
@@ -258,7 +258,7 @@ int IoPi::read_pin(char pin)
 	}
 }
 
-char IoPi::read_port(char port)
+char IoPi::read_port(unsigned char port)
 {	
 	/**
 	* read all pins on the selected port
@@ -280,7 +280,7 @@ char IoPi::read_port(char port)
 	}
 }
 
-void IoPi::invert_port(char port, char polarity)
+void IoPi::invert_port(unsigned char port, unsigned char polarity)
 {	
 	/**
 	* invert the polarity of the pins on a selected port
@@ -302,7 +302,7 @@ void IoPi::invert_port(char port, char polarity)
 	}
 }
 
-void IoPi::invert_pin(char pin, char polarity)
+void IoPi::invert_pin(unsigned char pin, unsigned char polarity)
 {
 	/**
 	* invert the polarity of the selected pin
@@ -310,7 +310,7 @@ void IoPi::invert_pin(char pin, char polarity)
 	* @param polarity - 0 = same logic state of the input pin, 1 = inverted logic	state of the input pin
 	*/
 	pin = pin - 1;
-	if (pin >= 0 && pin < 8)
+	if (pin < 8)
 	{
 
 		porta_polarity = updatebyte(porta_polarity, pin, polarity);
@@ -326,7 +326,7 @@ void IoPi::invert_pin(char pin, char polarity)
 	}
 }
 
-void IoPi::mirror_interrupts(char value)
+void IoPi::mirror_interrupts(unsigned char value)
 {
 	/**
 	* Set the interrupt pins to be mirrored or for separate ports
@@ -347,7 +347,7 @@ void IoPi::mirror_interrupts(char value)
 	}
 }
 
-void IoPi::set_interrupt_polarity(char value)
+void IoPi::set_interrupt_polarity(unsigned char value)
 {
 	/**
 	* This sets the polarity of the char output pins.
@@ -368,7 +368,7 @@ void IoPi::set_interrupt_polarity(char value)
 	}
 }
 
-void IoPi::set_interrupt_type(char port, char value)
+void IoPi::set_interrupt_type(unsigned char port, unsigned char value)
 {
 	/**
 	* Sets the type of interrupt for each pin on the selected port
@@ -388,7 +388,7 @@ void IoPi::set_interrupt_type(char port, char value)
 	}
 }
 
-void IoPi::set_interrupt_defaults(char port, char value)
+void IoPi::set_interrupt_defaults(unsigned char port, unsigned char value)
 {
 	/**
 	* These bits set the compare value for pins configured for interrupt-on-change on the selected port.
@@ -409,7 +409,7 @@ void IoPi::set_interrupt_defaults(char port, char value)
 	}
 }
 
-void IoPi::set_interrupt_on_port(char port, char value)
+void IoPi::set_interrupt_on_port(unsigned char port, unsigned char value)
 {
 	/**
 	* Enable interrupts for the pins on the selected port
@@ -431,7 +431,7 @@ void IoPi::set_interrupt_on_port(char port, char value)
 	}
 }
 
-void IoPi::set_interrupt_on_pin(char pin, char value)
+void IoPi::set_interrupt_on_pin(unsigned char pin, unsigned char value)
 {
 	/**
 	* Enable interrupts for the selected pin
@@ -439,7 +439,7 @@ void IoPi::set_interrupt_on_pin(char pin, char value)
 	* @param value - 0 = interrupt disabled, 1 = interrupt enabled
 	*/
 	pin = pin - 1;
-	if (pin >= 0 && pin < 8)
+	if (pin < 8)
 	{
 		intA = updatebyte(intA, pin, value);
 		write_byte_data(GPINTENA, intA);
@@ -454,7 +454,7 @@ void IoPi::set_interrupt_on_pin(char pin, char value)
 	}
 }
 
-char IoPi::read_interrupt_status(char port)
+char IoPi::read_interrupt_status(unsigned char port)
 {
 	/**
 	* read the interrupt status for the pins on the selected port
@@ -473,7 +473,7 @@ char IoPi::read_interrupt_status(char port)
 	}
 }
 
-char IoPi::read_interrupt_capture(char port)
+char IoPi::read_interrupt_capture(unsigned char port)
 {
 	/**
 	* read the value from the selected port at the time of the last interrupt trigger
@@ -511,7 +511,7 @@ private:
     int _fd;
 };
 
-int IoPi::read_byte_data(char reg)
+int IoPi::read_byte_data(unsigned char reg)
 {
 	/**
 	* private method for reading a byte from the I2C port
@@ -541,7 +541,7 @@ int IoPi::read_byte_data(char reg)
 	return (buf[0]);
 }
 
-void IoPi::write_byte_data(char reg, char value)
+void IoPi::write_byte_data(unsigned char reg, unsigned char value)
 {
 	/**
 	* private method for writing a byte to the I2C port
@@ -566,7 +566,7 @@ void IoPi::write_byte_data(char reg, char value)
 	}
 }
 
-char IoPi::updatebyte(char byte, char bit, char value)
+char IoPi::updatebyte(unsigned char byte, unsigned char bit, unsigned char value)
 {
 	/**
 	* private method for updating a bit within a byte
@@ -581,7 +581,7 @@ char IoPi::updatebyte(char byte, char bit, char value)
 	}
 }
 
-char IoPi::checkbit(char byte, char bit)
+char IoPi::checkbit(unsigned char byte, unsigned char bit)
 {
 	/**
 	* private method for checking the status of a bit within a byte

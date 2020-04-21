@@ -1,7 +1,7 @@
 /*
  ================================================
  ABElectronics UK ADC Differential Pi 8-Channel Analogue to Digital Converter
- Version 1.0 Created 21/06/2017
+ Version 1.1 Updated 21/04/2020
  ================================================
 
 Reads from the MCP3424 ADC on the ADC Differential Pi.
@@ -36,17 +36,17 @@ private:
     int _fd;
 };
 
-ADCDifferentialPi::ADCDifferentialPi(char address1, char address2, char rate)
+ADCDifferentialPi::ADCDifferentialPi(unsigned char address1, unsigned char address2, unsigned char rate)
 {
 	signbit = 0;
 	i2caddress1 = address1;
 	i2caddress2 = address2;
-	config1 = 0x9C;		 // PGAx1, 18 bit, continuous conversion, channel 1
-	currentchannel1 = 1; // channel variable for adc 1
-	config2 = 0x9C;		 // PGAx1, 18 bit, continuous-shot conversion, channel 1
-	currentchannel2 = 1; // channel variable for adc2
-	bitrate = 18;		 // current bitrate
-	conversionmode = 1;  // Conversion Mode
+	config1 = (unsigned char)0x9C;		 // PGAx1, 18 bit, continuous conversion, channel 1
+	currentchannel1 = (unsigned char)1; // channel variable for adc 1
+	config2 = (unsigned char)0x9C;		 // PGAx1, 18 bit, continuous-shot conversion, channel 1
+	currentchannel2 = (unsigned char)1; // channel variable for adc2
+	bitrate = (unsigned char)18;		 // current bitrate
+	conversionmode = (unsigned char)1;  // Conversion Mode
 	pga = 0.5;			 // current pga setting
 	lsb = 0.000007812;   // default lsb value for 18 bit
 
@@ -55,7 +55,7 @@ ADCDifferentialPi::ADCDifferentialPi(char address1, char address2, char rate)
 // public methods
 
 
-int ADCDifferentialPi::read_raw(char channel)
+int ADCDifferentialPi::read_raw(unsigned char channel)
 {
 	/**
 	* Reads the raw value from the selected ADC channel
@@ -64,12 +64,12 @@ int ADCDifferentialPi::read_raw(char channel)
 	*/
 
 	// variables for storing the raw bytes from the ADC
-	char h = 0;
-	char l = 0;
-	char m = 0;
-	char s = 0;
-	char config = 0;
-	char address = 0;
+	unsigned char h = 0;
+	unsigned char l = 0;
+	unsigned char m = 0;
+	unsigned char s = 0;
+	unsigned char config = 0;
+	unsigned char address = 0;
 	long t = 0;
 	signbit = 0;
 
@@ -179,7 +179,7 @@ int ADCDifferentialPi::read_raw(char channel)
 }
 
 
-double ADCDifferentialPi::read_voltage(char channel)
+double ADCDifferentialPi::read_voltage(unsigned char channel)
 {
 	/**
 	* Returns the voltage from the selected ADC channel
@@ -200,7 +200,7 @@ double ADCDifferentialPi::read_voltage(char channel)
 	}
 }
 
-void ADCDifferentialPi::set_pga(char gain)
+void ADCDifferentialPi::set_pga(unsigned char gain)
 {
 	/**
 	* Programmable Gain Amplifier gain selection
@@ -209,23 +209,23 @@ void ADCDifferentialPi::set_pga(char gain)
 	switch (gain)
 	{
 	case 1:
-		config1 = update_byte(config1, 0xFC, 0x00);
-		config2 = update_byte(config2, 0xFC, 0x00);
+		config1 = update_byte(config1, (unsigned char)0xFC, (unsigned char)0x00);
+		config2 = update_byte(config2, (unsigned char)0xFC, (unsigned char)0x00);
 		pga = 0.5;
 		break;
 	case 2:
-		config1 = update_byte(config1, 0xFC, 0x01);
-		config2 = update_byte(config2, 0xFC, 0x01);
+		config1 = update_byte(config1, (unsigned char)0xFC, (unsigned char)0x01);
+		config2 = update_byte(config2, (unsigned char)0xFC, (unsigned char)0x01);
 		pga = 1;
 		break;
 	case 4:
-		config1 = update_byte(config1, 0xFC, 0x02);
-		config2 = update_byte(config2, 0xFC, 0x02);
+		config1 = update_byte(config1, (unsigned char)0xFC, (unsigned char)0x02);
+		config2 = update_byte(config2, (unsigned char)0xFC, (unsigned char)0x02);
 		pga = 2;
 		break;
 	case 8:
-		config1 = update_byte(config1, 0xFC, 0x03);
-		config2 = update_byte(config2, 0xFC, 0x03);
+		config1 = update_byte(config1, (unsigned char)0xFC, (unsigned char)0x03);
+		config2 = update_byte(config2, (unsigned char)0xFC, (unsigned char)0x03);
 		pga = 4;
 		break;
 	default:
@@ -237,7 +237,7 @@ void ADCDifferentialPi::set_pga(char gain)
 	write_byte(i2caddress2, config2);
 }
 
-void ADCDifferentialPi::set_bit_rate(char rate)
+void ADCDifferentialPi::set_bit_rate(unsigned char rate)
 {
 	/**
 	* Set the sample resolution
@@ -246,26 +246,26 @@ void ADCDifferentialPi::set_bit_rate(char rate)
 	switch (rate)
 	{
 	case 12:
-		config1 = update_byte(config1, 0xF3, 0x00);
-		config2 = update_byte(config2, 0xF3, 0x00);
+		config1 = update_byte(config1, (unsigned char)0xF3, (unsigned char)0x00);
+		config2 = update_byte(config2, (unsigned char)0xF3, (unsigned char)0x00);
 		bitrate = 12;
 		lsb = 0.0005;
 		break;
 	case 14:
-		config1 = update_byte(config1, 0xF3, 0x04);
-		config2 = update_byte(config2, 0xF3, 0x04);
+		config1 = update_byte(config1, (unsigned char)0xF3, (unsigned char)0x04);
+		config2 = update_byte(config2, (unsigned char)0xF3, (unsigned char)0x04);
 		bitrate = 14;
 		lsb = 0.000125;
 		break;
 	case 16:
-		config1 = update_byte(config1, 0xF3, 0x08);
-		config2 = update_byte(config2, 0xF3, 0x08);
+		config1 = update_byte(config1, (unsigned char)0xF3, (unsigned char)0x08);
+		config2 = update_byte(config2, (unsigned char)0xF3, (unsigned char)0x08);
 		bitrate = 16;
 		lsb = 0.00003125;
 		break;
 	case 18:
-		config1 = update_byte(config1, 0xF3, 0x0C);
-		config2 = update_byte(config2, 0xF3, 0x0C);
+		config1 = update_byte(config1, (unsigned char)0xF3, (unsigned char)0x0C);
+		config2 = update_byte(config2, (unsigned char)0xF3, (unsigned char)0x0C);
 		bitrate = 18;
 		lsb = 0.0000078125;
 		break;
@@ -278,7 +278,7 @@ void ADCDifferentialPi::set_bit_rate(char rate)
 	write_byte(i2caddress2, config2);
 }
 
-void ADCDifferentialPi::set_conversion_mode(char mode)
+void ADCDifferentialPi::set_conversion_mode(unsigned char mode)
 {
 	/**
 	* Set the conversion mode for ADC
@@ -287,14 +287,14 @@ void ADCDifferentialPi::set_conversion_mode(char mode)
 
 	if (mode == 0)
 	{
-		config1 = update_byte(config1, 0xEF, 0x00);
-		config2 = update_byte(config2, 0xEF, 0x00);
+		config1 = update_byte(config1, (unsigned char)0xEF, (unsigned char)0x00);
+		config2 = update_byte(config2, (unsigned char)0xEF, (unsigned char)0x00);
 		conversionmode = 0;
 	}
 	else if (mode == 1)
 	{
-		config1 = update_byte(config1, 0xEF, 0x10);
-		config2 = update_byte(config2, 0xEF, 0x10);
+		config1 = update_byte(config1, (unsigned char)0xEF, (unsigned char)0x10);
+		config2 = update_byte(config2, (unsigned char)0xEF, (unsigned char)0x10);
 		conversionmode = 1;
 	}
 	else
@@ -307,7 +307,7 @@ void ADCDifferentialPi::set_conversion_mode(char mode)
 
 
 
-void ADCDifferentialPi::write_byte(char address, char value)
+void ADCDifferentialPi::write_byte(unsigned char address, unsigned char value)
 {
 	/**
 	* private method for writing a byte to the I2C port
@@ -335,7 +335,7 @@ void ADCDifferentialPi::write_byte(char address, char value)
 	close(i2cbus);
 }
 
-void ADCDifferentialPi::read_byte_array(char address, char reg, char length)
+void ADCDifferentialPi::read_byte_array(unsigned char address, unsigned char reg, unsigned char length)
 {
 	/**
 	* private method for reading bytes from the I2C port
@@ -363,7 +363,7 @@ void ADCDifferentialPi::read_byte_array(char address, char reg, char length)
 	close(i2cbus);
 }
 
-char ADCDifferentialPi::update_byte(char byte, char mask, char value)
+char ADCDifferentialPi::update_byte(unsigned char byte, unsigned char mask, unsigned char value)
 {
 	/**
 	* private method for setting the value of bits within a byte
@@ -373,7 +373,7 @@ char ADCDifferentialPi::update_byte(char byte, char mask, char value)
     return byte;
 }
 
-void ADCDifferentialPi::set_channel(char channel)
+void ADCDifferentialPi::set_channel(unsigned char channel)
 {
 	/**
 	* private method for setting the channel
@@ -386,16 +386,16 @@ void ADCDifferentialPi::set_channel(char channel)
 			switch (channel)
 			{
 			case 1:
-				config1 = update_byte(config1, 0x9F, 0x00);
+				config1 = update_byte(config1, (unsigned char)0x9F, (unsigned char)0x00);
 				break;
 			case 2:
-				config1 = update_byte(config1, 0x9F, 0x20);
+				config1 = update_byte(config1, (unsigned char)0x9F, (unsigned char)0x20);
 				break;
 			case 3:
-				config1 = update_byte(config1, 0x9F, 0x40);
+				config1 = update_byte(config1, (unsigned char)0x9F, (unsigned char)0x40);
 				break;
 			case 4:
-				config1 = update_byte(config1, 0x9F, 0x60);
+				config1 = update_byte(config1, (unsigned char)0x9F, (unsigned char)0x60);
 				break;
 			}
 		}
@@ -408,16 +408,16 @@ void ADCDifferentialPi::set_channel(char channel)
 			switch (channel)
 			{
 			case 5:
-				config2 = update_byte(config2, 0x9F, 0x00);
+				config2 = update_byte(config2, (unsigned char)0x9F, (unsigned char)0x00);
 				break;
 			case 6:
-				config2 = update_byte(config2, 0x9F, 0x20);
+				config2 = update_byte(config2, (unsigned char)0x9F, (unsigned char)0x20);
 				break;
 			case 7:
-				config2 = update_byte(config2, 0x9F, 0x40);
+				config2 = update_byte(config2, (unsigned char)0x9F, (unsigned char)0x40);
 				break;
 			case 8:
-				config2 = update_byte(config2, 0x9F, 0x60);
+				config2 = update_byte(config2, (unsigned char)0x9F, (unsigned char)0x60);
 				break;
 			}
 		}

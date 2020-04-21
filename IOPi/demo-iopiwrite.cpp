@@ -1,9 +1,9 @@
 /*
  * demo-iopiwrite.cpp
  *
- *  Created on: 20 June 2017
+ *  Version 1.1 Updated 21/04/2020
  *
- *      compile with "g++ demo-iopiwrite.cpp ABE_IoPi.cpp  -o demo-iopiwrite"
+ *      compile with "g++ demo-iopiwrite.cpp ABE_IoPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-iopiwrite"
  *      run with "./demo-iopiwrite"
  */
 
@@ -37,5 +37,7 @@ int main(int argc, char **argv){
 		cout << e.what();
 	}
 
+	(void)argc;
+	(void)argv;
 	return (0);
 }

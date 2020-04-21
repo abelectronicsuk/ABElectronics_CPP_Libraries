@@ -1,9 +1,9 @@
 /*
 * demo-rtcmemory.cpp
 *
-*  Created on: 25 June 2017
+*  Version 1.1 Updated 21/04/2020
 *
-*      compile with "g++ demo-rtcmemory.cpp ABE_ExpanderPi.cpp -o demo-rtcmemory"
+*      compile with "g++ demo-rtcmemory.cpp ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-rtcmemory"
 *      run with "./demo-rtcmemory"
 *
 *  This demo shows how to write to and read from the internal battery backed memory on the DS1307 RTC chip
@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 
 	int a = 0;
 
-	for (a = 0; a <= sizeof(inval); a++) {
+	for (a = 0; a <= (int)sizeof(inval); a++) {
 		bytearray[a] = (inval >> a * 8) & 0xFF;
 	}
 
@@ -44,9 +44,9 @@ int main(int argc, char **argv) {
 
 	// read the RTC SRAM into a 4 byte array.  
 	// The array is allocated by the rtc_read_memory function, use a pointer to point to the memory location of this array.
-	unsigned char *readarray = expi.rtc_read_memory(0x08, sizeof(inval));
+	unsigned char *readarray = expi.rtc_read_memory(0x08, (int)sizeof(inval));
 
-	for (a = 0; a <= sizeof(outval); a++) { // convert the bytes from the readarray into a number
+	for (a = 0; a <= (int)sizeof(outval); a++) { // convert the bytes from the readarray into a number
 		outval |= readarray[a] << (a * 8);
 	}
 
@@ -54,5 +54,7 @@ int main(int argc, char **argv) {
 
 	printf("Number read from SRAM: %d", outval);
 
+	(void)argc;
+	(void)argv;
 	return (0);
 }

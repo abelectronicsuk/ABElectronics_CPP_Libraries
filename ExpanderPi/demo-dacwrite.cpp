@@ -1,9 +1,9 @@
 /*
  * demo-dacwrite.cpp
  *
- *  Created on: 25 June 2017
+ *  Version 1.1 Updated 21/04/2020
  *
- *      compile with "g++ demo-dacwrite.cpp ABE_ExpanderPi.cpp -o demo-dacwrite"
+ *      compile with "g++ demo-dacwrite.cpp ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-dacwrite"
  *      run with "./demo-dacwrite"
  */
 
@@ -38,5 +38,8 @@ int main(int argc, char **argv){
 	expi.dac_close();
 
 	printf("dac values written\n");
+
+	(void)argc;
+	(void)argv;
 	return (0);
 }

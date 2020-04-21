@@ -1,7 +1,7 @@
 /*
 ================================================
 ABElectronics UK ADC Servo Pi 16 Channel PWM controller
-Version 1.0 Created 11/01/2016
+Version 1.1 Updated 21/04/2020
 ================================================
 
 Required package{
@@ -26,7 +26,7 @@ public:
 * @param address - I2C address
 * @param use_oe_pin - Enable the Output Enable pin on the GPIO port
 */
-ServoPi(char address, char use_oe_pin);
+ServoPi(unsigned char address, unsigned char use_oe_pin);
 
 
 /**
@@ -34,7 +34,7 @@ ServoPi(char address, char use_oe_pin);
 * @param freq - required frequency
 * @param address - I2C address
 */
-void set_pwm_freq(double freq, char address);
+void set_pwm_freq(double freq, unsigned char address);
 
 /**
 * Set the output on single channels
@@ -43,7 +43,7 @@ void set_pwm_freq(double freq, char address);
 * @param off - time period 0 to 4096
 * @param address - I2C address
 */
-void set_pwm(char channel, int on, int off, char address);
+void set_pwm(unsigned char channel, int on, int off, unsigned char address);
 
 /**
 * Set the output on all channels
@@ -51,37 +51,35 @@ void set_pwm(char channel, int on, int off, char address);
 * @param off - time period 0 to 4096
 * @param address - I2C address
 */
-void set_all_pwm(int on, int off, char address);
+void set_all_pwm(int on, int off, unsigned char address);
 
 /**
 * Disable the output via OE pin
-* @returns - 0 = OK, 1 = GPIO failed
 */
-int output_disable();
+void output_disable();
 
 /**
 * Enable the output via OE pin
-* @returns - 0 = OK, 1 = GPIO failed
 */
-int output_enable();
+void output_enable();
 
 /**
 * Set the I2C address for the All Call function
 * @param allcalladdress - I2C address
 */
-void set_allcall_address(char allcalladdress, char address);
+void set_allcall_address(unsigned char allcalladdress, unsigned char address);
 
 /**
 * Enable the I2C address for the All Call function
 * @param address - I2C address
 */
-void enable_allcall_address(char address);
+void enable_allcall_address(unsigned char address);
 
 /**
 * Disable the I2C address for the All Call function
 * @param address - I2C address
 */
-void disable_allcall_address(char address);
+void disable_allcall_address(unsigned char address);
 
 private:
 
@@ -89,12 +87,10 @@ private:
 int i2cbus;
 unsigned char buf[10];
 
-// private methods
-int read_byte_data(char address, char reg);
-void write_byte_data(char address, char reg, char value);
-int gpio_export(int pin);
-int gpio_direction(int pin, int dir);
-int gpio_write(int pin, int value);
 
+
+// private methods
+int read_byte_data(unsigned char address, unsigned char reg);
+void write_byte_data(unsigned char address, unsigned char reg, unsigned char value);
 };
 }

@@ -1,8 +1,7 @@
 /*
 ================================================
 ABElectronics UK RTC Pi real-time clock
-Version 1.0 Created 12/06/2017
-Version 1.1 Updated 16/07/2018
+Version 1.1 Updated 21/04/2020
 ================================================
 
 Required package{
@@ -17,6 +16,7 @@ apt-get install libi2c-dev
 #include <errno.h>
 #include <fcntl.h>
 #include <cstring>
+#include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/i2c-dev.h>
 #include <time.h>
@@ -56,7 +56,7 @@ private:
     int _fd;
 };
 
-void RTCPi::read_byte_array(char reg, char length) {
+void RTCPi::read_byte_array(unsigned char reg, unsigned char length) {
 	/*
 	internal method for reading data from the i2c bus
 	*/
@@ -83,7 +83,7 @@ void RTCPi::read_byte_array(char reg, char length) {
 	close(i2cbus);
 }
 
-void RTCPi::write_byte_data(char reg, char value) {
+void RTCPi::write_byte_data(unsigned char reg, unsigned char value) {
 	/**
 	* private method for writing a byte to the I2C port
 	*/
@@ -141,14 +141,14 @@ unsigned char RTCPi::bcd_to_dec(unsigned char bcd) {
 	return (unsigned char)((HI_NIBBLE(bcd) * 10) + (LO_NIBBLE(bcd)));
 }
 
-unsigned char RTCPi::dec_to_bcd(char dec) {
+unsigned char RTCPi::dec_to_bcd(unsigned char dec) {
 	/*
 	internal method for converting a decimal formatted number to bcd
 	*/
 	return (unsigned char)((dec / 10) * 16) + (dec % 10);
 }
 
-char RTCPi::updatebyte(char byte, char bit, char value) {
+unsigned char RTCPi::updatebyte(unsigned char byte, unsigned char bit, unsigned char value) {
 	/*
 	internal method for setting the value of a single bit within a byte
 	*/
