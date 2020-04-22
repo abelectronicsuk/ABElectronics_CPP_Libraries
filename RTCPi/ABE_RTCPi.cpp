@@ -263,6 +263,7 @@ void RTCPi::write_memory(unsigned char address, unsigned char *valuearray) {
 			unsigned char *writearray = (unsigned char*)malloc(length + 1);
 
 			if (errno == ENOMEM) { // Fail!!!!
+				free(writearray);
 				throw std::runtime_error("memory allocation error: not enough system memory to allocate array");
 			}
 			else {
@@ -304,6 +305,7 @@ unsigned char *RTCPi::read_memory(unsigned char address, int length) {
 			unsigned char *writearray = (unsigned char*)malloc(length);
 
 			if (errno == ENOMEM) { // Fail!!!!
+				free(writearray);
 				throw std::runtime_error("memory allocation error: not enough system memory to allocate array");
 				return NULL;
 			}

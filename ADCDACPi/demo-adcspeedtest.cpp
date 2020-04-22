@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 	gettimeofday(&t1, NULL);
 
 	int x;
-	for (x = 0; x <= numberofsamples; x++)
+	for (x = 0; x < numberofsamples; x++)
 	{
 		samplearray[x] = adcdac.read_adc_voltage(1, 0); // read from adc channel 1
 	}
@@ -56,8 +56,9 @@ int main(int argc, char **argv)
 	gettimeofday(&t2, NULL);
 
 	// calculate the average value
-	double average, sum;
-	for (x = 0; x <= numberofsamples; x++)
+	double average = 0;
+	double sum = 0;
+	for (x = 0; x < numberofsamples; x++)
 	{
 		sum += samplearray[x];
 	}

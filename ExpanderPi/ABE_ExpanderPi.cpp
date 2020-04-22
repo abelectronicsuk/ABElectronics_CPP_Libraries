@@ -783,6 +783,7 @@ void ExpanderPi::rtc_write_memory(unsigned char address, unsigned char *valuearr
 			unsigned char *writearray = (unsigned char*)malloc(length + 1);
 
 			if (errno == ENOMEM) { // Fail!!!!
+				free(writearray);
 				throw std::runtime_error("memory allocation error: not enough system memory to allocate array");
 			}
 			else {
@@ -824,6 +825,7 @@ unsigned char *ExpanderPi::rtc_read_memory(unsigned char address, int length) {
 			unsigned char *writearray = (unsigned char*)malloc(length);
 
 			if (errno == ENOMEM) { // Fail!!!!
+				free(writearray);
 				throw std::runtime_error("memory allocation error: not enough system memory to allocate array");
 				return NULL;
 			}

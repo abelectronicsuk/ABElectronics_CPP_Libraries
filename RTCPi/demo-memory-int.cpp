@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 
 	int a = 0;
 
-	for (a = 0; a <= (int)sizeof(inval); a++) {
+	for (a = 0; a < (int)sizeof(inval); a++) {
 		bytearray[a] = (inval >> a * 8) & 0xFF;
 	}
 
@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
 	// The array is allocated by the rtc_read_memory function, use a pointer to point to the memory location of this array.
 	unsigned char *readarray = rtc.read_memory(0x08, (int)sizeof(inval));
 
-	for (a = 0; a <= (int)sizeof(outval); a++) { // convert the bytes from the readarray into a number
+	for (a = 0; a < (int)sizeof(outval); a++) { // convert the bytes from the readarray into a number
 		outval |= readarray[a] << (a * 8);
 	}
 
