@@ -1,9 +1,9 @@
 /*
  * demo-iopiread.cpp
  *
- *  Version 1.1 Updated 21/04/2020
+ *  Version 1.2 Updated 01/07/2020
  *
- *      compile with "g++ demo-iopiread.cpp ABE_IoPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-iopiread"
+ *      compile with "g++ demo-iopiread.cpp ../ABE_IoPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-iopiread"
  *      run with "./demo-iopiread"
  */
 
@@ -12,7 +12,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <iostream>
-#include "ABE_IoPi.h"
+#include "../ABE_IoPi.h"
 
 using namespace std;
 

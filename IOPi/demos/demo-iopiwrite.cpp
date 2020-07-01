@@ -1,9 +1,9 @@
 /*
  * demo-iopiwrite.cpp
  *
- *  Version 1.1 Updated 21/04/2020
+ *  Version 1.2 Updated 01/07/2020
  *
- *      compile with "g++ demo-iopiwrite.cpp ABE_IoPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-iopiwrite"
+ *      compile with "g++ demo-iopiwrite.cpp ../ABE_IoPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-iopiwrite"
  *      run with "./demo-iopiwrite"
  */
 
@@ -12,7 +12,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <iostream>
-#include "ABE_IoPi.h"
+#include "../ABE_IoPi.h"
 
 using namespace std;
 

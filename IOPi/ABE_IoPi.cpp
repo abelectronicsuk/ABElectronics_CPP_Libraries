@@ -1,7 +1,7 @@
 /*
  ================================================
  ABElectronics UK IO Pi 32-Channel Port Expander
- Version 1.1 Updated 21/04/2020
+ Version 1.1.0 Updated 01/07/2020
  ================================================
 
 
@@ -82,255 +82,261 @@
 
 using namespace ABElectronics_CPP_Libraries;
 
-
-IoPi::IoPi(unsigned char address)
+IoPi::IoPi(uint8_t address, bool initialise)
 {
-		config = 0x22;
-		i2caddress = address;
-	 	write_byte_data(IOCON, config);
-		portaval = read_byte_data(GPIOA);
-		portbval = read_byte_data(GPIOB);
-		write_byte_data(IODIRA, (unsigned char)0xFF);
-		write_byte_data(IODIRB, (unsigned char)0xFF);
-		set_port_pullups(0, (unsigned char)0x00);
-		set_port_pullups(1, (unsigned char)0x00);
-		invert_port(0, (unsigned char)0x00);
-		invert_port(1, (unsigned char)0x00);
+	/**
+	* initialise the MCP32017 IO chip with default values: ports are inputs, pull-up resistors are disabled and ports are not inverted
+	* @param address - I2C address for the target device
+	* @param initialise - true = direction set as inputs, pull-ups disabled, ports not inverted.
+                          false = device state unaltered. Defaults to true
+	*/
+	if (address<0x20 || address> 0x27)
+	{
+		throw std::out_of_range("IoPi address out of range: 0x20 to 0x27");
+	}
+
+	config = 0x02;
+	i2caddress = address;
+	write_byte_data(IOCON, config);
+
+	if (initialise)
+	{
+		write_word_data(IODIRA, 0xFFFF);
+		write_word_data(GPPUA, 0x0000);
+		write_word_data(IPOLA, 0x0000);
+	}
 }
 
-void IoPi::set_pin_direction(unsigned char pin, unsigned char direction)
+void IoPi::set_pin_direction(uint8_t pin, uint8_t direction)
 {
 	/**
 	* set IO direction for an individual pin
 	* @param pins - 1 to 16
 	* @param direction - 1 = input, 0 = output
 	*/
-	pin = pin - 1;
-	if (pin < 8)
-	{
-		port_a_dir = updatebyte(port_a_dir, pin, direction);
-		write_byte_data(IODIRA, port_a_dir);
-	}
-	else if (pin >= 8 && pin < 16)
-	{
-		port_b_dir = updatebyte(port_b_dir, pin - 8, direction);
-		write_byte_data(IODIRB, port_b_dir);
-	}
-	else{
-		throw std::out_of_range("set_pin_direction pin out of range: 1 to 16");
-	}
+	set_pin(pin, direction, IODIRA, IODIRB);
 }
 
-void IoPi::set_port_direction(unsigned char port, unsigned char direction)
-{	
+uint8_t IoPi::get_pin_direction(uint8_t pin)
+{
+	/**
+	* get IO direction for an individual pin
+	* @param pins - 1 to 16
+	*/
+	return get_pin(pin, IODIRA, IODIRB);
+}
+
+void IoPi::set_port_direction(uint8_t port, uint8_t direction)
+{
 	/**
 	* set direction for an IO port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
-	* @param direction - 1 = input, 0 = output
+	* @param direction - 0 to 255 (0xFF).  For each bit 1 = input, 0 = output
 	*/
-	if (port == 0)
-	{
-		write_byte_data(IODIRA, direction);
-		port_a_dir = direction;
-	}
-	else if (port == 1)
-	{
-		write_byte_data(IODIRB, direction);
-		port_b_dir = direction;
-	}
-	else{
-		throw std::out_of_range("set_port_direction port out of range: 0 or 1");
-	}
+	set_port(port, direction, IODIRA, IODIRB);
 }
 
-void IoPi::set_pin_pullup(unsigned char pin, unsigned char value)
+uint8_t IoPi::get_port_direction(uint8_t port)
+{
+	/**
+	* get direction for an IO port
+	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
+	*/
+	return get_port(port, IODIRA, IODIRB);
+}
+
+void IoPi::set_bus_direction(uint16_t direction)
+{
+	/**
+	* set direction for the IO bus
+	* @param direction - 0 to 65535 (0xFFFF).  For each bit 1 = input, 0 = output
+	*/
+	write_word_data(IODIRA, direction);
+}
+
+uint16_t IoPi::get_bus_direction()
+{
+	/**
+	* get direction for the IO bus
+	*/
+	return read_word_data(IODIRA);
+}
+
+void IoPi::set_pin_pullup(uint8_t pin, uint8_t value)
 {
 	/**
 	* set the internal 100K pull-up resistors for an individual pin
 	* @param pin - 1 to 16
 	* @param value - 1 = enabled, 0 = disabled
 	*/
-	pin = pin - 1;
-	if (pin < 8)
-	{
-		porta_pullup = updatebyte(porta_pullup, pin, value);
-		write_byte_data(GPPUA, porta_pullup);
-	}
-	else if (pin >= 8 && pin < 16)
-	{
-		portb_pullup = updatebyte(portb_pullup, pin - 8, value);
-		write_byte_data(GPPUB, portb_pullup);
-	}
-	else{
-		throw std::out_of_range("set_pin_pullup pin out of range: 1 to 16");
-	}
-	
+	set_pin(pin, value, GPPUA, GPPUB);
 }
 
-void IoPi::set_port_pullups(unsigned char port, unsigned char value)
-{	
+uint8_t IoPi::get_pin_pullup(uint8_t pin)
+{
+	/**
+	* get the internal 100K pull-up resistors for an individual pin
+	* @param pin - 1 to 16
+	*/
+
+	return get_pin(pin, GPPUA, GPPUB);
+}
+
+void IoPi::set_port_pullups(uint8_t port, uint8_t value)
+{
 	/**
 	* set the internal 100K pull-up resistors for the selected IO port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
-	* @param value - number between 0 and 255 or 0x00 and 0xFF
+	* @param value - 0 to 255 (0xFF). For each bit 1 = enabled, 0 = disabled
 	*/
-	if (port == 0)
-	{
-		porta_pullup = value;
-		write_byte_data(GPPUA, value);
-	}
-	else if (port == 1)
-	{
-		portb_pullup = value;
-		write_byte_data(GPPUB, value);
-	}
-	else{
-		throw std::out_of_range("set_port_pullups port out of range: 0 or 1");
-	}
+	set_port(port, value, GPPUA, GPPUB);
 }
 
-void IoPi::write_pin(unsigned char pin, unsigned char value)
+uint8_t IoPi::get_port_pullups(uint8_t port)
+{
+	/**
+	* get the internal 100K pull-up resistors for the selected IO port
+	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
+	*/
+	return get_port(port, GPPUA, GPPUB);
+}
+
+void IoPi::set_bus_pullups(uint16_t value)
+{
+	/**
+	* set internal 100K pull-up resistors for the IO bus
+	* @param value - 0 to 65535 (0xFFFF).  For each bit 1 = enabled, 0 = disabled
+	*/
+	write_word_data(GPPUA, value);
+}
+
+uint16_t IoPi::get_bus_pullups()
+{
+	/**
+	* get internal 100K pull-up resistors for the IO bus
+	*/
+	return read_word_data(GPPUA);
+}
+
+void IoPi::write_pin(uint8_t pin, uint8_t value)
 {
 	/**
 	* write to an individual pin 1 - 16
 	* @param pin - 1 to 16
-	* @param value - 0 = logic level low, 1 = logic level high
+	* @param value - 0 = logic low, 1 = logic high
 	*/
-	pin = pin - 1;
-	if (pin < 8)
-	{
-		portaval = updatebyte(portaval, pin, value);
-		write_byte_data(GPIOA, portaval);
-	}
-	else if (pin >= 8 && pin < 16)
-	{
-		portbval = updatebyte(portbval, pin - 8, value);
-		write_byte_data(GPIOB, portbval);
-	}
-	else{
-		throw std::out_of_range("write_pin pin out of range: 1 to 16");
-	}
+	set_pin(pin, value, GPIOA, GPIOB);
 }
 
-void IoPi::write_port(unsigned char port, unsigned char value)
-{	
+void IoPi::write_port(uint8_t port, uint8_t value)
+{
 	/**
 	* write to all pins on the selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
-	* @param value - number between 0 and 255 or 0x00 and 0xFF
+	* @param value - 0 to 255 (0xFF)
 	*/
-	if (port == 0)
-	{
-	write_byte_data(GPIOA, value);
-	portaval = value;
-	}
-	else if (port == 1)
-	{
-	write_byte_data(GPIOB, value);
-	portbval = value;
-	}
-	else{
-		throw std::out_of_range("write_port port out of range: 0 or 1");
-	}
+	set_port(port, value, GPIOA, GPIOB);
 }
 
-int IoPi::read_pin(unsigned char pin)
+void IoPi::write_bus(uint16_t value)
+{
+	/**
+	* write to all pins on the selected bus
+	* @param value - 0 to 65535 (0xFFFF). For each bit 1 = logic high, 0 = logic low
+	*/
+	write_word_data(GPIOA, value);
+}
+
+uint8_t IoPi::read_pin(uint8_t pin)
 {
 	/**
 	* read the value of an individual pin
 	* @param pin - 1 to 16
-	* @returns - 0 = logic level low, 1 = logic level high
+	* @returns - 0 = logic low, 1 = logic high
 	*/
-	pin = pin - 1;
-	if (pin < 8)
-	{
-		portaval = read_byte_data(GPIOA);
-		return (checkbit(portaval, pin));
-	}
-	else if (pin >= 8 && pin < 16)
-	{
-		pin = pin - 8;
-		portbval = read_byte_data(GPIOB);
-		return (checkbit(portbval, pin));
-	}
-	else{
-		throw std::out_of_range("read_pin pin out of range: 1 to 16");
-	}
+
+	return get_pin(pin, GPIOA, GPIOB);
 }
 
-char IoPi::read_port(unsigned char port)
-{	
+uint8_t IoPi::read_port(uint8_t port)
+{
 	/**
 	* read all pins on the selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
-	* @returns - number between 0 and 255 or 0x00 and 0xFF
+	* @returns - 0 to 255 (0xFF). For each bit 1 = logic high, 0 = logic low
 	*/
-	if (port == 0)
-	{
-		portaval = read_byte_data(GPIOA);
-		return (portaval);
-	}
-	else if (port == 1)
-	{
-		portbval = read_byte_data(GPIOB);
-		return (portbval);
-	}
-	else{
-		throw std::out_of_range("read_port port out of range: 0 or 1");
-	}
+	return get_port(port, GPIOA, GPIOB);
 }
 
-void IoPi::invert_port(unsigned char port, unsigned char polarity)
-{	
+uint16_t IoPi::read_bus()
+{
 	/**
-	* invert the polarity of the pins on a selected port
-	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
-	* @param polarity - 0 = same logic state of the input pin, 1 = inverted logic	state of the input pin
+	* read all pins on the selected bus
+	* @returns - 0 to 65535 (0xFFFF). For each bit 1 = logic high, 0 = logic low
 	*/
-	if (port == 0)
-	{
-		write_byte_data(IPOLA, polarity);
-		porta_polarity = polarity;
-	}
-	else if (port == 1)
-	{
-		write_byte_data(IPOLB, polarity);
-		portb_polarity = polarity;
-	}
-	else{
-		throw std::out_of_range("invert_port port out of range: 0 or 1");
-	}
+	return read_word_data(GPIOA);
 }
 
-void IoPi::invert_pin(unsigned char pin, unsigned char polarity)
+void IoPi::invert_pin(uint8_t pin, uint8_t polarity)
 {
 	/**
 	* invert the polarity of the selected pin
 	* @param pin - 1 to 16
-	* @param polarity - 0 = same logic state of the input pin, 1 = inverted logic	state of the input pin
+	* @param polarity - 0 = non-inverted, 1 = inverted
 	*/
-	pin = pin - 1;
-	if (pin < 8)
-	{
-
-		porta_polarity = updatebyte(porta_polarity, pin, polarity);
-		write_byte_data(IPOLA, porta_polarity);
-	}
-	else if (pin >= 8 && pin < 16)
-	{
-		portb_polarity = updatebyte(portb_polarity, pin - 8, polarity);
-		write_byte_data(IPOLB, portb_polarity);
-	}
-	else{
-		throw std::out_of_range("invert_pin pin out of range: 1 to 16");
-	}
+	set_pin(pin, polarity, IPOLA, IPOLB);
 }
 
-void IoPi::mirror_interrupts(unsigned char value)
+uint8_t IoPi::get_pin_polarity(uint8_t pin)
+{
+	/**
+  	* get the polarity of the selected pin
+  	* @param pin - 1 to 16
+  	*/
+  	return get_pin(pin, IPOLA, IPOLB);
+}
+
+void IoPi::invert_port(uint8_t port, uint8_t polarity)
+{
+	/**
+	* invert the polarity of the pins on a selected port
+	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
+	* @param polarity - 0 to 255 (0xFF). For each bit 0 = non-inverted, 1 = inverted
+	*/
+	set_port(port, polarity, IPOLA, IPOLB);
+}
+
+uint8_t IoPi::get_port_polarity(uint8_t port)
+{
+	/**
+  	* get the polarity of the selected pin
+  	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
+  	*/
+  	return get_port(port, IPOLA, IPOLB);
+}
+
+void IoPi::invert_bus(uint16_t polarity)
+{
+	/**
+	* invert the polarity of the pins on a selected bus
+	* @param polarity - 0 to 65535 (0xFFFF). For each bit 0 = non-inverted, 1 = inverted
+	*/
+	write_word_data(IPOLA, polarity);
+}
+
+ uint16_t IoPi::get_bus_polarity()
+ {
+	 /**
+  	* get the polarity of the bus
+  	*/
+  	return read_word_data(IPOLA);
+ }
+
+void IoPi::mirror_interrupts(uint8_t value)
 {
 	/**
 	* Set the interrupt pins to be mirrored or for separate ports
-	* @param value - 1 = The char pins are internally connected, 0 = The char pins are not connected. INTA is associated with PortA and INTB is associated with PortB
+	* @param value - 1 = The interrupt pins are internally connected, 0 = The interrupt pins are not connected. INTA is associated with PortA and INTB is associated with PortB
 	*/
 	if (value == 0)
 	{
@@ -342,15 +348,16 @@ void IoPi::mirror_interrupts(unsigned char value)
 		config = updatebyte(config, 6, 1);
 		write_byte_data(IOCON, config);
 	}
-	else{
+	else
+	{
 		throw std::out_of_range("mirror_interrupts value out of range: 0 or 1");
 	}
 }
 
-void IoPi::set_interrupt_polarity(unsigned char value)
+void IoPi::set_interrupt_polarity(uint8_t value)
 {
 	/**
-	* This sets the polarity of the char output pins.
+	* This sets the polarity of the interrupt output pins.
 	* @param value - 1 = Active-high, 0 = Active-low.
 	*/
 	if (value == 0)
@@ -363,161 +370,167 @@ void IoPi::set_interrupt_polarity(unsigned char value)
 		config = updatebyte(config, 1, 1);
 		write_byte_data(IOCON, config);
 	}
-	else{
+	else
+	{
 		throw std::out_of_range("set_interrupt_polarity value out of range: 0 or 1");
 	}
 }
 
-void IoPi::set_interrupt_type(unsigned char port, unsigned char value)
+uint8_t IoPi::get_interrupt_polarity()
+{
+	/**
+  	* Get the polarity of the interrupt output pins.
+  	*/
+  	return checkbit(read_byte_data(IOCON), 1);
+}
+
+void IoPi::set_interrupt_type(uint8_t port, uint8_t value)
 {
 	/**
 	* Sets the type of interrupt for each pin on the selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
-	* @param value - 1 = interrupt is fired when the pin matches the default value, 0 = the interrupt is fired on state change
+	* @param value - 0 to 255 (0xFF). For each bit 1 = interrupt is fired when the pin matches the default value, 0 = the interrupt is fired on state change
 	*/
-	if (port == 0)
-	{
-		write_byte_data(INTCONA, value);
-	}
-	else if (port == 1)
-	{
-		write_byte_data(INTCONB, value);
-	}
-	else{
-		throw std::out_of_range("set_interrupt_type port out of range: 0 or 1");
-	}
+	set_port(port, value, INTCONA, INTCONB);
 }
 
-void IoPi::set_interrupt_defaults(unsigned char port, unsigned char value)
+uint8_t IoPi::get_interrupt_type(uint8_t port)
+{
+	/**
+	* Get the type of interrupt for each pin on the selected port
+	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
+	*/
+	return get_port(port, INTCONA, INTCONB);
+}
+
+void IoPi::set_interrupt_defaults(uint8_t port, uint8_t value)
 {
 	/**
 	* These bits set the compare value for pins configured for interrupt-on-change on the selected port.
 	* If the associated pin level is the opposite from the register bit, an interrupt occurs.
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
-	* @param value - default state for the port
+	* @param value - default state for the port. 0 to 255 (0xFF).
 	*/
-	if (port == 0)
-	{
-		write_byte_data(DEFVALA, value);
-	}
-	else if (port == 1)
-	{
-		write_byte_data(DEFVALB, value);
-	}
-	else{
-		throw std::out_of_range("set_interrupt_defaults port out of range: 0 or 1");
-	}
+	set_port(port, value, DEFVALA, DEFVALB);
 }
 
-void IoPi::set_interrupt_on_port(unsigned char port, unsigned char value)
+uint8_t IoPi::get_interrupt_defaults(uint8_t port)
 {
 	/**
-	* Enable interrupts for the pins on the selected port
-	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
-	* @param value - number between 0 and 255 or 0x00 and 0xFF
-	*/
-	if (port == 0)
-	{
-		write_byte_data(GPINTENA, value);
-		intA = value;
-	}
-	else if (port == 1)
-	{
-		write_byte_data(GPINTENB, value);
-		intB = value;
-	}
-	else{
-		throw std::out_of_range("set_interrupt_on_port port out of range: 0 or 1");
-	}
+  	* Get the compare value for pins configured for interrupt-on-change on the selected port.
+  	* If the associated pin level is the opposite from the register bit, an interrupt occurs.
+  	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
+  	*/
+  	return get_port(port, DEFVALA, DEFVALB);
 }
 
-void IoPi::set_interrupt_on_pin(unsigned char pin, unsigned char value)
+void IoPi::set_interrupt_on_pin(uint8_t pin, uint8_t value)
 {
 	/**
 	* Enable interrupts for the selected pin
 	* @param pin - 1 to 16
 	* @param value - 0 = interrupt disabled, 1 = interrupt enabled
 	*/
-	pin = pin - 1;
-	if (pin < 8)
-	{
-		intA = updatebyte(intA, pin, value);
-		write_byte_data(GPINTENA, intA);
-	}
-	else if (pin >= 8 && pin < 16)
-	{
-		intB = updatebyte(intB, pin - 8, value);
-		write_byte_data(GPINTENB, intB);
-	}
-	else{
-		throw std::out_of_range("set_interrupt_on_pin pin out of range: 1 to 16");
-	}
+	set_pin(pin, value, GPINTENA, GPINTENB);
 }
 
-char IoPi::read_interrupt_status(unsigned char port)
+ uint8_t IoPi::get_interrupt_on_pin(uint8_t pin)
+ {
+	 /**
+  	* Get the interrupt enable status for the selected pin
+  	* @param pin - 1 to 16
+  	*/
+  	return get_pin(pin, GPINTENA, GPINTENB);
+ }
+
+void IoPi::set_interrupt_on_port(uint8_t port, uint8_t value)
+{
+	/**
+	* Enable interrupts for the pins on the selected port
+	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
+	* @param value - 0 to 255 (0xFF). For each bit 0 = interrupt disabled, 1 = interrupt enabled
+	*/
+	set_port(port, value, GPINTENA, GPINTENB);
+}
+
+uint8_t IoPi::get_interrupt_on_port(uint8_t port)
+{
+	/**
+  	* Get the interrupt enable status for the selected port
+  	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
+  	*/
+  	return get_port(port, GPINTENA, GPINTENB);
+}
+
+void IoPi::set_interrupt_on_bus(uint16_t value)
+{
+	/**
+	* Enable interrupts for the pins on the selected bus
+	* @param value - 0 to 65535 (0xFFFF). For each bit 0 = interrupt disabled, 1 = interrupt enabled
+	*/
+	write_word_data(GPINTENA, value);
+}
+
+ uint16_t IoPi::get_interrupt_on_bus()
+ {
+	 /**
+  	* Get the interrupt enable status for the selected bus
+  	*/
+  	return read_word_data(GPINTENA);
+ }
+
+uint8_t IoPi::read_interrupt_status(uint8_t port)
 {
 	/**
 	* read the interrupt status for the pins on the selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
+	* @returns - 0 to 255 (0xFF). For each bit 1 = interrupt triggered, 0 = interrupt not triggered
 	*/
-	if (port == 0)
-	{
-		return (read_byte_data(INTFA));
-	}
-	else if (port == 1)
-	{
-		return (read_byte_data(INTFB));
-	}
-	else{
-		throw std::out_of_range("read_interrupt_status port out of range: 0 or 1");
-	}
+	return get_port(port, INTFA, INTFB);
 }
 
-char IoPi::read_interrupt_capture(unsigned char port)
+uint8_t IoPi::read_interrupt_capture(uint8_t port)
 {
 	/**
 	* read the value from the selected port at the time of the last interrupt trigger
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
+	* @returns - 0 to 255 (0xFF). For each bit 1 = interrupt triggered, 0 = interrupt not triggered
 	*/
-	if (port == 0)
-	{
-		return (read_byte_data(INTCAPA));
-	}
-	else if (port == 1)
-	{
-		return (read_byte_data(INTCAPB));
-	}
-	else{
-		throw std::out_of_range("read_interrupt_capture port out of range: 0 or 1");
-	}
+	return get_port(port, INTCAPA, INTCAPB);
 }
 
 void IoPi::reset_interrupts()
 {
 	/**
-	* set the interrupts A and B to 0
+	* Reset the interrupts A and B to 0
 	*/
 	read_interrupt_capture(0);
 	read_interrupt_capture(1);
 }
 
 // stops file handle leakage on exceptions
-class ScopedFileHandle{
+class ScopedFileHandle
+{
 public:
-    ScopedFileHandle(int fd) :_fd(fd){}
-    ~ScopedFileHandle(){ if(_fd >= 0) close(_fd); }
-    operator int() const { return _fd; }
+	ScopedFileHandle(int fd) : _fd(fd) {}
+	~ScopedFileHandle()
+	{
+		if (_fd >= 0)
+			close(_fd);
+	}
+	operator int() const { return _fd; }
+
 private:
-    int _fd;
+	int _fd;
 };
 
-int IoPi::read_byte_data(unsigned char reg)
+uint8_t IoPi::read_byte_data(uint8_t reg)
 {
 	/**
 	* private method for reading a byte from the I2C port
 	*/
-    ScopedFileHandle i2cbus(open(fileName, O_RDWR));
-    if (i2cbus < 0)
+	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
+	if (i2cbus < 0)
 	{
 		throw std::runtime_error("Failed to open i2c port for read");
 	}
@@ -538,16 +551,53 @@ int IoPi::read_byte_data(unsigned char reg)
 	{ // Read back data into buf[]
 		throw std::runtime_error("Failed to read from slave");
 	}
+
+	close(i2cbus);
+
 	return (buf[0]);
 }
 
-void IoPi::write_byte_data(unsigned char reg, unsigned char value)
+uint16_t IoPi::read_word_data(uint8_t reg)
+{
+	/**
+	* private method for reading a byte from the I2C port
+	*/
+	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
+	if (i2cbus < 0)
+	{
+		throw std::runtime_error("Failed to open i2c port for read");
+	}
+
+	if (ioctl(i2cbus, I2C_SLAVE, i2caddress) < 0)
+	{
+		throw std::runtime_error("Failed to write to i2c port for read");
+	}
+
+	buf[0] = reg;
+
+	if ((write(i2cbus, buf, 1)) != 1)
+	{
+		throw std::runtime_error("Failed to write to i2c device for read");
+	}
+
+	if (read(i2cbus, buf, 2) != 2)
+	{ // Read back data into buf[]
+		throw std::runtime_error("Failed to read from slave");
+	}
+
+	close(i2cbus);
+
+	uint16_t value = (buf[1] << 8) | buf[0];
+	return (value);
+}
+
+void IoPi::write_byte_data(uint8_t reg, uint8_t value)
 {
 	/**
 	* private method for writing a byte to the I2C port
 	*/
-    ScopedFileHandle i2cbus(open(fileName, O_RDWR));
-    if (i2cbus < 0)
+	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
+	if (i2cbus < 0)
 	{
 		throw std::runtime_error("Failed to open i2c port for write");
 	}
@@ -564,9 +614,40 @@ void IoPi::write_byte_data(unsigned char reg, unsigned char value)
 	{
 		throw std::runtime_error("Failed to write to i2c device for write");
 	}
+
+	close(i2cbus);
 }
 
-char IoPi::updatebyte(unsigned char byte, unsigned char bit, unsigned char value)
+void IoPi::write_word_data(uint8_t reg, uint16_t value)
+{
+	/**
+	* private method for writing a byte to the I2C port
+	*/
+	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
+	if (i2cbus < 0)
+	{
+		throw std::runtime_error("Failed to open i2c port for write");
+	}
+
+	if (ioctl(i2cbus, I2C_SLAVE, i2caddress) < 0)
+	{
+		throw std::runtime_error("Failed to write to i2c port for write");
+	}
+
+
+	buf[0] = reg;
+	buf[1] = (uint8_t)(value&(0xff)); // lower 8 bits
+	buf[2] = (uint8_t)(value>>8) & 0xff; // upper 8 bits
+
+	if ((write(i2cbus, buf, 3)) != 3)
+	{
+		throw std::runtime_error("Failed to write to i2c device for write");
+	}
+
+	close(i2cbus);
+}
+
+uint8_t IoPi::updatebyte(uint8_t byte, uint8_t bit, uint8_t value)
 {
 	/**
 	* private method for updating a bit within a byte
@@ -581,7 +662,7 @@ char IoPi::updatebyte(unsigned char byte, unsigned char bit, unsigned char value
 	}
 }
 
-char IoPi::checkbit(unsigned char byte, unsigned char bit)
+uint8_t IoPi::checkbit(uint8_t byte, uint8_t bit)
 {
 	/**
 	* private method for checking the status of a bit within a byte
@@ -594,4 +675,104 @@ char IoPi::checkbit(unsigned char byte, unsigned char bit)
 	{
 		return (0);
 	}
+}
+
+void IoPi::set_pin(uint8_t pin, uint8_t value, uint8_t a_register, uint8_t b_register)
+{
+	/**
+	* private method for setting the value of a single bit within the device registers
+	*/
+	uint8_t reg = 0;
+	uint8_t p = 0;
+	if (pin >= 1 && pin <= 8)
+	{
+		reg = a_register;
+		p = pin - 1;
+	}
+	else if (pin >= 9 and pin <= 16)
+	{
+		reg = b_register;
+		p = pin - 9;
+	}
+	else
+	{
+		throw std::out_of_range("pin out of range: 1 to 16");
+	}
+
+	if (value > 1)
+	{
+		throw std::out_of_range("value out of range: 0 or 1");
+	}
+
+	uint8_t newval = updatebyte(read_byte_data(reg), p, value);
+	write_byte_data(reg, newval);
+}
+
+uint8_t IoPi::get_pin(uint8_t pin, uint8_t a_register, uint8_t b_register)
+{
+	/**
+	* private method for getting the value of a single bit within the device registers
+	*/
+
+		uint8_t value = 0;
+
+        if (pin >= 1 && pin <= 8)
+		{
+            value = checkbit(read_byte_data(a_register), pin - 1);
+		}
+        else if (pin >= 9 && pin <= 16)
+		{
+            value = checkbit(read_byte_data(b_register), pin - 9);
+		}
+        else
+		{
+            throw std::out_of_range("pin out of range: 1 to 16");
+		}
+
+        return value;
+}
+
+void IoPi::set_port(uint8_t port, uint8_t value, uint8_t a_register, uint8_t b_register)
+{
+	/**
+	* private method for setting the value of a device register
+	*/
+	if (port == 0)
+	{
+    	write_byte_data(a_register, value);
+	}
+    else if (port == 1)
+	{
+    	write_byte_data(b_register, value);
+	}
+	else
+	{
+		throw std::out_of_range("port out of range: 0 or 1");
+	}
+}
+
+uint8_t IoPi::get_port(uint8_t port, uint8_t a_register, uint8_t b_register)
+{
+	/**
+	* private method for getting the value of a device register
+	*/
+	if (port == 0)
+	{
+    	return read_byte_data(a_register);
+	}
+    else if (port == 1)
+	{
+    	return read_byte_data(b_register);
+	}
+	else
+	{
+		throw std::out_of_range("port out of range: 0 or 1");
+	}
+}
+
+void IoPi::set_bus(uint16_t value, uint8_t a_register){
+	/**
+	* private method for writing a 16-bit value to two consecutive device registers
+	*/
+	write_word_data(a_register, value);
 }

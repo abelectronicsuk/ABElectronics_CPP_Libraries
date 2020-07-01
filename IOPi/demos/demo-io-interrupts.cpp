@@ -1,7 +1,7 @@
 /*
  * demo-io-interrupts.cpp
  *
- *  Version 1.1 Updated 21/04/2020
+ *  Version 1.2 Updated 01/07/2020
  * 
  *  This example shows how to use the interrupt methods on the IO port.
  *  The interrupts will be enabled and set so that a voltage applied
@@ -9,7 +9,7 @@
  *  Using the read_interrupt_capture or read_port methods will
  *  reset the interrupts.
  *
- *      compile with "g++ demo-io-interrupts.cpp ABE_IoPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-io-interrupts"
+ *      compile with "g++ demo-io-interrupts.cpp ../ABE_IoPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-io-interrupts"
  *      run with "./demo-io-interrupts"
  */
 
@@ -18,7 +18,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <iostream>
-#include "ABE_IoPi.h"
+#include "../ABE_IoPi.h"
 
 using namespace std;
 
