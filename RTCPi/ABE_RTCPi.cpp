@@ -56,7 +56,7 @@ private:
     int _fd;
 };
 
-void RTCPi::read_byte_array(unsigned char reg, unsigned char length) {
+void RTCPi::read_byte_array(uint8_t reg, uint8_t length) {
 	/*
 	internal method for reading data from the i2c bus
 	*/
@@ -83,7 +83,7 @@ void RTCPi::read_byte_array(unsigned char reg, unsigned char length) {
 	close(i2cbus);
 }
 
-void RTCPi::write_byte_data(unsigned char reg, unsigned char value) {
+void RTCPi::write_byte_data(uint8_t reg, uint8_t value) {
 	/**
 	* private method for writing a byte to the I2C port
 	*/
@@ -109,7 +109,7 @@ void RTCPi::write_byte_data(unsigned char reg, unsigned char value) {
 	close(i2cbus);
 }
 
-void RTCPi::write_byte_array(unsigned char buffer[], unsigned char length) {
+void RTCPi::write_byte_array(uint8_t buffer[], uint8_t length) {
 	/*
 	internal method for writing data to the i2c bus
 	*/
@@ -133,22 +133,22 @@ void RTCPi::write_byte_array(unsigned char buffer[], unsigned char length) {
 	close(i2cbus);
 }
 
-unsigned char RTCPi::bcd_to_dec(unsigned char bcd) {
+uint8_t RTCPi::bcd_to_dec(uint8_t bcd) {
 	/*
 	internal method for converting a bcd formatted number to decimal
 	*/
 
-	return (unsigned char)((HI_NIBBLE(bcd) * 10) + (LO_NIBBLE(bcd)));
+	return (uint8_t)((HI_NIBBLE(bcd) * 10) + (LO_NIBBLE(bcd)));
 }
 
-unsigned char RTCPi::dec_to_bcd(unsigned char dec) {
+uint8_t RTCPi::dec_to_bcd(uint8_t dec) {
 	/*
 	internal method for converting a decimal formatted number to bcd
 	*/
-	return (unsigned char)((dec / 10) * 16) + (dec % 10);
+	return (uint8_t)((dec / 10) * 16) + (dec % 10);
 }
 
-unsigned char RTCPi::updatebyte(unsigned char byte, unsigned char bit, unsigned char value) {
+uint8_t RTCPi::updatebyte(uint8_t byte, uint8_t bit, uint8_t value) {
 	/*
 	internal method for setting the value of a single bit within a byte
 	*/
@@ -216,7 +216,7 @@ void RTCPi::disable_output() {
 	write_byte_data(CONTROL, rtcConfig);
 }
 
-void RTCPi::set_frequency(unsigned char frequency) {
+void RTCPi::set_frequency(uint8_t frequency) {
 	/**
 	* Set the squarewave output frequency
 	* @param - 1 = 1Hz, 2 = 4.096KHz, 3 = 8.192KHz, 4 = 32.768KHz
@@ -247,7 +247,7 @@ void RTCPi::set_frequency(unsigned char frequency) {
 	}
 }
 
-void RTCPi::write_memory(unsigned char address, unsigned char *valuearray) {
+void RTCPi::write_memory(uint8_t address, uint8_t *valuearray) {
 	/**
 	* write to the memory on the ds1307
 	* the ds1307 contains 56 - Byte, battery - backed RAM with Unlimited Writes
@@ -260,7 +260,7 @@ void RTCPi::write_memory(unsigned char address, unsigned char *valuearray) {
 
 			int length = sizeof(valuearray);
 			
-			unsigned char *writearray = (unsigned char*)malloc(length + 1);
+			uint8_t *writearray = (uint8_t*)malloc(length + 1);
 
 			if (errno == ENOMEM) { // Fail!!!!
 				free(writearray);
@@ -275,7 +275,7 @@ void RTCPi::write_memory(unsigned char address, unsigned char *valuearray) {
 					writearray[a + 1] = valuearray[a];
 				}
 				
-				write_byte_array(writearray, (unsigned char)length + 1);
+				write_byte_array(writearray, (uint8_t)length + 1);
 				
 				free(writearray);
 			}
@@ -290,7 +290,7 @@ void RTCPi::write_memory(unsigned char address, unsigned char *valuearray) {
 	}
 }
 
-unsigned char *RTCPi::read_memory(unsigned char address, int length) {
+uint8_t *RTCPi::read_memory(uint8_t address, uint8_t length) {
 	/**
 	* read from the memory on the ds1307
 	* the ds1307 contains 56-Byte, battery-backed RAM with Unlimited Writes
@@ -302,7 +302,7 @@ unsigned char *RTCPi::read_memory(unsigned char address, int length) {
 	if (address >= 0x08 && address <= 0x3F) {
 		if (address <= (0x3F - length)) {
 
-			unsigned char *writearray = (unsigned char*)malloc(length);
+			uint8_t *writearray = (uint8_t*)malloc(length);
 
 			if (errno == ENOMEM) { // Fail!!!!
 				free(writearray);

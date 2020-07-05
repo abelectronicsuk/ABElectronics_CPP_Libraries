@@ -3,7 +3,7 @@
  *
  *  Version 1.1 Updated 21/04/2020
  *
- *      compile with "g++ demo-adcread.cpp ABE_ADCPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-adcread"
+ *      compile with "g++ demo-adcread.cpp ../ABE_ADCPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-adcread"
  *      run with "./demo-adcread"
  */
 
@@ -13,7 +13,7 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "ABE_ADCPi.h"
+#include "../ABE_ADCPi.h"
 
 using namespace std;
 using namespace ABElectronics_CPP_Libraries;
@@ -41,7 +41,6 @@ int main(int argc, char **argv){
 		printf("Pin 7: %G \n", adc.read_voltage(7)); // read from channel 7
 		printf("Pin 8: %G \n", adc.read_voltage(8)); // read from channel 8
 		usleep(200000); // sleep 0.2 seconds
-
 	}
 
 	(void)argc;

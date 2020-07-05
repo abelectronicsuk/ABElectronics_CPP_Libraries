@@ -25,14 +25,14 @@ public:
 * Initialise the Servo Pi - run before calling any other methods
 * @param address - I2C address.  0x70 to 0x77
 */
-I2CSwitch(unsigned char address);
+I2CSwitch(uint8_t address);
 
 
 /**
 * Enable the specified I2C channel and disable other channels
 * @param channel - 1 to 4
 */
-void switch_channel(unsigned char channel);
+void switch_channel(uint8_t channel);
 
 
 /**
@@ -40,7 +40,7 @@ void switch_channel(unsigned char channel);
 * All other channels keep their existing state.
 * @param channel - 1 to 4
 */
-void set_channel_state(unsigned char channel, unsigned char state);
+void set_channel_state(uint8_t channel, uint8_t state);
 
 
 /**
@@ -48,7 +48,7 @@ void set_channel_state(unsigned char channel, unsigned char state);
 * @param channel - 1 to 4
 * @returns - 0 = channel off, 1 = channel on
 */
-unsigned char get_channel_state(unsigned char channel);
+uint8_t get_channel_state(uint8_t channel);
 
 
 /**
@@ -60,14 +60,14 @@ private:
 
 // private variables
 int i2cbus; // I2C bus 
-unsigned char i2caddress; // I2C address
-unsigned char buf[10];
+uint8_t i2caddress; // I2C address
+uint8_t buf[10];
 
 // private methods
 int read_byte_data();
-void write_byte_data(unsigned char value);
-unsigned char updatebyte(unsigned char byte, unsigned char bit, unsigned char value);
-unsigned char checkbit(unsigned char byte, unsigned char bit);
+void write_byte_data(uint8_t value);
+uint8_t updatebyte(uint8_t byte, uint8_t bit, uint8_t value);
+uint8_t checkbit(uint8_t byte, uint8_t bit);
 int gpio_export(int pin);
 int gpio_direction(int pin, int dir);
 int gpio_write(int pin, int value);

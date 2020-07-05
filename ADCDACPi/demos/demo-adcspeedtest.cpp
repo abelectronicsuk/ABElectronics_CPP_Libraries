@@ -3,7 +3,7 @@
  *
  *  Version 1.1 Updated 21/04/2020
  *
- *      compile with "g++ demo-adcspeedtest.cpp ABE_ADCDACPi.cpp -Wall -Wextra -Wpedantic -Woverflow  -o demo-adcspeedtest"
+ *      compile with "g++ demo-adcspeedtest.cpp ../ABE_ADCDACPi.cpp -Wall -Wextra -Wpedantic -Woverflow  -o demo-adcspeedtest"
  *      run with "./demo-adcspeedtest"
  */
 
@@ -17,7 +17,7 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "ABE_ADCDACPi.h"
+#include "../ABE_ADCDACPi.h"
 
 using namespace std;
 using namespace ABElectronics_CPP_Libraries;

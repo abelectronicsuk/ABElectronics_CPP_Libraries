@@ -3,7 +3,7 @@
  *
  *  Version 1.1 Updated 21/04/2020
  *
- *      compile with "g++ demo-speedtest.cpp ABE_ADCDifferentialPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-speedtest"
+ *      compile with "g++ demo-speedtest.cpp ../ABE_ADCPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-speedtest"
  *      run with "./demo-speedtest"
  */
 
@@ -11,11 +11,12 @@
 #define numberofsamples 100
 
 #include <stdio.h>
+#include <stdint.h>
 #include <stdexcept>
 #include <sys/time.h>
 #include <unistd.h>
 #include <iostream>
-#include "ABE_ADCDifferentialPi.h"
+#include "../ABE_ADCPi.h"
 
 using namespace std;
 using namespace ABElectronics_CPP_Libraries;
@@ -31,7 +32,7 @@ int main(int argc, char **argv){
 	setvbuf (stdout, NULL, _IONBF, 0); // needed to print to the command line
 
 	// create an ADCPi object
-	ADCDifferentialPi adc(0x68, 0x69, 12);
+	ADCPi adc(0x68, 0x69, 12);
 
 	// set the conversion mode to continuous 
 	adc.set_conversion_mode(1);
@@ -45,11 +46,10 @@ int main(int argc, char **argv){
 	// start timer
 	gettimeofday(&t1, NULL);
 
-	int x;
+	uint32_t x;
 
 	for (x = 0; x < numberofsamples; x++){
 		samplearray[x] = adc.read_voltage(1); // read from adc channel 1
-
 	}
 
 	// stop timer

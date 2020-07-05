@@ -3,7 +3,7 @@
 *
 *  Version 1.1 Updated 21/04/2020
 *
-*      compile with "g++ ABE_RTCPi.cpp demo-rtcsetdate.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-rtcsetdate"
+*      compile with "g++ ../ABE_RTCPi.cpp demo-rtcsetdate.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-rtcsetdate"
 *      run with "./demo-rtcsetdate"
 *
 *  This demo shows how to write a date to the RTC and read it back again.
@@ -15,7 +15,7 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "ABE_RTCPi.h"
+#include "../ABE_RTCPi.h"
 
 int main(int argc, char **argv) {
 

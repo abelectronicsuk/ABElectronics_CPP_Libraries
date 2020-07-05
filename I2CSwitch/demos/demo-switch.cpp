@@ -5,7 +5,7 @@
  *
  *	Set the I2C output to the specified channel.
  *
- *  compile with "g++ demo-switch.cpp ABE_I2CSwitch.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-switch -L/usr/local/lib -lwiringPi"
+ *  compile with "g++ demo-switch.cpp ../ABE_I2CSwitch.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-switch -L/usr/local/lib -lwiringPi"
  *  run with "sudo ./demo-switch"
  */
 
@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "ABE_I2CSwitch.h"
+#include "../ABE_I2CSwitch.h"
 
 using namespace ABElectronics_CPP_Libraries;
 

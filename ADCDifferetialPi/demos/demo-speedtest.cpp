@@ -3,7 +3,7 @@
  *
  *  Version 1.1 Updated 21/04/2020
  *
- *      compile with "g++ demo-speedtest.cpp ABE_ADCPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-speedtest"
+ *      compile with "g++ demo-speedtest.cpp ../ABE_ADCDifferentialPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-speedtest"
  *      run with "./demo-speedtest"
  */
 
@@ -15,7 +15,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <iostream>
-#include "ABE_ADCPi.h"
+#include "../ABE_ADCDifferentialPi.h"
 
 using namespace std;
 using namespace ABElectronics_CPP_Libraries;
@@ -31,7 +31,7 @@ int main(int argc, char **argv){
 	setvbuf (stdout, NULL, _IONBF, 0); // needed to print to the command line
 
 	// create an ADCPi object
-	ADCPi adc(0x68, 0x69, 12);
+	ADCDifferentialPi adc(0x68, 0x69, 12);
 
 	// set the conversion mode to continuous 
 	adc.set_conversion_mode(1);

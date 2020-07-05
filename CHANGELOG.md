@@ -1,3 +1,11 @@
+#### 2020-07-05 Andrew Dorey
+
+* 1.1.1  Updates to the ADC DAC Pi, ADC Pi, ADC Differential Pi, I2C Switch and RTC Pi classes.
+
+Changed datatypes in all classes, unsigned char is now uint8_t, unsigned short is now uint16_t, unsigned long is now uint32_t.
+Added README files for each class with class and method documentation.
+Moved the demo files into demo sub-folders.
+
 #### 2020-07-01 Andrew Dorey
 
 * 1.1.0  Updates to the IO Pi class.  

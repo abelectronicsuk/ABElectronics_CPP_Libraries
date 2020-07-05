@@ -38,7 +38,7 @@ ADCDACPi::ADCDACPi(){
 int ADCDACPi::open_adc() {
 	/**
 	* Open the ADC SPI bus channel
-	* This needs to be called before using the DAC
+	* This needs to be called before using the ADC
 	*/
 
 	// Open SPI device
@@ -87,7 +87,7 @@ void ADCDACPi::close_dac() {
 	close(dac);
 }
 
-double ADCDACPi::read_adc_voltage(int channel, int mode) {
+double ADCDACPi::read_adc_voltage(uint8_t channel, uint8_t mode) {
 	/**
 	* Read the voltage from the ADC
 	* @param channel - 1 or 2
@@ -97,13 +97,11 @@ double ADCDACPi::read_adc_voltage(int channel, int mode) {
 	* @returns between 0V and the reference voltage
 	*/
 	
-	int rawval = read_adc_raw(channel, mode);
+	uint16_t rawval = read_adc_raw(channel, mode);
 	return ((adcrefvoltage / 4096) * (double) rawval);
 }
 
-
-
-int ADCDACPi::read_adc_raw(int channel, int mode) {
+uint16_t ADCDACPi::read_adc_raw(uint8_t channel, uint8_t mode) {
 	/**
 	* Read the raw value from the ADC
 	* @param channel -  1 to 8
@@ -136,8 +134,8 @@ int ADCDACPi::read_adc_raw(int channel, int mode) {
 	struct spi_ioc_transfer spi;
 	memset(&spi,0,sizeof(spi));
 
-	spi.tx_buf = (unsigned long)adctx;	
-	spi.rx_buf = (unsigned long)adcrx;
+	spi.tx_buf = (uint32_t)adctx;	
+	spi.rx_buf = (uint32_t)adcrx;
 	spi.len = 3;
 	spi.speed_hz = 1800000; // 1.8MHz Clock Speed
 	spi.delay_usecs = 0;		
@@ -159,7 +157,7 @@ void ADCDACPi::set_adc_refvoltage(double ref) {
 	adcrefvoltage = ref;
 }
 
-void ADCDACPi::set_dac_voltage(double voltage, int channel) {
+void ADCDACPi::set_dac_voltage(double voltage, uint8_t channel) {
 	/**
 	* Set the DAC voltage
 	* @param voltage - between 0 and 2.048 when gain is set to 1,  0 and 3.3 when gain is set to 2
@@ -177,7 +175,7 @@ void ADCDACPi::set_dac_voltage(double voltage, int channel) {
 	}
 }
 
-void ADCDACPi::set_dac_raw(uint16_t raw, int channel) {
+void ADCDACPi::set_dac_raw(uint16_t raw, uint8_t channel) {
 	/**
 	* Set the raw value from the selected channel on the DAC
 	* @param raw - between 0 and 4095
@@ -197,8 +195,8 @@ void ADCDACPi::set_dac_raw(uint16_t raw, int channel) {
 	struct spi_ioc_transfer tr;
     memset(&tr,0,sizeof(tr));
 
-	tr.tx_buf = (unsigned long)&dactx;
-	tr.rx_buf = (unsigned long)NULL;
+	tr.tx_buf = (uint32_t)&dactx;
+	tr.rx_buf = (uint32_t)NULL;
 	tr.len = 2;
 	tr.speed_hz = 20000000; // 20MHz clock speed
 	tr.delay_usecs = 0;		
@@ -211,9 +209,7 @@ void ADCDACPi::set_dac_raw(uint16_t raw, int channel) {
 		
 }
 
-
-
-void ADCDACPi::set_dac_gain(int gain) {
+void ADCDACPi::set_dac_gain(uint8_t gain) {
 	/**
 	* Set the DAC gain
 	* @param gain - 1 or 2 - The output voltage will be between 0 and 2.048V when gain is set to 1,  0 and 3.3V when gain is set to 2	

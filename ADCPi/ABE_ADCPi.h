@@ -23,14 +23,14 @@ public:
  * @param address2 - I2C address2 for the target device e.g. 0x69
  * @param bitrate (optional) - 12, 14, 16 or 18
  */
-ADCPi(unsigned char address1, unsigned char address2, unsigned char rate=18);
+ADCPi(uint8_t address1, uint8_t address2, uint8_t rate=18);
 
 /**
 * Reads the raw value from the selected ADC channel
 * @param channel - 1 to 8
 * @returns - raw long value from ADC buffer
 */
-int read_raw(unsigned char channel);
+uint32_t read_raw(uint8_t channel);
 
 
 /**
@@ -38,62 +38,62 @@ int read_raw(unsigned char channel);
 * @param channel - 1 to 8
 * @returns - double voltage value from ADC
 */
-double read_voltage(unsigned char channel);
+double read_voltage(uint8_t channel);
 
 /**
 * Programmable Gain Amplifier gain selection
 * @param gain - Set to 1, 2, 4 or 8
 */
-void set_pga(unsigned char gain);
+void set_pga(uint8_t gain);
 
 /**
 * Set the sample resolution
 * @param rate - 12 = 12 bit(240SPS max), 14 = 14 bit(60SPS max), 16 = 16 bit(15SPS max), 18 = 18 bit(3.75SPS max)
 */
-void set_bit_rate(unsigned char rate);
+void set_bit_rate(uint8_t rate);
 
 /**
 * Set the conversion mode for ADC
 * @param mode - 0 = One shot conversion mode, 1 = Continuous conversion mode
 */
-void set_conversion_mode(unsigned char mode);
+void set_conversion_mode(uint8_t mode);
 
 private:
 
 /**
 * private method for writing a byte to the I2C port
 */
-void write_byte(unsigned char reg, unsigned char value);
+void write_byte(uint8_t reg, uint8_t value);
 
 /**
 * private method for reading bytes from the I2C port
 */
-void read_byte_array(unsigned char address, unsigned char reg, unsigned char length);
+void read_byte_array(uint8_t address, uint8_t reg, uint8_t length);
 
 /**
 * private method for setting the value of a single bit within a byte
 */
-char update_byte(unsigned char byte, unsigned char bit, unsigned char value);
+char update_byte(uint8_t byte, uint8_t bit, uint8_t value);
 
 /**
 * private method for setting the channel
 */
-void set_channel(unsigned char channel);
+void set_channel(uint8_t channel);
 
 int i2cbus;
-unsigned char i2caddress1;
-unsigned char i2caddress2;
-unsigned char config1;
-unsigned char currentchannel1;
-unsigned char config2;
-unsigned char currentchannel2;
-unsigned char bitrate;
-unsigned char conversionmode;
+uint8_t i2caddress1;
+uint8_t i2caddress2;
+uint8_t config1;
+uint8_t currentchannel1;
+uint8_t config2;
+uint8_t currentchannel2;
+uint8_t bitrate;
+uint8_t conversionmode;
 double pga;
 double lsb;
-unsigned char writebuffer[1];
-unsigned char readbuffer[10];
-unsigned char signbit;
+uint8_t writebuffer[1];
+uint8_t readbuffer[10];
+uint8_t signbit;
 
 };
 }

@@ -11,6 +11,7 @@ Reads from the MCP3424 ADC on the ADC Differential Pi.
  */
 
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdexcept>
@@ -36,17 +37,26 @@ private:
     int _fd;
 };
 
-ADCDifferentialPi::ADCDifferentialPi(unsigned char address1, unsigned char address2, unsigned char rate)
+ADCDifferentialPi::ADCDifferentialPi(uint8_t address1, uint8_t address2, uint8_t rate)
 {
+	if (address1 < 0x68 || address1 > 0x6F)
+	{
+		throw std::out_of_range("ADCPi address1 out of range: 0x68 to 0x6F");
+	}
+
+	if (address2 < 0x68 || address2 > 0x6F)
+	{
+		throw std::out_of_range("ADCPi address2 out of range: 0x68 to 0x6F");
+	}
 	signbit = 0;
 	i2caddress1 = address1;
 	i2caddress2 = address2;
-	config1 = (unsigned char)0x9C;		 // PGAx1, 18 bit, continuous conversion, channel 1
-	currentchannel1 = (unsigned char)1; // channel variable for adc 1
-	config2 = (unsigned char)0x9C;		 // PGAx1, 18 bit, continuous-shot conversion, channel 1
-	currentchannel2 = (unsigned char)1; // channel variable for adc2
-	bitrate = (unsigned char)18;		 // current bitrate
-	conversionmode = (unsigned char)1;  // Conversion Mode
+	config1 = (uint8_t)0x9C;		 // PGAx1, 18 bit, continuous conversion, channel 1
+	currentchannel1 = (uint8_t)1; // channel variable for adc 1
+	config2 = (uint8_t)0x9C;		 // PGAx1, 18 bit, continuous-shot conversion, channel 1
+	currentchannel2 = (uint8_t)1; // channel variable for adc2
+	bitrate = (uint8_t)18;		 // current bitrate
+	conversionmode = (uint8_t)1;  // Conversion Mode
 	pga = 0.5;			 // current pga setting
 	lsb = 0.000007812;   // default lsb value for 18 bit
 
@@ -55,7 +65,7 @@ ADCDifferentialPi::ADCDifferentialPi(unsigned char address1, unsigned char addre
 // public methods
 
 
-int ADCDifferentialPi::read_raw(unsigned char channel)
+uint32_t ADCDifferentialPi::read_raw(uint8_t channel)
 {
 	/**
 	* Reads the raw value from the selected ADC channel
@@ -64,13 +74,13 @@ int ADCDifferentialPi::read_raw(unsigned char channel)
 	*/
 
 	// variables for storing the raw bytes from the ADC
-	unsigned char h = 0;
-	unsigned char l = 0;
-	unsigned char m = 0;
-	unsigned char s = 0;
-	unsigned char config = 0;
-	unsigned char address = 0;
-	long t = 0;
+	uint8_t h = 0;
+	uint8_t l = 0;
+	uint8_t m = 0;
+	uint8_t s = 0;
+	uint8_t config = 0;
+	uint8_t address = 0;
+	uint32_t t = 0;
 	signbit = 0;
 
 	// get the config and i2c address for the selected channel
@@ -99,8 +109,8 @@ int ADCDifferentialPi::read_raw(unsigned char channel)
 	}
 
 	// keep reading the ADC data until the conversion result is ready
-	int timeout = 10000; // number of reads before a timeout occurs
-	int x = 0;
+	uint32_t timeout = 10000; // number of reads before a timeout occurs
+	uint32_t x = 0;
 	
 	do
 	{
@@ -179,7 +189,7 @@ int ADCDifferentialPi::read_raw(unsigned char channel)
 }
 
 
-double ADCDifferentialPi::read_voltage(unsigned char channel)
+double ADCDifferentialPi::read_voltage(uint8_t channel)
 {
 	/**
 	* Returns the voltage from the selected ADC channel
@@ -200,7 +210,7 @@ double ADCDifferentialPi::read_voltage(unsigned char channel)
 	}
 }
 
-void ADCDifferentialPi::set_pga(unsigned char gain)
+void ADCDifferentialPi::set_pga(uint8_t gain)
 {
 	/**
 	* Programmable Gain Amplifier gain selection
@@ -209,23 +219,23 @@ void ADCDifferentialPi::set_pga(unsigned char gain)
 	switch (gain)
 	{
 	case 1:
-		config1 = update_byte(config1, (unsigned char)0xFC, (unsigned char)0x00);
-		config2 = update_byte(config2, (unsigned char)0xFC, (unsigned char)0x00);
+		config1 = update_byte(config1, (uint8_t)0xFC, (uint8_t)0x00);
+		config2 = update_byte(config2, (uint8_t)0xFC, (uint8_t)0x00);
 		pga = 0.5;
 		break;
 	case 2:
-		config1 = update_byte(config1, (unsigned char)0xFC, (unsigned char)0x01);
-		config2 = update_byte(config2, (unsigned char)0xFC, (unsigned char)0x01);
+		config1 = update_byte(config1, (uint8_t)0xFC, (uint8_t)0x01);
+		config2 = update_byte(config2, (uint8_t)0xFC, (uint8_t)0x01);
 		pga = 1;
 		break;
 	case 4:
-		config1 = update_byte(config1, (unsigned char)0xFC, (unsigned char)0x02);
-		config2 = update_byte(config2, (unsigned char)0xFC, (unsigned char)0x02);
+		config1 = update_byte(config1, (uint8_t)0xFC, (uint8_t)0x02);
+		config2 = update_byte(config2, (uint8_t)0xFC, (uint8_t)0x02);
 		pga = 2;
 		break;
 	case 8:
-		config1 = update_byte(config1, (unsigned char)0xFC, (unsigned char)0x03);
-		config2 = update_byte(config2, (unsigned char)0xFC, (unsigned char)0x03);
+		config1 = update_byte(config1, (uint8_t)0xFC, (uint8_t)0x03);
+		config2 = update_byte(config2, (uint8_t)0xFC, (uint8_t)0x03);
 		pga = 4;
 		break;
 	default:
@@ -237,7 +247,7 @@ void ADCDifferentialPi::set_pga(unsigned char gain)
 	write_byte(i2caddress2, config2);
 }
 
-void ADCDifferentialPi::set_bit_rate(unsigned char rate)
+void ADCDifferentialPi::set_bit_rate(uint8_t rate)
 {
 	/**
 	* Set the sample resolution
@@ -246,26 +256,26 @@ void ADCDifferentialPi::set_bit_rate(unsigned char rate)
 	switch (rate)
 	{
 	case 12:
-		config1 = update_byte(config1, (unsigned char)0xF3, (unsigned char)0x00);
-		config2 = update_byte(config2, (unsigned char)0xF3, (unsigned char)0x00);
+		config1 = update_byte(config1, (uint8_t)0xF3, (uint8_t)0x00);
+		config2 = update_byte(config2, (uint8_t)0xF3, (uint8_t)0x00);
 		bitrate = 12;
 		lsb = 0.0005;
 		break;
 	case 14:
-		config1 = update_byte(config1, (unsigned char)0xF3, (unsigned char)0x04);
-		config2 = update_byte(config2, (unsigned char)0xF3, (unsigned char)0x04);
+		config1 = update_byte(config1, (uint8_t)0xF3, (uint8_t)0x04);
+		config2 = update_byte(config2, (uint8_t)0xF3, (uint8_t)0x04);
 		bitrate = 14;
 		lsb = 0.000125;
 		break;
 	case 16:
-		config1 = update_byte(config1, (unsigned char)0xF3, (unsigned char)0x08);
-		config2 = update_byte(config2, (unsigned char)0xF3, (unsigned char)0x08);
+		config1 = update_byte(config1, (uint8_t)0xF3, (uint8_t)0x08);
+		config2 = update_byte(config2, (uint8_t)0xF3, (uint8_t)0x08);
 		bitrate = 16;
 		lsb = 0.00003125;
 		break;
 	case 18:
-		config1 = update_byte(config1, (unsigned char)0xF3, (unsigned char)0x0C);
-		config2 = update_byte(config2, (unsigned char)0xF3, (unsigned char)0x0C);
+		config1 = update_byte(config1, (uint8_t)0xF3, (uint8_t)0x0C);
+		config2 = update_byte(config2, (uint8_t)0xF3, (uint8_t)0x0C);
 		bitrate = 18;
 		lsb = 0.0000078125;
 		break;
@@ -278,7 +288,7 @@ void ADCDifferentialPi::set_bit_rate(unsigned char rate)
 	write_byte(i2caddress2, config2);
 }
 
-void ADCDifferentialPi::set_conversion_mode(unsigned char mode)
+void ADCDifferentialPi::set_conversion_mode(uint8_t mode)
 {
 	/**
 	* Set the conversion mode for ADC
@@ -287,14 +297,14 @@ void ADCDifferentialPi::set_conversion_mode(unsigned char mode)
 
 	if (mode == 0)
 	{
-		config1 = update_byte(config1, (unsigned char)0xEF, (unsigned char)0x00);
-		config2 = update_byte(config2, (unsigned char)0xEF, (unsigned char)0x00);
+		config1 = update_byte(config1, (uint8_t)0xEF, (uint8_t)0x00);
+		config2 = update_byte(config2, (uint8_t)0xEF, (uint8_t)0x00);
 		conversionmode = 0;
 	}
 	else if (mode == 1)
 	{
-		config1 = update_byte(config1, (unsigned char)0xEF, (unsigned char)0x10);
-		config2 = update_byte(config2, (unsigned char)0xEF, (unsigned char)0x10);
+		config1 = update_byte(config1, (uint8_t)0xEF, (uint8_t)0x10);
+		config2 = update_byte(config2, (uint8_t)0xEF, (uint8_t)0x10);
 		conversionmode = 1;
 	}
 	else
@@ -307,7 +317,7 @@ void ADCDifferentialPi::set_conversion_mode(unsigned char mode)
 
 
 
-void ADCDifferentialPi::write_byte(unsigned char address, unsigned char value)
+void ADCDifferentialPi::write_byte(uint8_t address, uint8_t value)
 {
 	/**
 	* private method for writing a byte to the I2C port
@@ -335,7 +345,7 @@ void ADCDifferentialPi::write_byte(unsigned char address, unsigned char value)
 	close(i2cbus);
 }
 
-void ADCDifferentialPi::read_byte_array(unsigned char address, unsigned char reg, unsigned char length)
+void ADCDifferentialPi::read_byte_array(uint8_t address, uint8_t reg, uint8_t length)
 {
 	/**
 	* private method for reading bytes from the I2C port
@@ -363,7 +373,7 @@ void ADCDifferentialPi::read_byte_array(unsigned char address, unsigned char reg
 	close(i2cbus);
 }
 
-char ADCDifferentialPi::update_byte(unsigned char byte, unsigned char mask, unsigned char value)
+char ADCDifferentialPi::update_byte(uint8_t byte, uint8_t mask, uint8_t value)
 {
 	/**
 	* private method for setting the value of bits within a byte
@@ -373,7 +383,7 @@ char ADCDifferentialPi::update_byte(unsigned char byte, unsigned char mask, unsi
     return byte;
 }
 
-void ADCDifferentialPi::set_channel(unsigned char channel)
+void ADCDifferentialPi::set_channel(uint8_t channel)
 {
 	/**
 	* private method for setting the channel
@@ -386,16 +396,16 @@ void ADCDifferentialPi::set_channel(unsigned char channel)
 			switch (channel)
 			{
 			case 1:
-				config1 = update_byte(config1, (unsigned char)0x9F, (unsigned char)0x00);
+				config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x00);
 				break;
 			case 2:
-				config1 = update_byte(config1, (unsigned char)0x9F, (unsigned char)0x20);
+				config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x20);
 				break;
 			case 3:
-				config1 = update_byte(config1, (unsigned char)0x9F, (unsigned char)0x40);
+				config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x40);
 				break;
 			case 4:
-				config1 = update_byte(config1, (unsigned char)0x9F, (unsigned char)0x60);
+				config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x60);
 				break;
 			}
 		}
@@ -408,16 +418,16 @@ void ADCDifferentialPi::set_channel(unsigned char channel)
 			switch (channel)
 			{
 			case 5:
-				config2 = update_byte(config2, (unsigned char)0x9F, (unsigned char)0x00);
+				config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x00);
 				break;
 			case 6:
-				config2 = update_byte(config2, (unsigned char)0x9F, (unsigned char)0x20);
+				config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x20);
 				break;
 			case 7:
-				config2 = update_byte(config2, (unsigned char)0x9F, (unsigned char)0x40);
+				config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x40);
 				break;
 			case 8:
-				config2 = update_byte(config2, (unsigned char)0x9F, (unsigned char)0x60);
+				config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x60);
 				break;
 			}
 		}

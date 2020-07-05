@@ -52,7 +52,7 @@ void disable_output();
 * Set the squarewave output frequency
 * @param - 1 = 1Hz, 2 = 4.096KHz, 3 = 8.192KHz, 4 = 32.768KHz
 */
-void set_frequency(unsigned char frequency);
+void set_frequency(uint8_t frequency);
 
 /**
 * write to the memory on the ds1307
@@ -60,7 +60,7 @@ void set_frequency(unsigned char frequency);
 * @param address - 0x08 to 0x3F
 * @param valuearray - byte array containing data to be written to memory
 */
-void write_memory(unsigned char address, unsigned char *valuearray);
+void write_memory(uint8_t address, uint8_t *valuearray);
 
 /**
 * read from the memory on the ds1307
@@ -69,25 +69,25 @@ void write_memory(unsigned char address, unsigned char *valuearray);
 * @param length - up to 32 bytes.  length can not exceed the avaiable address space.
 * @returns - pointer to a byte array where the data will be saved
 */
-unsigned char *read_memory(unsigned char address, int length);
+uint8_t *read_memory(uint8_t address, uint8_t length);
 
 private:
 
 // Define local variables
-unsigned char rtcConfig;
-unsigned int rtcCentury;
+uint8_t rtcConfig;
+uint16_t rtcCentury;
 
 int i2cbus;
-unsigned char buf[10];
-unsigned char writebuffer[60];
-unsigned char readbuffer[60];
+uint8_t buf[10];
+uint8_t writebuffer[60];
+uint8_t readbuffer[60];
 
-void read_byte_array(unsigned char reg, unsigned char length);
-void write_byte_data(unsigned char reg, unsigned char value);
-void write_byte_array(unsigned char buffer[], unsigned char length);
-unsigned char bcd_to_dec(unsigned char bcd);
-unsigned char dec_to_bcd(unsigned char dec);
-unsigned char updatebyte(unsigned char byte, unsigned char bit, unsigned char value);
+void read_byte_array(uint8_t reg, uint8_t length);
+void write_byte_data(uint8_t reg, uint8_t value);
+void write_byte_array(uint8_t buffer[], uint8_t length);
+uint8_t bcd_to_dec(uint8_t bcd);
+uint8_t dec_to_bcd(uint8_t dec);
+uint8_t updatebyte(uint8_t byte, uint8_t bit, uint8_t value);
 
 };
 }

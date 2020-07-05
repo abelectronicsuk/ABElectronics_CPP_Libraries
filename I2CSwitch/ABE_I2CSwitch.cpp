@@ -44,12 +44,17 @@ using namespace ABElectronics_CPP_Libraries;
 
 // public methods
 
-I2CSwitch::I2CSwitch(unsigned char address)
+I2CSwitch::I2CSwitch(uint8_t address)
 {
 	/**
-	* Initialise the Servo Pi - run before calling any other methods
+	* Initialise the I2CSwitch Pi - run before calling any other methods
 	* @param address - I2C address
 	*/
+
+	if (address < 0x70 || address > 0x77)
+	{
+		throw std::out_of_range("I2CSwitch address out of range: 0x70 to 0x77");
+	}
 
 	i2caddress = address;
 
@@ -63,7 +68,7 @@ I2CSwitch::I2CSwitch(unsigned char address)
 	digitalWrite (RESETPIN, 1);
 }
 
-void I2CSwitch::switch_channel(unsigned char channel) {
+void I2CSwitch::switch_channel(uint8_t channel) {
 	/**
 	* Enable the specified I2C channel and disable other channels
 	* @param channel - 1 to 4
@@ -71,12 +76,12 @@ void I2CSwitch::switch_channel(unsigned char channel) {
 	if (channel < 1 || channel > 4){
 		throw std::runtime_error("switch_channel: channel out of range. 1 - 4");
 	}
-	unsigned char cval = 0;
+	uint8_t cval = 0;
 	cval = updatebyte(cval, channel - 1, 1);
 	write_byte_data(cval);
 }
 
-void I2CSwitch::set_channel_state(unsigned char channel, unsigned char state) {
+void I2CSwitch::set_channel_state(uint8_t channel, uint8_t state) {
 	/**
 	* Sets the state of the specified I2C channel.
 	* All other channels keep their existing state.
@@ -90,12 +95,12 @@ void I2CSwitch::set_channel_state(unsigned char channel, unsigned char state) {
 		throw std::runtime_error("set_channel_state: state out of range. 0 or 1");
 		fprintf(stderr, "state out of range. 0 or 1\n");
 	}
-	unsigned char cval = read_byte_data();
+	uint8_t cval = read_byte_data();
 	cval = updatebyte(cval, channel -1, state);
 	write_byte_data(cval);
 }
 
-unsigned char I2CSwitch::get_channel_state(unsigned char channel) {
+uint8_t I2CSwitch::get_channel_state(uint8_t channel) {
 	/**
 	* Gets the state of the specified I2C channel
 	* @param channel - 1 to 4
@@ -104,7 +109,7 @@ unsigned char I2CSwitch::get_channel_state(unsigned char channel) {
 	if (channel < 1 || channel > 4){
 		throw std::runtime_error("get_channel_state: channel out of range. 1 - 4");
 	}
-	unsigned char cval = read_byte_data();
+	uint8_t cval = read_byte_data();
 	return (checkbit(cval, channel - 1));
 }
 
@@ -169,7 +174,7 @@ int I2CSwitch::read_byte_data()
 	return (buf[0]);
 }
 
-void I2CSwitch::write_byte_data(unsigned char value)
+void I2CSwitch::write_byte_data(uint8_t value)
 {
 	/**
 	* private method for writing a byte to the I2C port
@@ -195,7 +200,7 @@ void I2CSwitch::write_byte_data(unsigned char value)
 	close(i2cbus);
 }
 
-unsigned char I2CSwitch::updatebyte(unsigned char byte, unsigned char bit, unsigned char value) {
+uint8_t I2CSwitch::updatebyte(uint8_t byte, uint8_t bit, uint8_t value) {
 	/*
 	 internal method for setting the value of a single bit within a byte
 	 */
@@ -208,7 +213,7 @@ unsigned char I2CSwitch::updatebyte(unsigned char byte, unsigned char bit, unsig
 
 }
 
-unsigned char I2CSwitch::checkbit(unsigned char byte, unsigned char bit) {
+uint8_t I2CSwitch::checkbit(uint8_t byte, uint8_t bit) {
 	/*
 	 internal method for reading the value of a single bit within a byte
 	 */
