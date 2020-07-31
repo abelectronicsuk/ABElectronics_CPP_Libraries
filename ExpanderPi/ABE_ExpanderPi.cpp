@@ -38,7 +38,7 @@ apt-get install libi2c-dev
 #define IOADDRESS 0x20
 #define IODIRA 0x00 // IO direction A - 1= input 0 = output
 #define IODIRB 0x01 // IO direction B - 1= input 0 = output
-#define IPOLA 0x02 // Input polarity A 
+#define IPOLA 0x02 // Input polarity A
 #define IPOLB 0x03 // Input polarity B
 #define GPINTENA 0x04 // The GPINTEN register controls the interrupt-onchange feature for each pin on port A.
 #define GPINTENB 0x05 // The GPINTEN register controls the interrupt-onchange feature for each pin on port B.
@@ -80,7 +80,7 @@ using namespace ABElectronics_CPP_Libraries;
 ExpanderPi::ExpanderPi(){
 	// SPI Bus Variables
 	mode = SPI_MODE_0; // SPI_MODE_0
-	speed = 2500000; // SPI bus speed
+	speed = 200000; // SPI bus speed
 
 	// ADC Variables
 
@@ -174,11 +174,11 @@ int ExpanderPi::adc_read_raw(int channel, int mode) {
 	struct spi_ioc_transfer spi;
 	memset(&spi,0,sizeof(spi));
 
-	spi.tx_buf = (unsigned long)adctx;	
+	spi.tx_buf = (unsigned long)adctx;
 	spi.rx_buf = (unsigned long)adcrx;
 	spi.len = 3;
 	spi.speed_hz = 1800000; // 1.8MHz Clock Speed
-	spi.delay_usecs = 0;		
+	spi.delay_usecs = 0;
 	spi.bits_per_word = 8;
 
 
@@ -254,7 +254,7 @@ void ExpanderPi::dac_set_raw(uint16_t raw, int channel, int gain) {
 	tr.rx_buf = (unsigned long)NULL;
 	tr.len = 2;
 	tr.speed_hz = 20000000; // 20MHz clock speed
-	tr.delay_usecs = 0;		
+	tr.delay_usecs = 0;
 	tr.bits_per_word = 8;
 	tr.cs_change = 0;
 
@@ -277,7 +277,7 @@ void ExpanderPi::dac_set_voltage(double voltage, int channel, int gain) {
 	if (gain == 2) {
 		dacvoltage = 4.096;
 	}
-	
+
 	if ((voltage >= 0.0) && (voltage < dacvoltage)) {
 		uint16_t rawval = ((voltage / 2.048) * 4096) / gain;
 		dac_set_raw(rawval, channel, gain);
@@ -850,7 +850,7 @@ unsigned char *ExpanderPi::rtc_read_memory(unsigned char address, int length) {
 	else {
 		throw std::out_of_range("address out of range");
 		return NULL;
-	}	
+	}
 }
 
 /*===================RTC Methods End ===================*/
