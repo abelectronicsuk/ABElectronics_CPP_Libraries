@@ -91,7 +91,8 @@ void set_dac_gain(uint8_t gain);
 private:
 // private variables
 uint8_t mode; // SPI_MODE_0
-uint32_t speed; // SPI bus speed
+uint32_t adcspeed; // SPI ADC bus speed
+uint32_t dacspeed; // SPI DAC bus speed
 
 uint8_t adctx[3]; // transmit buffer for the ADC
 uint8_t adcrx[3]; // receive buffer for the ADC

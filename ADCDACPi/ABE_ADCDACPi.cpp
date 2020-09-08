@@ -24,7 +24,8 @@ using namespace ABElectronics_CPP_Libraries;
 
 ADCDACPi::ADCDACPi(){
 	mode = SPI_MODE_0; // SPI_MODE_0
-	speed = 2500000; // SPI bus speed
+	adcspeed = 1100000; // SPI ADC bus speed 1.1MHz
+	dacspeed = 20000000; // SPI DAC bus speed 20MHz
 
 	adctx[0] = 0x01; // transmit buffer for the ADC
 	adctx[1] = 0x80;
@@ -45,7 +46,7 @@ int ADCDACPi::open_adc() {
 	if ((adc = open(adcdevice, O_RDWR)) < 0)
 		return (0);
 
-	if (ioctl(adc, SPI_IOC_WR_MAX_SPEED_HZ, &speed) == -1)
+	if (ioctl(adc, SPI_IOC_WR_MAX_SPEED_HZ, &adcspeed) == -1)
 		return (0);
 	// Set SPI mode
 	if (ioctl(adc, SPI_IOC_WR_MODE, &mode) == -1)
@@ -71,7 +72,7 @@ int ADCDACPi::open_dac() {
 	if ((dac = open(dacdevice, O_RDWR)) < 0)
 		return (0);
 
-	if (ioctl(dac, SPI_IOC_WR_MAX_SPEED_HZ, &speed) == -1)
+	if (ioctl(dac, SPI_IOC_WR_MAX_SPEED_HZ, &dacspeed) == -1)
 		return (0);
 	// Set SPI mode
 	if (ioctl(dac, SPI_IOC_WR_MODE, &mode) == -1)
@@ -137,7 +138,7 @@ uint16_t ADCDACPi::read_adc_raw(uint8_t channel, uint8_t mode) {
 	spi.tx_buf = (uint32_t)adctx;	
 	spi.rx_buf = (uint32_t)adcrx;
 	spi.len = 3;
-	spi.speed_hz = 1800000; // 1.8MHz Clock Speed
+	spi.speed_hz = adcspeed;
 	spi.delay_usecs = 0;		
 	spi.bits_per_word = 8;
 
@@ -198,7 +199,7 @@ void ADCDACPi::set_dac_raw(uint16_t raw, uint8_t channel) {
 	tr.tx_buf = (uint32_t)&dactx;
 	tr.rx_buf = (uint32_t)NULL;
 	tr.len = 2;
-	tr.speed_hz = 20000000; // 20MHz clock speed
+	tr.speed_hz = dacspeed;
 	tr.delay_usecs = 0;		
 	tr.bits_per_word = 8;
 	tr.cs_change = 0;
