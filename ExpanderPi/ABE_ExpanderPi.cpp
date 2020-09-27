@@ -237,15 +237,19 @@ void ExpanderPi::dac_set_raw(uint16_t raw, int channel, int gain) {
 	* @param gain - 1 or 2  - The output voltage will be between 0 and 2.048V when gain is set to 1,  0 and 4.096V when gain is set to 2
 	*/
 
-	uint16_t dactx[2];
+	uint8_t dactx[2];
 
 	dactx[1] = (raw & 0xff);
-	dactx[0] = (((raw >> 8) & 0xff) | (channel - 1) << 7 | 0x1 << 5 | 1 << 4);
 
-	if (gain == 2) {
-		uint16_t x = dactx[0];
-        dactx[0] = (x &= ~(1 << 5));
+	if (gain == 1) {
+		dactx[0] = (((raw >> 8) & 0xff) | (channel - 1) << 7 | 1 << 5 | 1 << 4);
     }
+	else if (gain == 2) {
+		dactx[0] = (((raw >> 8) & 0xff) | (channel - 1) << 7 | 1 << 4);
+	}
+	else {
+		throw std::out_of_range("dac_set_raw gain out of range: 1 or 2");
+	}
 
 	struct spi_ioc_transfer tr;
     memset(&tr,0,sizeof(tr));
@@ -262,6 +266,7 @@ void ExpanderPi::dac_set_raw(uint16_t raw, int channel, int gain) {
 	if (ioctl(dac, SPI_IOC_MESSAGE(1), &tr) == -1){
 		throw std::runtime_error("error setting dac raw value");
 	}
+
 	return;
 }
 
@@ -279,11 +284,11 @@ void ExpanderPi::dac_set_voltage(double voltage, int channel, int gain) {
 	}
 
 	if ((voltage >= 0.0) && (voltage < dacvoltage)) {
-		uint16_t rawval = ((voltage / 2.048) * 4096) / gain;
+		uint16_t rawval = (voltage / 2.048) * 4096 / gain;
 		dac_set_raw(rawval, channel, gain);
 	}
 	else {
-		return;
+		throw std::out_of_range("dac_set_voltage voltage out of range");
 	}
 }
 
