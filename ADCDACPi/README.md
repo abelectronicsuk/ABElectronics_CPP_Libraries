@@ -3,7 +3,7 @@ AB Electronics UK ADCDAC Pi C++ Library
 
 C++ Library to use with ADCDAC Pi Raspberry Pi expansion board from https://www.abelectronics.co.uk
 
-The example python files can be found in /ABElectronics_CPP_Libraries/ADCDACPi/demos.
+The example demo files can be found in /ABElectronics_CPP_Libraries/ADCDACPi/demos.
 
 ### Downloading and Installing the library
 
