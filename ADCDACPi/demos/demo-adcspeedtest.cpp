@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 	ADCDACPi adcdac;
 
 	if (adcdac.open_adc() != 1)
-	{				// open the DAC spi channel
+	{				// open the ADC spi channel
 		return (1); // if the SPI bus fails to open exit the program
 	}
 

@@ -1,3 +1,10 @@
+#### 2020-10-02 Andrew Dorey
+
+* 1.1.2  Updates to the ADC DAC Pi class.
+
+Added test programs for the ADC and DAC functions.
+
+
 #### 2020-07-05 Andrew Dorey
 
 * 1.1.1  Updates to the ADC DAC Pi, ADC Pi, ADC Differential Pi, I2C Switch and RTC Pi classes.
