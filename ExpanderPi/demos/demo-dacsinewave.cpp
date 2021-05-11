@@ -5,7 +5,7 @@
  *
  *  	This demonstration uses an array of 256 data points to generate a sine wave.
  *
- *      compile with "g++ demo-dacsinewave.cpp ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-dacsinewave"
+ *      compile with "g++ demo-dacsinewave.cpp ../ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-dacsinewave"
  *      run with "./demo-dacsinewave"
  */
 
@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "ABE_ExpanderPi.h"
+#include "../ABE_ExpanderPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
 

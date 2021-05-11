@@ -3,7 +3,7 @@
 *
 *  Version 1.1 Updated 21/04/2020
 *
-*      compile with "g++ demo-rtcmemory.cpp ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-rtcmemory"
+*      compile with "g++ demo-rtcmemory.cpp ../ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-rtcmemory"
 *      run with "./demo-rtcmemory"
 *
 *  This demo shows how to write to and read from the internal battery backed memory on the DS1307 RTC chip
@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "ABE_ExpanderPi.h"
+#include "../ABE_ExpanderPi.h"
 
 
 int main(int argc, char **argv) {

@@ -3,7 +3,7 @@
  *
  *  Version 1.1 Updated 21/04/2020
  *
- *      compile with "g++ demo-adcread.cpp ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-adcread"
+ *      compile with "g++ demo-adcread.cpp ../ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-adcread"
  *      run with "./demo-adcread"
  */
 
@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "ABE_ExpanderPi.h"
+#include "../ABE_ExpanderPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
 

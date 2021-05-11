@@ -3,7 +3,7 @@
  *
  *  Created on: 25 June 2017
  *
- *      compile with "g++ demo-iowrite.cpp ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow  -o demo-iowrite"
+ *      compile with "g++ demo-iowrite.cpp ../ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow  -o demo-iowrite"
  *      run with "./demo-iowrite"
  */
 #include <stdint.h>
@@ -12,7 +12,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <iostream>
-#include "ABE_ExpanderPi.h"
+#include "../ABE_ExpanderPi.h"
 
 using namespace std;
 

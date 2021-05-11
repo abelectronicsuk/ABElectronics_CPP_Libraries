@@ -3,7 +3,7 @@
  *
  *  Version 1.1 Updated 21/04/2020
  *
- *      compile with "g++ demo-dacwrite.cpp ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-dacwrite"
+ *      compile with "g++ demo-dacwrite.cpp ../ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-dacwrite"
  *      run with "./demo-dacwrite"
  */
 
@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "ABE_ExpanderPi.h"
+#include "../ABE_ExpanderPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
 
@@ -32,8 +32,8 @@ int main(int argc, char **argv){
 		return(1); // if the SPI bus fails to open exit the program
 	}
 
-	expi.dac_set_voltage(1.2, 1, 2); // set the voltage on channel 1 to 1.2V and the gain to 2
-	expi.dac_set_voltage(2.5, 2, 2); // set the voltage on channel 2 to 2.5V and the gain to 2
+	expi.dac_set_voltage(1.5, 1, 2); // set the voltage on channel 1 to 1.2V and the gain to 2
+	expi.dac_set_voltage(3.8, 2, 2); // set the voltage on channel 2 to 2.5V and the gain to 2
 
 	expi.dac_close();
 
