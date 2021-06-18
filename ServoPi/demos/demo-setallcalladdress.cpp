@@ -1,17 +1,15 @@
 /*
  * demo-setallcalladdress.cpp
  *
- *  Version 1.1 Updated 21/04/2020
- *
  *  Set the All Call I2C address to be 0x60 and enable All Call functionality.  This allows you to
  *  access several Servo Pi boards at the same time from a single I2C address.
  *
- *	The ServoPi library uses Wiring Pi to access the GPIO port.  This is because the Servo Pi uses the GPIO port to control
+ *	The ServoPi library uses Wiring Pi library.  This is because the Servo Pi uses the GPIO port to control
  *	the Output Enable function.  
  *	
  *	If Wiring Pi is not installed you can install it using the command "sudo apt-get install wiringpi"
  *
- *      compile with "g++ demo-setallcalladdress.cpp ABE_ServoPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-setallcalladdress -L/usr/local/lib -lwiringPi"
+ *      compile with "g++ demo-setallcalladdress.cpp ../ABE_ServoPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-setallcalladdress -L/usr/local/lib -lwiringPi"
  *      run with "./demo-setallcalladdress"
  */
 
@@ -22,7 +20,7 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "ABE_ServoPi.h"
+#include "../ABE_ServoPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
 
@@ -35,13 +33,12 @@ void clearscreen() {
 int main(int argc, char **argv) {
 	setvbuf(stdout, NULL, _IONBF, 0); // needed to print to the command line
 
-
 	// initialise the servo pi on I2C address 0x40.  Check the returned value to ensure the Servo Pi initialised correctly
 
-	ServoPi servo(0x40, 1);
+	PWM pwm(0x40, 1);
 
-	servo.set_allcall_address(0x60, 0x40);
-	servo.enable_allcall_address(0x40);
+	pwm.set_allcall_address(0x70);
+	pwm.enable_allcall_address();
 
 	(void)argc;
 	(void)argv;

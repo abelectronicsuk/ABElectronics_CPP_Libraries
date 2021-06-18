@@ -1,3 +1,11 @@
+#### 2021-06-18 Andrew Dorey
+
+* 1.1.3  Servo Pi Updates
+Renamed ServoPi class to PWM.
+Added new methods to the PWM class for controlling the functionality of the PCA9685 PWM controller IC.
+Added Servo class for controlling servos.
+Added new demos and unit tests.
+
 #### 2020-10-02 Andrew Dorey
 
 * 1.1.2  Updates to the ADC DAC Pi class.
