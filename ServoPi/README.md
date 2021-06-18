@@ -335,7 +335,9 @@ wake()
 Wake the device from its sleep state.  
 **Parameter:** null  
 **Returns:** null  
----
+
+---  
+
 ```
 is_sleeping()
 ```
