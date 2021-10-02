@@ -62,7 +62,7 @@ write_memory(uint8_t address, uint8_t *valuearray, uint8_t length)
 ```
 Write to the memory on the ds1307. The ds1307 contains 56-Byte, battery-backed RAM with Unlimited Writes  
 **Parameter:** address - 0x08 to 0x3F  
-**Parameter:** valuearray - uint8_t array containing data to be written to memory 
+**Parameter:** valuearray - uint8_t array containing data to be written to memory  
 **Parameter:** length - up to 56 bytes.  array length can not exceed the available address space.  
 **Returns:** null
 ___
