@@ -11,7 +11,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <iostream>
-#include "../testlibs.h"
+#include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_ServoPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
@@ -22,47 +22,48 @@ void clearscreen() {
 }
 
 int main(int argc, char **argv) {
-	start_test("PWM class > set_pwm_on_time()");
+    TestLibs test;
+	test.start_test("PWM class > set_pwm_on_time()");
 
 	PWM pwm(0x40, true); // create PWM object
 
 	// out of bounds test for channel
 	try{
 		pwm.set_pwm_on_time(0, 1);
-		test_exception_failed("Channel low out of bounds");
+		test.test_exception_failed("Channel low out of bounds");
 	}
 	catch(const std::exception& e){	}
 
 	try{
 		pwm.set_pwm_on_time(17, 1);
-		test_exception_failed("Channel high out of bounds");
+		test.test_exception_failed("Channel high out of bounds");
 	}
 	catch(const std::exception& e){	}
 
 	// out of bounds test for off_time
 	try{
 		pwm.set_pwm_on_time(1, -1);
-		test_exception_failed("on_time low out of bounds");
+		test.test_exception_failed("on_time low out of bounds");
 	}
 	catch(const std::exception& e){	}
 
 	try{
 		pwm.set_pwm_on_time(1, 4096);
-		test_exception_failed("on_time high out of bounds");
+		test.test_exception_failed("on_time high out of bounds");
 	}
 	catch(const std::exception& e){	}
 
 	pwm.set_pwm_on_time(1, 0x0802);
 
-	test_i2c_register(PCA9685::LED0_ON_Low, 0x02); // LED0_ON_High expected to be 0x02
-	test_i2c_register(PCA9685::LED0_ON_High, 0x08); // LED0_ON_High expected to be 0x08
+	test.test_i2c_register(test.PCA9685_LED0_ON_Low, 0x02); // LED0_ON_High expected to be 0x02
+	test.test_i2c_register(test.PCA9685_LED0_ON_High, 0x08); // LED0_ON_High expected to be 0x08
 	
 	pwm.set_pwm_on_time(10, 0x06A4);
 
-	test_i2c_register(PCA9685::LED0_ON_Low + 36, 0xA4); // LED9_ON_High expected to be 0xA4
-	test_i2c_register(PCA9685::LED0_ON_High + 36, 0x06); // LED9_ON_High expected to be 0x06
+	test.test_i2c_register(test.PCA9685_LED0_ON_Low + 36, 0xA4); // LED9_ON_High expected to be 0xA4
+	test.test_i2c_register(test.PCA9685_LED0_ON_High + 36, 0x06); // LED9_ON_High expected to be 0x06
 	
-	test_outcome();
+	test.test_outcome();
 
 	(void)argc;
 	(void)argv;

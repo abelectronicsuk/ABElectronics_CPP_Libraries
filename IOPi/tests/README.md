@@ -1,5 +1,4 @@
-AB Electronics UK IO Pi C++ Library Unit Tests
+AB Electronics UK IO Pi C++ Library Test Files
 =====
 
-This folder contains unit tests for each method in the IO Pi library.  
-Most of the tests require a logic analyser connected to the SDA and SCL pins on the Raspberry Pi GPIO header.
+This folder contains unit test files for testing the functions available in the IO Pi library.  

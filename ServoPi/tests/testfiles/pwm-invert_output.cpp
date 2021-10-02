@@ -11,7 +11,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <iostream>
-#include "../testlibs.h"
+#include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_ServoPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
@@ -22,19 +22,20 @@ void clearscreen() {
 }
 
 int main(int argc, char **argv) {
-	start_test("PWM class > invert_output()");
+    TestLibs test;
+	test.start_test("PWM class > invert_output()");
 
 	PWM pwm(0x40, true); // create PWM object
 
 	pwm.invert_output(true);
 
-	test_i2c_register(PCA9685::Mode2, 0x1C); // MODE2 expected to be 0x1C
+	test.test_i2c_register(test.PCA9685_Mode2, 0x1C); // MODE2 expected to be 0x1C
 
 	pwm.invert_output(false);
 
-	test_i2c_register(PCA9685::Mode2, 0x0C); // MODE2 expected to be 0x0C
+	test.test_i2c_register(test.PCA9685_Mode2, 0x0C); // MODE2 expected to be 0x0C
 	
-	test_outcome();
+	test.test_outcome();
 
 	(void)argc;
 	(void)argv;

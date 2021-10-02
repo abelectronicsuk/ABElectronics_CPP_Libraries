@@ -11,7 +11,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <iostream>
-#include "../testlibs.h"
+#include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_ServoPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
@@ -22,30 +22,31 @@ void clearscreen() {
 }
 
 int main(int argc, char **argv) {
-	start_test("PWM class > set_allcall_address()");
+    TestLibs test;
+	test.start_test("PWM class > set_allcall_address()");
 
 	PWM pwm(0x40, true); // create PWM object
 
 	// out of bounds test for address register
 	try{
 	pwm.set_allcall_address(0x39);
-	test_exception_failed("All Call I2C address low out of bounds");
+	test.test_exception_failed("All Call I2C address low out of bounds");
 	}
 	catch(const std::exception& e){	}
 
 	try{
 	pwm.set_allcall_address(0x80);
-	test_exception_failed("All Call I2C address high out of bounds");
+	test.test_exception_failed("All Call I2C address high out of bounds");
 	}
 	catch(const std::exception& e){	}
 
 	pwm.set_allcall_address(0x52); // set all call address to 0x52
 
-	test_i2c_register(PCA9685::AllCallAddress, 0xA4); // Check the AllCallAddress register.  Value should be shifted left 1 bit.
+	test.test_i2c_register(test.PCA9685_AllCallAddress, 0xA4); // Check the AllCallAddress register.  Value should be shifted left 1 bit.
 
-	test_i2c_register(PCA9685::Mode1, 0x01); // Check if the ALLCALL bit in Mode1 register is set
+	test.test_i2c_register(test.PCA9685_Mode1, 0x01); // Check if the ALLCALL bit in Mode1 register is set
 	
-	test_outcome();
+	test.test_outcome();
 
 	(void)argc;
 	(void)argv;

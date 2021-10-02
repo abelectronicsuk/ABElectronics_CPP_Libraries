@@ -11,7 +11,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <iostream>
-#include "../testlibs.h"
+#include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_ServoPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
@@ -24,46 +24,47 @@ void clearscreen() {
 
 
 int main(int argc, char **argv) {
-	start_test("Servo class > move()");
+    TestLibs test;
+	test.start_test("Servo class > move()");
 
 	Servo servo(0x40, 1, 2, false, true); // create Servo object
 
 	// out of bounds test for channel parameter
 	try{
 		servo.move(0, 200, 250);
-		test_exception_failed("channel low out of bounds");
+		test.test_exception_failed("channel low out of bounds");
 	}
 	catch(const std::exception& e){	}
 
 	try{
 		servo.move(17, 200, 250);
-		test_exception_failed("channel high out of bounds");
+		test.test_exception_failed("channel high out of bounds");
 	}
 	catch(const std::exception& e){	}
 
 	// out of bounds test for position parameter
 	try{
 		servo.move(1, -1, 250);
-		test_exception_failed("position low out of bounds");
+		test.test_exception_failed("position low out of bounds");
 	}
 	catch(const std::exception& e){	}
 
 	try{
 		servo.move(1, 251, 250);
-		test_exception_failed("position high out of bounds");
+		test.test_exception_failed("position high out of bounds");
 	}
 	catch(const std::exception& e){	}
 
 	// out of bounds test for steps parameter
 	try{
 		servo.move(1, 100, 0);
-		test_exception_failed("steps low out of bounds");
+		test.test_exception_failed("steps low out of bounds");
 	}
 	catch(const std::exception& e){	}
 
 	try{
 		servo.move(1, 100, 4096);
-		test_exception_failed("steps high out of bounds");
+		test.test_exception_failed("steps high out of bounds");
 	}
 	catch(const std::exception& e){	}
 
@@ -74,11 +75,11 @@ int main(int argc, char **argv) {
 		uint16_t position = servo.get_position(channel, 250); // get servo position
 
 		if (position != 200){
-			test_fail("Incorrect position for channel " + channel);
+			test.test_fail("Incorrect position for channel " + channel);
 		}
 	}
 
-	test_outcome();
+	test.test_outcome();
 	(void)argc;
 	(void)argv;
 	return (0);

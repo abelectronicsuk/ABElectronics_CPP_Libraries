@@ -11,7 +11,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <iostream>
-#include "../testlibs.h"
+#include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_ServoPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
@@ -24,20 +24,21 @@ void clearscreen() {
 
 
 int main(int argc, char **argv) {
-	start_test("Servo class > set_frequency()");
+    TestLibs test;
+	test.start_test("Servo class > set_frequency()");
 
 	Servo servo(0x40, 1, 2, false, true); // create Servo object
 
 	// out of bounds test for frequency value
 	try{
 		servo.set_frequency(39, 0);
-		test_exception_failed("Frequency low out of bounds");
+		test.test_exception_failed("Frequency low out of bounds");
 	}
 	catch(const std::exception& e){	}
 
 	try{
 		servo.set_frequency(1001, 0);
-		test_exception_failed("Frequency high out of bounds");
+		test.test_exception_failed("Frequency high out of bounds");
 	}
 	catch(const std::exception& e){	}
 
@@ -51,9 +52,9 @@ int main(int argc, char **argv) {
 		value is written to the PRE_SCALE register
 	*/
 
-	test_i2c_register(PCA9685::Prescaler, 62); // Prescaler expected to be 62
+	test.test_i2c_register(test.PCA9685_Prescaler, 62); // Prescaler expected to be 62
 
-	test_outcome();
+	test.test_outcome();
 
 	(void)argc;
 	(void)argv;

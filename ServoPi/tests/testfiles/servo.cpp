@@ -11,7 +11,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <iostream>
-#include "../testlibs.h"
+#include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_ServoPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
@@ -24,19 +24,20 @@ void clearscreen() {
 
 
 int main(int argc, char **argv) {
-	start_test("Servo class > servo()");
+    TestLibs test;
+	test.start_test("Servo class > servo()");
 
 	// out of bounds test for address register
 	
 	try{
 	Servo servo1(0x39, 1, 2, false, false);
-	test_exception_failed("I2C address low out of bounds");
+	test.test_exception_failed("I2C address low out of bounds");
 	}
 	catch(const std::exception& e){	}
 
 	try{
 	Servo servo2(0x80, 1, 2, false, false);
-	test_exception_failed("I2C address high out of bounds");
+	test.test_exception_failed("I2C address high out of bounds");
 	}
 	catch(const std::exception& e){	}
 
@@ -44,17 +45,17 @@ int main(int argc, char **argv) {
 
 	Servo servo(0x40, 1, 2, false, true);
 		
-	test_i2c_register(PCA9685::Mode1, 0x00); // MODE1 expected to be 0x00
-	test_i2c_register(PCA9685::Mode2, 0x0C); // MODE2 expected to be 0x0C
+	test.test_i2c_register(test.PCA9685_Mode1, 0x00); // MODE1 expected to be 0x00
+	test.test_i2c_register(test.PCA9685_Mode2, 0x0C); // MODE2 expected to be 0x0C
 
 	Servo servo2(0x40, 1, 2, true, true); // enable device reset
 	
-	test_i2c_register(PCA9685::Mode1, 0x80); // MODE1 expected to be 0x80
-	test_i2c_register(PCA9685::Mode2, 0x0C); // MODE2 expected to be 0x0C
+	test.test_i2c_register(test.PCA9685_Mode1, 0x80); // MODE1 expected to be 0x80
+	test.test_i2c_register(test.PCA9685_Mode2, 0x0C); // MODE2 expected to be 0x0C
 
-	test_gpio_direction(7, Direction::Output); // GPIO 7 expected to be an output
+	test.test_gpio_direction(7, test.Output); // GPIO 7 expected to be an output
 
-	test_outcome();
+	test.test_outcome();
 
 	(void)argc;
 	(void)argv;

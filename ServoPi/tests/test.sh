@@ -7,13 +7,13 @@ if [ "$#" -eq  "0" ]
         for file in testfiles/*.cpp; do 
             echo "Building" "$file"    
             outputname="$(basename "$file" .cpp)"
-            g++ "$file" testlibs.cpp ../ABE_ServoPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o bin/"$outputname" -L/usr/local/lib
+            g++ "$file" ../ABE_ServoPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o bin/"$outputname" -L/usr/local/lib
         done
 else
     file="testfiles/"$1".cpp"
     echo "Building" "$file"    
     outputname="$(basename "$file" .cpp)"
-    g++ "$file" testlibs.cpp ../ABE_ServoPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o bin/"$outputname" -L/usr/local/lib
+    g++ "$file"  ../ABE_ServoPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o bin/"$outputname" -L/usr/local/lib
 fi
 
 # run test

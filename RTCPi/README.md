@@ -58,11 +58,12 @@ Set the frequency for the square-wave output on the SQW pin.
 **Returns:** null
 ___
 ```
-write_memory(uint8_t address, uint8_t *valuearray)
+write_memory(uint8_t address, uint8_t *valuearray, uint8_t length)
 ```
 Write to the memory on the ds1307. The ds1307 contains 56-Byte, battery-backed RAM with Unlimited Writes  
 **Parameter:** address - 0x08 to 0x3F  
-**Parameter:** valuearray - uint8_t array containing data to be written to memory  
+**Parameter:** valuearray - uint8_t array containing data to be written to memory 
+**Parameter:** length - up to 56 bytes.  array length can not exceed the available address space.  
 **Returns:** null
 ___
 ```
@@ -70,5 +71,5 @@ read_memory(uint8_t address, uint8_t length)
 ```
 Read from the memory on the ds1307  
 **Parameter:** address - 0x08 to 0x3F  
-**Parameter:** length - up to 32 bytes.  length can not exceed the available address space.  
+**Parameter:** length - up to 56 bytes.  length can not exceed the available address space.  
 **Returns:** (uint8_t*) array of bytes from the SRAM

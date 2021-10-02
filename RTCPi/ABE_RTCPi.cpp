@@ -1,13 +1,14 @@
 /*
 ================================================
 ABElectronics UK RTC Pi real-time clock
-Version 1.1 Updated 21/04/2020
+See CHANGELOG.md for version number.
 ================================================
 
 Required package{
 apt-get install libi2c-dev
 */
 
+//#define TESTMODE // used for unit testing, comment out when using with the Servo Pi board
 
 #include <stdint.h>
 #include <stdio.h>
@@ -20,7 +21,13 @@ apt-get install libi2c-dev
 #include <linux/types.h>
 #include <linux/i2c-dev.h>
 #include <time.h>
+#include <vector>
 #include <unistd.h>
+
+#ifdef TESTMODE
+	#include "../UnitTest/testlibs.h"
+#endif
+
 #include "ABE_RTCPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
@@ -42,7 +49,6 @@ using namespace ABElectronics_CPP_Libraries;
 #define LO_NIBBLE(b) ((b) & 0x0F)
 
 RTCPi::RTCPi(){
-	rtcConfig = 0x03;
 	rtcCentury = 2000;
 }
 
@@ -56,10 +62,60 @@ private:
     int _fd;
 };
 
+uint8_t RTCPi::read_byte_data(uint8_t reg)
+{
+	/**
+	* private method for reading a byte from the I2C port
+	*/
+	#ifdef TESTMODE	
+        TestLibs test;	
+		readbuffer[0] = test.i2c_emulator_read_byte_data(reg);
+	#else
+
+	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
+	if (i2cbus < 0)
+	{
+		throw std::runtime_error("Failed to open i2c port for read");
+	}
+
+	if (ioctl(i2cbus, I2C_SLAVE, RTCADDRESS) < 0)
+	{
+		throw std::runtime_error("Failed to write to i2c port for read");
+	}
+
+	readbuffer[0] = reg;
+
+	if ((write(i2cbus, readbuffer, 1)) != 1)
+	{
+		throw std::runtime_error("Failed to write to i2c device for read");
+	}
+
+	if (read(i2cbus, readbuffer, 1) != 1)
+	{ // Read back data into buf[]
+		throw std::runtime_error("Failed to read from slave");
+	}
+
+	close(i2cbus);
+
+	#endif
+
+	return (readbuffer[0]);
+}
+
 void RTCPi::read_byte_array(uint8_t reg, uint8_t length) {
 	/*
 	internal method for reading data from the i2c bus
 	*/
+
+    #ifdef TESTMODE
+		TestLibs test;
+        if (length > 1){
+            for (uint8_t i = 0; i <= length; i++){
+                readbuffer[i] = test.i2c_emulator_read_byte_data(reg + i);
+            }
+        }		
+	#else
+
 	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
     if (i2cbus < 0)
 	{
@@ -81,12 +137,20 @@ void RTCPi::read_byte_array(uint8_t reg, uint8_t length) {
 	read(i2cbus, readbuffer, length);
 
 	close(i2cbus);
+
+    #endif
 }
 
 void RTCPi::write_byte_data(uint8_t reg, uint8_t value) {
 	/**
 	* private method for writing a byte to the I2C port
 	*/
+
+    #ifdef TESTMODE
+		TestLibs test;
+		test.i2c_emulator_write_byte_data(reg, value);
+	#else
+
     ScopedFileHandle i2cbus(open(fileName, O_RDWR));
     if (i2cbus < 0)
 	{
@@ -107,12 +171,24 @@ void RTCPi::write_byte_data(uint8_t reg, uint8_t value) {
 	}
 
 	close(i2cbus);
+
+    #endif
 }
 
 void RTCPi::write_byte_array(uint8_t buffer[], uint8_t length) {
 	/*
 	internal method for writing data to the i2c bus
 	*/
+
+    #ifdef TESTMODE
+		TestLibs test;
+        uint8_t address = buffer[0];
+        if (length > 1){
+            for (uint8_t i = 1; i <= length; i++){
+                test.i2c_emulator_write_byte_data(address + (i-1), buffer[i]);
+            }
+        }		
+	#else
 
 	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
     if (i2cbus < 0)
@@ -131,6 +207,8 @@ void RTCPi::write_byte_array(uint8_t buffer[], uint8_t length) {
 	}
 
 	close(i2cbus);
+
+    #endif
 }
 
 uint8_t RTCPi::bcd_to_dec(uint8_t bcd) {
@@ -202,18 +280,20 @@ void RTCPi::enable_output() {
 	/**
 	* Enable the squarewave output pin
 	*/
-	rtcConfig = updatebyte(rtcConfig, 7, 1);
-	rtcConfig = updatebyte(rtcConfig, 4, 1);
-	write_byte_data(CONTROL, rtcConfig);
+	uint8_t config = read_byte_data(CONTROL);
+	config = updatebyte(config, 7, 1);
+	config = updatebyte(config, 4, 1);
+	write_byte_data(CONTROL, config);
 }
 
 void RTCPi::disable_output() {
 	/**
 	* Disable the squarewave output pin
 	*/
-	rtcConfig = updatebyte(rtcConfig, 7, 0);
-	rtcConfig = updatebyte(rtcConfig, 4, 0);
-	write_byte_data(CONTROL, rtcConfig);
+    uint8_t config = read_byte_data(CONTROL);
+	config = updatebyte(config, 7, 0);
+	config = updatebyte(config, 4, 0);
+	write_byte_data(CONTROL, config);
 }
 
 void RTCPi::set_frequency(uint8_t frequency) {
@@ -221,33 +301,35 @@ void RTCPi::set_frequency(uint8_t frequency) {
 	* Set the squarewave output frequency
 	* @param - 1 = 1Hz, 2 = 4.096KHz, 3 = 8.192KHz, 4 = 32.768KHz
 	*/
+    uint8_t config = read_byte_data(CONTROL);
+
 	switch (frequency) {
 		case 1:
-			rtcConfig = updatebyte(rtcConfig, 0, 0);
-			rtcConfig = updatebyte(rtcConfig, 1, 0);
-			write_byte_data(CONTROL, rtcConfig);
+			config = updatebyte(config, 0, 0);
+			config = updatebyte(config, 1, 0);
+			write_byte_data(CONTROL, config);
 			break;
 		case 2:
-			rtcConfig = updatebyte(rtcConfig, 0, 1);
-			rtcConfig = updatebyte(rtcConfig, 1, 0);
-			write_byte_data(CONTROL, rtcConfig);
+			config = updatebyte(config, 0, 1);
+			config = updatebyte(config, 1, 0);
+			write_byte_data(CONTROL, config);
 			break;
 		case 3:
-			rtcConfig = updatebyte(rtcConfig, 0, 0);
-			rtcConfig = updatebyte(rtcConfig, 1, 1);
-			write_byte_data(CONTROL, rtcConfig);
+			config = updatebyte(config, 0, 0);
+			config = updatebyte(config, 1, 1);
+			write_byte_data(CONTROL, config);
 			break;
 		case 4:
-			rtcConfig = updatebyte(rtcConfig, 0, 1);
-			rtcConfig = updatebyte(rtcConfig, 1, 1);
-			write_byte_data(CONTROL, rtcConfig);
+			config = updatebyte(config, 0, 1);
+			config = updatebyte(config, 1, 1);
+			write_byte_data(CONTROL, config);
 			break;
 		default:
 			throw std::out_of_range("Error: set_frequency() - value must be between 1 and 4");
 	}
 }
 
-void RTCPi::write_memory(uint8_t address, uint8_t *valuearray) {
+void RTCPi::write_memory(uint8_t address, uint8_t *valuearray, uint8_t length) {
 	/**
 	* write to the memory on the ds1307
 	* the ds1307 contains 56 - Byte, battery - backed RAM with Unlimited Writes
@@ -256,9 +338,7 @@ void RTCPi::write_memory(uint8_t address, uint8_t *valuearray) {
 	*/
 
 	if (address >= 0x08 && address <= 0x3F) {
-		if (address + sizeof(valuearray) <= 0x3F) {
-
-			int length = sizeof(valuearray);
+		if (address <= (0x3F - (length - 1))) {
 			
 			uint8_t *writearray = (uint8_t*)malloc(length + 1);
 
@@ -275,7 +355,7 @@ void RTCPi::write_memory(uint8_t address, uint8_t *valuearray) {
 					writearray[a + 1] = valuearray[a];
 				}
 				
-				write_byte_array(writearray, (uint8_t)length + 1);
+				write_byte_array(writearray, length);
 				
 				free(writearray);
 			}
@@ -295,12 +375,16 @@ uint8_t *RTCPi::read_memory(uint8_t address, uint8_t length) {
 	* read from the memory on the ds1307
 	* the ds1307 contains 56-Byte, battery-backed RAM with Unlimited Writes
 	* @param address - 0x08 to 0x3F
-	* @param length - up to 32 bytes.  length can not exceed the avaiable address space.
+	* @param length - up to 56 bytes.  length can not exceed the avaiable address space.
 	* @returns - pointer to a byte array where the data will be saved
 	*/
 
+    if (length < 1 || length > 56){
+        throw std::runtime_error("length outside of range 1 to 56");
+    }
+
 	if (address >= 0x08 && address <= 0x3F) {
-		if (address <= (0x3F - length)) {
+		if (address <= (0x3F - (length - 1))) {
 
 			uint8_t *writearray = (uint8_t*)malloc(length);
 

@@ -1,7 +1,7 @@
 /*
 * demo-memory-int.cpp
 *
-*  Version 1.1 Updated 21/04/2020
+*  Version 1.2 Updated 02/10/2021
 *
 *      compile with "g++ ../ABE_RTCPi.cpp demo-memory-int.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-memory-int"
 *      run with "./demo-memory-int"
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
 		bytearray[a] = (inval >> a * 8) & 0xFF;
 	}
 
-	rtc.write_memory(0x08, bytearray); // write the byte array to the RTC SRAM
+	rtc.write_memory(0x08, bytearray, sizeof(inval)); // write the byte array to the RTC SRAM
 		
 	int outval = 0; // declare the output value
 

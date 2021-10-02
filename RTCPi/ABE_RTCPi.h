@@ -59,14 +59,15 @@ void set_frequency(uint8_t frequency);
 * the ds1307 contains 56 - Byte, battery - backed RAM with Unlimited Writes
 * @param address - 0x08 to 0x3F
 * @param valuearray - byte array containing data to be written to memory
+* @param length - up to 56 bytes.  length of byte array can not exceed the avaiable address space.
 */
-void write_memory(uint8_t address, uint8_t *valuearray);
+void write_memory(uint8_t address, uint8_t *valuearray, uint8_t length);
 
 /**
 * read from the memory on the ds1307
 * the ds1307 contains 56-Byte, battery-backed RAM with Unlimited Writes
 * @param address - 0x08 to 0x3F
-* @param length - up to 32 bytes.  length can not exceed the avaiable address space.
+* @param length - up to 56 bytes.  length can not exceed the avaiable address space.
 * @returns - pointer to a byte array where the data will be saved
 */
 uint8_t *read_memory(uint8_t address, uint8_t length);
@@ -74,7 +75,6 @@ uint8_t *read_memory(uint8_t address, uint8_t length);
 private:
 
 // Define local variables
-uint8_t rtcConfig;
 uint16_t rtcCentury;
 
 int i2cbus;
@@ -82,6 +82,7 @@ uint8_t buf[10];
 uint8_t writebuffer[60];
 uint8_t readbuffer[60];
 
+uint8_t read_byte_data(uint8_t reg);
 void read_byte_array(uint8_t reg, uint8_t length);
 void write_byte_data(uint8_t reg, uint8_t value);
 void write_byte_array(uint8_t buffer[], uint8_t length);

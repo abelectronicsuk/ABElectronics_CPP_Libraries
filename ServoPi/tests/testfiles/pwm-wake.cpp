@@ -11,7 +11,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <iostream>
-#include "../testlibs.h"
+#include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_ServoPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
@@ -22,17 +22,18 @@ void clearscreen() {
 }
 
 int main(int argc, char **argv) {
-	start_test("PWM class > wake()");
+    TestLibs test;
+	test.start_test("PWM class > wake()");
 
 	PWM pwm(0x40, true); // create PWM object
 
-	i2c_emulator_write_byte_data(PCA9685::Mode1, 0x10); // Enable sleep mode in MODE1 register
+	test.i2c_emulator_write_byte_data(test.PCA9685_Mode1, 0x10); // Enable sleep mode in MODE1 register
 
 	pwm.wake();
 
-	test_i2c_register(PCA9685::Mode1, 0x00); // MODE1 expected to be 0x00
+	test.test_i2c_register(test.PCA9685_Mode1, 0x00); // MODE1 expected to be 0x00
 	
-	test_outcome();
+	test.test_outcome();
 
 	(void)argc;
 	(void)argv;

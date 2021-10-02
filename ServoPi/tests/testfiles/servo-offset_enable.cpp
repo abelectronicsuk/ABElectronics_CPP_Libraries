@@ -11,7 +11,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <iostream>
-#include "../testlibs.h"
+#include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_ServoPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
@@ -24,7 +24,8 @@ void clearscreen() {
 
 
 int main(int argc, char **argv) {
-	start_test("Servo class > offset_enable()");
+    TestLibs test;
+	test.start_test("Servo class > offset_enable()");
 
 		Servo servo(0x40, 1, 2, false, true); // create Servo object
 
@@ -44,28 +45,28 @@ int main(int argc, char **argv) {
 
 	for (uint8_t c = 1; c < 17; c++){
 
-		lowbyte = i2c_emulator_read_byte_data(PCA9685::LED0_OFF_Low + 4 * (c - 1));
-		highbyte = i2c_emulator_read_byte_data(PCA9685::LED0_OFF_High + 4 * (c - 1));
+		lowbyte = test.i2c_emulator_read_byte_data(test.PCA9685_LED0_OFF_Low + 4 * (c - 1));
+		highbyte = test.i2c_emulator_read_byte_data(test.PCA9685_LED0_OFF_High + 4 * (c - 1));
 
 		off_value = (uint16_t)(lowbyte | highbyte << 8);
 
-		lowbyte = i2c_emulator_read_byte_data(PCA9685::LED0_ON_Low + 4 * (c - 1));
-		highbyte = i2c_emulator_read_byte_data(PCA9685::LED0_ON_High + 4 * (c - 1));
+		lowbyte = test.i2c_emulator_read_byte_data(test.PCA9685_LED0_ON_Low + 4 * (c - 1));
+		highbyte = test.i2c_emulator_read_byte_data(test.PCA9685_LED0_ON_High + 4 * (c - 1));
 
 		on_value = (uint16_t)(lowbyte | highbyte << 8);
 
 		// off_value expected to be 409, on_value expected to be 0
 
 		if (off_value != 409){
-			test_fail("off_value offset incorrect");
+			test.test_fail("off_value offset incorrect");
 		}
 
 		if (on_value != 0){
-			test_fail("on_value offset incorrect");
+			test.test_fail("on_value offset incorrect");
 		}
 	}
 
-	test_outcome();
+	test.test_outcome();
 
 	(void)argc;
 	(void)argv;

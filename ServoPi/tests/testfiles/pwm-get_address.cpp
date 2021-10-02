@@ -11,7 +11,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <iostream>
-#include "../testlibs.h"
+#include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_ServoPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
@@ -24,17 +24,18 @@ void clearscreen() {
 
 
 int main(int argc, char **argv) {
-	start_test("PWM class > get_address()");
+    TestLibs test;
+	test.start_test("PWM class > get_address()");
 
 	PWM pwm(0x40, true); // create PWM object
 
 	uint8_t a = pwm.get_address();
 
 	if (a != 0x40){ // I2C address should be 0x40
-		test_fail("Unexpected I2C address");
+		test.test_fail("Unexpected I2C address");
 	}
 	
-	test_outcome();
+	test.test_outcome();
 
 	(void)argc;
 	(void)argv;

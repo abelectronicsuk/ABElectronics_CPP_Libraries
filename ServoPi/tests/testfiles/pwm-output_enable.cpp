@@ -11,7 +11,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <iostream>
-#include "../testlibs.h"
+#include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_ServoPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
@@ -22,17 +22,18 @@ void clearscreen() {
 }
 
 int main(int argc, char **argv) {
-	start_test("PWM class > output_enable()");
+    TestLibs test;
+	test.start_test("PWM class > output_enable()");
 
 	PWM pwm(0x40, true); // create PWM object
 
-	digitalWrite(7, State::On); // ser the OE output to on
+	test.digitalWrite(7, test.State::On); // ser the OE output to on
 
 	pwm.output_enable();
 
-	test_gpio_state(7, State::Off); // test if the OE output has been set to off
+	test.test_gpio_state(7, test.State::Off); // test if the OE output has been set to off
 	
-	test_outcome();
+	test.test_outcome();
 
 	(void)argc;
 	(void)argv;

@@ -1,3 +1,12 @@
+#### 2021-10-02 Andrew Dorey
+
+* 1.1.4 IO Pi, RTC Pi and Servo Pi Updates
+Added unit tests to IO Pi and RTC classes.
+Changed IO Pi class to use enum for MCP23017 register addresses instead of defines.
+Changed Servo Pi class to use enum for PCA9685 register addresses instead of defines.
+Updated unit tests to use TestFile class in UnitTest folder.
+RTCPi class, added length parameter to write_memory function.
+
 #### 2021-06-18 Andrew Dorey
 
 * 1.1.3  Servo Pi Updates

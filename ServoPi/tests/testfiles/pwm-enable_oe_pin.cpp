@@ -11,7 +11,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <iostream>
-#include "../testlibs.h"
+#include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_ServoPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
@@ -24,15 +24,16 @@ void clearscreen() {
 
 
 int main(int argc, char **argv) {
-	start_test("PWM class > enable_oe_pin()");
+    TestLibs test;
+	test.start_test("PWM class > enable_oe_pin()");
 
 	PWM pwm(0x40, true); // create PWM object
 
 	pwm.enable_oe_pin();
 
-	test_gpio_direction(7, Direction::Output); // GPIO 7 expected to be an output
+	test.test_gpio_direction(7, test.Direction::Output); // GPIO 7 expected to be an output
 
-	test_outcome();
+	test.test_outcome();
 
 	(void)argc;
 	(void)argv;

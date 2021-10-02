@@ -29,7 +29,7 @@ apt-get install libi2c-dev wiringpi
 #include <iostream>
 
 #ifdef TESTMODE
-	#include "tests/testlibs.h"
+	#include "../UnitTest/testlibs.h"
 #else
 	#include <wiringPi.h>
 #endif
@@ -269,7 +269,12 @@ void PWM::output_disable()
 	* Disable the output via OE pin
 	*/
 	if (oe_pin_enabled) {
-		digitalWrite(ENABLE_PIN, 1);
+        #ifdef TESTMODE
+        TestLibs test;
+		test.digitalWrite(ENABLE_PIN, 1);
+        #else
+            digitalWrite(ENABLE_PIN, 1);
+        #endif
 	}
 	else{
 		throw std::runtime_error("output_disable: Attempted to set output state when OE pin is disabled.");
@@ -282,10 +287,15 @@ void PWM::output_enable()
 	* Enable the output via OE pin
 	*/
 	if (oe_pin_enabled) {
-		digitalWrite(ENABLE_PIN, 0);
+		#ifdef TESTMODE
+        TestLibs test;
+		test.digitalWrite(ENABLE_PIN, 0);
+        #else
+            digitalWrite(ENABLE_PIN, 0);
+        #endif
 	}
 	else{
-		throw std::runtime_error("output_enable: Attempted to set output state when OE pin is disabled.");
+		throw std::runtime_error("output_enable: Attempted to set output state when OE pin is enabled.");
 	}
 }
 
@@ -405,10 +415,18 @@ void PWM::enable_oe_pin(){
 	/**
 	* Enable the Output Enable Pin on the GPIO header
 	*/
-	if (wiringPiSetup() == -1)
-		throw std::runtime_error("Error setting up GPIO pin");
-	oe_pin_enabled = true;
-	pinMode(ENABLE_PIN, OUTPUT);
+    #ifdef TESTMODE
+        TestLibs test;
+        if (test.wiringPiSetup() == -1)
+            throw std::runtime_error("Error setting up GPIO pin");
+        oe_pin_enabled = true;
+        test.pinMode(ENABLE_PIN, test.Direction::Output);
+    #else
+        if (wiringPiSetup() == -1)
+		    throw std::runtime_error("Error setting up GPIO pin");
+        oe_pin_enabled = true;
+        pinMode(ENABLE_PIN, OUTPUT);
+    #endif
 }
 
 // private PWM methods
@@ -436,7 +454,8 @@ uint8_t PWM::read_byte_data(uint8_t reg)
 	*/
 
 	#ifdef TESTMODE		
-		buf[0] = i2c_emulator_read_byte_data(reg);
+        TestLibs test;		
+		buf[0] = test.i2c_emulator_read_byte_data(reg);
 	#else
 	
 	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
@@ -476,7 +495,8 @@ void PWM::write_byte_data(uint8_t reg, uint8_t value)
 	*/
 
 	#ifdef TESTMODE
-		i2c_emulator_write_byte_data(reg, value);
+		TestLibs test;
+		test.i2c_emulator_write_byte_data(reg, value);
 	#else
 	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
 	if (i2cbus < 0)
