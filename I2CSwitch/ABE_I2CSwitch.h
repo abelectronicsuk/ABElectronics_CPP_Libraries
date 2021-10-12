@@ -1,11 +1,12 @@
 /*
 ================================================
 ABElectronics UK I2C Switch
-Version 1.1 Updated 21/04/2020
 ================================================
 
-Required package{
-sudo apt-get install libi2c-dev
+I2C Switch class for the PCA9546A controller from NXP
+
+Required packages: i2c-dev and wiringPi
+apt-get install libi2c-dev wiringpi
 */
 
 #ifndef I2CSWITCH_ABE_I2CSWITCH_H_

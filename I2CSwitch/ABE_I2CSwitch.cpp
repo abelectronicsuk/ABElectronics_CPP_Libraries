@@ -1,15 +1,16 @@
 /*
 ================================================
 ABElectronics UK I2C Switch
-Version 1.1 Updated 21/04/2020
 ================================================
 
+I2C Switch class for the PCA9546A controller from NXP
 
- Required packages: i2c-dev and wiringPi
- apt-get install libi2c-dev wiringpi
- */
+Required packages: i2c-dev and wiringPi
+apt-get install libi2c-dev wiringpi
+*/
 
-//#include <stdint.h>
+//#define TESTMODE // used for unit testing, comment out when using with the I2C Switch board
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdexcept>
@@ -20,8 +21,13 @@ Version 1.1 Updated 21/04/2020
 #include <linux/types.h>
 #include <linux/i2c-dev.h>
 #include <time.h>
-#include <wiringPi.h>
 #include <unistd.h>
+
+#ifdef TESTMODE
+	#include "../UnitTest/testlibs.h"
+#else
+	#include <wiringPi.h>
+#endif
 
 #include "ABE_I2CSwitch.h"
 
@@ -60,12 +66,17 @@ I2CSwitch::I2CSwitch(uint8_t address)
 
 	//Enable GPIO Reset pin
 
+    #ifdef TESTMODE
+        TestLibs test;
+        test.digitalWrite (RESETPIN, 1);
+    #else
 	if (wiringPiSetup () == -1) throw std::runtime_error("reset: Failed to reset switch. GPIO error!");
 
 	pinMode (RESETPIN, OUTPUT) ;
 	
 	// set reset pin high
 	digitalWrite (RESETPIN, 1);
+    #endif
 }
 
 void I2CSwitch::switch_channel(uint8_t channel) {
@@ -119,7 +130,11 @@ void I2CSwitch::reset(){
 	*/
 
 	//Enable GPIO pins
-
+	#ifdef TESTMODE
+        TestLibs test;
+        test.digitalWrite (RESETPIN, 0);
+		test.digitalWrite (RESETPIN, 1);
+    #else
 	if (wiringPiSetup () == -1) throw std::runtime_error("reset: Failed to reset switch. GPIO error!");
 
 	pinMode (RESETPIN, OUTPUT) ;
@@ -131,6 +146,8 @@ void I2CSwitch::reset(){
 	usleep (1000);  
 
 	digitalWrite (RESETPIN, 1);
+
+	#endif
 
 	// wait 1ms for the switch to reset
 	usleep (1000);  
@@ -153,6 +170,11 @@ int I2CSwitch::read_byte_data()
 	/*
 	internal method for reading data from the i2c bus
 	*/
+	#ifdef TESTMODE		
+        TestLibs test;		
+		buf[0] = test.i2c_emulator_read_byte_data(0x00);
+	#else
+
 	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
     if (i2cbus < 0)
 	{
@@ -171,6 +193,8 @@ int I2CSwitch::read_byte_data()
 	
 	close(i2cbus);
 
+	#endif
+
 	return (buf[0]);
 }
 
@@ -179,6 +203,12 @@ void I2CSwitch::write_byte_data(uint8_t value)
 	/**
 	* private method for writing a byte to the I2C port
 	*/
+
+	#ifdef TESTMODE
+		TestLibs test;
+		test.i2c_emulator_write_byte_data(0x00, value);
+	#else
+
     ScopedFileHandle i2cbus(open(fileName, O_RDWR));
     if (i2cbus < 0)
 	{
@@ -198,6 +228,8 @@ void I2CSwitch::write_byte_data(uint8_t value)
 	}
 
 	close(i2cbus);
+
+	#endif
 }
 
 uint8_t I2CSwitch::updatebyte(uint8_t byte, uint8_t bit, uint8_t value) {

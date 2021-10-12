@@ -1,3 +1,7 @@
+#### 2021-10-12 Andrew Dorey
+
+* 1.1.5 Added unit tests to the I2C Switch library.
+
 #### 2021-10-02 Andrew Dorey
 
 * 1.1.4 IO Pi, RTC Pi and Servo Pi Updates
