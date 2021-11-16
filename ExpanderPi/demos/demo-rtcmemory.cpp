@@ -37,13 +37,13 @@ int main(int argc, char **argv) {
 		bytearray[a] = (inval >> a * 8) & 0xFF;
 	}
 
-	expi.rtc_write_memory(0x08, bytearray); // write the byte array to the RTC SRAM
+	expi.rtc_write_memory(0x08, bytearray, sizeof(inval)); // write the byte array to the RTC SRAM
 	
 	int outval = 0; // declare the output value
 
 	// read the RTC SRAM into a 4 byte array.  
 	// The array is allocated by the rtc_read_memory function, use a pointer to point to the memory location of this array.
-	unsigned char *readarray = expi.rtc_read_memory(0x08, (int)sizeof(inval));
+	unsigned char *readarray = expi.rtc_read_memory(0x08, sizeof(inval));
 
 	for (a = 0; a < (int)sizeof(outval); a++) { // convert the bytes from the readarray into a number
 		outval |= readarray[a] << (a * 8);

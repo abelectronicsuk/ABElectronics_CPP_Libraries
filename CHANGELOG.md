@@ -1,3 +1,11 @@
+#### 2021-11-16 Andrew Dorey
+
+* 1.1.6 Updates to Expander Pi library
+Updated Expander Pi IO and RTC methods to include the same functionality found in the IO Pi and RTC Pi libraries.
+Added documentation for the Expander Pi class and methods.
+Added unit tests for the Expander Pi.
+Updated Expander Pi demos.
+
 #### 2021-10-12 Andrew Dorey
 
 * 1.1.5 Added unit tests to the I2C Switch library.
