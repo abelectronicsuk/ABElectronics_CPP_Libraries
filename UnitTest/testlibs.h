@@ -45,6 +45,19 @@ public:
         MCP23017_OLATB = 0x15     // Output latches for port B
     };
 
+    // PCA9535 Register Addresses - used in the IO Zero 32 library
+    enum PCA9535
+    {
+		PCA9535_INPUTPORT0  = 0x00, // Command byte Input port 0
+		PCA9535_INPUTPORT1  = 0x01, // Command byte Input port 1
+		PCA9535_OUTPUTPORT0 = 0x02, // Command byte Output port 0
+		PCA9535_OUTPUTPORT1 = 0x03, // Command byte Output port 1
+		PCA9535_INVERTPORT0 = 0x04, // Command byte Polarity Inversion port 0
+		PCA9535_INVERTPORT1 = 0x05, // Command byte Polarity Inversion port 1
+		PCA9535_CONFIGPORT0 = 0x06, // Command byte Configuration port 0
+		PCA9535_CONFIGPORT1 = 0x07, // Command byte Configuration port 1
+    };
+
     // PCA9685 Register Addresses - used in the Servo Pi library
     enum PCA9685
     {

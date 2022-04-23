@@ -1,3 +1,7 @@
+#### 2022-04-23 Andrew Dorey
+
+* 1.1.7 Added new library for the IO Zero 32 expansion board.
+
 #### 2021-11-16 Andrew Dorey
 
 * 1.1.6 Updates to Expander Pi library
