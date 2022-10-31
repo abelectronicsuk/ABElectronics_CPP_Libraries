@@ -22,7 +22,8 @@ ExpanderPi(bool init)
 ```
 Initialise the Expander Pi Object  
 **Parameter:**  
-init *(bool optional)*: initialise the IO chip. Defaults to true.  
+init *(bool optional)*: initialise the IO chip. Defaults to true.
+usertc *(bool optional)*: initialise the RTC chip. Set to false when using the RTC with the linux ds1307 module  
 
 When the IO is initialised the pins will be set as inputs and non-inverted. Pull-ups resistors are disabled.
 

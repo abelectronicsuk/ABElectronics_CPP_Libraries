@@ -84,10 +84,11 @@ using namespace ABElectronics_CPP_Libraries;
 
 /*===============================Public Methods===============================*/
 
-ExpanderPi::ExpanderPi(bool init){ /* init = true */
+ExpanderPi::ExpanderPi(bool init, bool usertc){ /* init = true */
 	/**
 	* Initialise the Expander Pi Object
 	* @param init (optional) -  initialise the IO chip.
+	* @param usertc (optional) -  initialise the RTC chip. Set to false when using the RTC with the linux ds1307 module
 	* When the IO is initialised the pins will be set as inputs and non-inverted. Pull-ups resistors are disabled.
 	*/
 
@@ -106,7 +107,9 @@ ExpanderPi::ExpanderPi(bool init){ /* init = true */
 	rtcCentury = 2000;
 
 	/*initialise the DS1307 RTC chip with default values */
-	write_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL, (unsigned char)0x03);
+	if (usertc){
+		write_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL, (unsigned char)0x03);
+	}
 
 	/*initialise the MCP32017 IO chip with default values: ports are inputs, pull-up resistors are disabled and ports are not inverted */
 	write_byte_data(MCP23017::IOADDRESS, IOCON, (unsigned char)0x02);

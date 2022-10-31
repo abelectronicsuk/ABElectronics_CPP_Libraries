@@ -1,3 +1,7 @@
+#### 2022-10-31 Andrew Dorey
+
+* 1.1.8 Added usertc parameter to the Expander Pi library.
+
 #### 2022-04-23 Andrew Dorey
 
 * 1.1.7 Added new library for the IO Zero 32 expansion board.

@@ -22,9 +22,10 @@ public:
 /**
 * Initialise the Expander Pi Object
 * @param init (optional) -  initialise the IO chip.
+* @param usertc (optional) -  initialise the RTC chip. Set to false when using the RTC with the linux ds1307 module
 * When the IO is initialised the pins will be set as inputs and non-inverted. Pull-ups resistors are disabled.
 */
-ExpanderPi(bool init=true);
+ExpanderPi(bool init=true, bool usertc=true);
 
 /*=================== ADC Methods ===================*/
 
