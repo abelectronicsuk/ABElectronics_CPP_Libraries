@@ -3,8 +3,7 @@
  *
  *	Control a servo on channel 1 using the Servo class and change the position between three positions.
  *
- *	The Servo Pi library uses Wiring Pi library.  This is because the Servo Pi uses the GPIO port to control
- *	the Output Enable function.  
+ *	The Servo Pi library uses Wiring Pi library.  This is because the Servo Pi uses the GPIO port to control the Output Enable function.  
  *	
  *	If Wiring Pi is not installed you can install it using the command "sudo apt-get install wiringpi"
  *
@@ -35,7 +34,7 @@ int main(int argc, char **argv)
 	// initialise a servo object with an I2C address of 0x40 and the Output Enable pin enabled.
 	Servo servo(0x40, 1.0, 2.0, true);
 
-	//Set PWM frequency to 60 Hz and enable the output
+	//Set the PWM frequency to 60 Hz and enable the output
 	servo.set_frequency(60);
 	servo.output_enable();
 

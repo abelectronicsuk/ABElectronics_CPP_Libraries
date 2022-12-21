@@ -26,8 +26,8 @@ public:
         MCP23017_IODIRB = 0x01,   // IO direction B - 1= input 0 = output
         MCP23017_IPOLA = 0x02,    // Input polarity A
         MCP23017_IPOLB = 0x03,    // Input polarity B
-        MCP23017_GPINTENA = 0x04, // Controls the interrupt-onchange on port A
-        MCP23017_GPINTENB = 0x05, // Controls the interrupt-onchange on port B
+        MCP23017_GPINTENA = 0x04, // Controls the interrupt-on-change on port A
+        MCP23017_GPINTENB = 0x05, // Controls the interrupt-on-change on port B
         MCP23017_DEFVALA = 0x06,  // Default value for port A
         MCP23017_DEFVALB = 0x07,  // Default value for port B
         MCP23017_INTCONA = 0x08,  // Interrupt control register for port A

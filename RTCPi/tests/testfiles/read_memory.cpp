@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 	
     RTCPi rtc;  // new RTCPi object
     
-    // out of bounds tests
+    // out-of-bounds tests
 	try
 	{
 		rtc.read_memory(0x07, 1);
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 
     uint8_t *readarray = rtc.read_memory(0x08, size);
 
-	for (uint8_t a = 0; a < size; a++) { // convert the bytes from the readarray into a number
+	for (uint8_t a = 0; a < size; a++) { // convert the bytes from readarray into a number
 		if (readarray[a] != bytearray[a]){
             test.test_fail("failed to read memory");
             break;

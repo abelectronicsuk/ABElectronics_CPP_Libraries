@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 	
     RTCPi rtc;  // new RTCPi object
     
-    // out of bounds tests
+    // out-of-bounds tests
 	try
 	{
 		rtc.write_memory(0x07, {0}, 1);

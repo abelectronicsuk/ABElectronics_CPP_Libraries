@@ -7,7 +7,7 @@ The example CPP files can be found in /ABElectronics_CPP_Libraries/ADCDifferenti
 
 ### Downloading and Installing the library
 
-To download to your Raspberry Pi type in terminal: 
+To download to your Raspberry Pi type in the terminal: 
 
 ```
 git clone https://github.com/abelectronicsuk/ABElectronics_CPP_Libraries.git
@@ -48,7 +48,7 @@ ___
 ```
 set_bit_rate(uint8_t rate)
 ```
-Set the sample bit rate of the adc  
+Set the sample bit rate of the ADC  
 **Parameter:** rate -  12, 14, 16, 18  
 12 = 12 bit (240SPS max)  
 14 = 14 bit (60SPS max)  
@@ -60,6 +60,6 @@ ___
 ```
 set_conversion_mode(uint8_t mode)
 ```
-Set the conversion mode for the adc  
+Set the conversion mode for the ADC  
 **Parameter:** mode -  0 = One-shot conversion, 1 = Continuous conversion  
 **Returns:** null

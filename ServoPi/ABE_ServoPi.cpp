@@ -1,9 +1,8 @@
 /*
 ================================================
-ABElectronics UK Servo Pi 16-Channel PWM Servo Controller
+AB Electronics UK Servo Pi 16-Channel PWM Servo Controller
+See CHANGELOG.md for the version number.
 ================================================
-
-See CHANGELOG.md for version number.
 
 Note:  From version 1.1.3 the ServoPi class is called PWM.
 
@@ -37,7 +36,7 @@ apt-get install libi2c-dev wiringpi
 
 #define fileName "/dev/i2c-1"  // change to /dev/i2c-0 if you are using a revision 0002 or 0003 model B
 
-// Define registers values from datasheet
+// Define registers values from the datasheet
 #define MODE1 0x00
 #define MODE2 0x01
 #define SUBADR1 0x02
@@ -94,11 +93,11 @@ PWM::PWM(uint8_t address, bool use_oe_pin)
 
 	set_address(address);
 
-	// Update control regiters
+	// Update control registers
 	write_byte_data(MODE1, MODE1_DEFAULT);
 	write_byte_data(MODE2, MODE2_DEFAULT);
 
-	// set the gpio pin as an output for the Output Enable Pin if use_oe_pin = 1
+	// set the GPIO pin as an output for the Output Enable Pin if use_oe_pin = 1
 
 	if (use_oe_pin)
 	{
@@ -133,7 +132,7 @@ void PWM::set_pwm_freq(double freq, uint8_t calibration)
 void PWM::set_pwm(uint8_t channel, uint16_t on_time, uint16_t off_time)
 {
 	/**
-	* Set the output on single channel
+	* Set the output on a single channel
 	* @param channel - 1 to 16
 	* @param on_time - time period 0 to 4095
 	* @param off_time - time period 0 to 4095
@@ -266,7 +265,7 @@ void PWM::set_all_pwm(uint16_t on_time, uint16_t off_time)
 void PWM::output_disable()
 {
 	/**
-	* Disable the output via OE pin
+	* Disable the output via the OE pin
 	*/
 	if (oe_pin_enabled) {
         #ifdef TESTMODE
@@ -284,7 +283,7 @@ void PWM::output_disable()
 void PWM::output_enable()
 {
 	/**
-	* Enable the output via OE pin
+	* Enable the output via the OE pin
 	*/
 	if (oe_pin_enabled) {
 		#ifdef TESTMODE
@@ -429,9 +428,9 @@ void PWM::enable_oe_pin(){
     #endif
 }
 
-// private PWM methods
+// Private PWM methods
 
-// stops file handle leakage on exceptions
+// Stops file handle leakage on exceptions
 class ScopedFileHandle
 {
 public:
@@ -450,7 +449,7 @@ private:
 uint8_t PWM::read_byte_data(uint8_t reg)
 {
 	/*
-	internal method for reading data from the i2c bus
+	Private method for reading data from the i2c bus
 	*/
 
 	#ifdef TESTMODE		
@@ -491,7 +490,7 @@ uint8_t PWM::read_byte_data(uint8_t reg)
 void PWM::write_byte_data(uint8_t reg, uint8_t value)
 {
 	/**
-	* private method for writing a byte to the I2C port
+	* Private method for writing a byte to the I2C port
 	*/
 
 	#ifdef TESTMODE
@@ -560,7 +559,7 @@ Servo::Servo(uint8_t address, double low_limit, double high_limit, bool reset, b
         calculate_offsets(); // reset the offset values
 	}
     else{
-		// get the on and off times from the pwm controller
+		// get the on and off times from the PWM controller
 		for (uint8_t i = 0; i < 16; i++){
 			offset[i] = pwm.get_pwm_on_time(i + 1);
 			pos[i] = pwm.get_pwm_off_time(i + 1) - offset[i];
@@ -574,7 +573,7 @@ void Servo::move(uint8_t channel, uint16_t position, uint16_t steps)
 	* Set the servo position
 	* @param channel - 1 to 16
 	* @param position - value between 0 and the maximum number of steps.
-	* @param steps - The number of steps between the the low and high limits.
+	* @param steps - The number of steps between the low and high limits.
 	*                This can be any number between 1 and 4095.
 	*                On a typical RC servo a step value of 250 is recommended.
 	*                Defaults to 250
@@ -612,12 +611,12 @@ uint16_t Servo::get_position(uint8_t channel, uint16_t steps)
 	/**
 	* Get the servo position
 	* @param channel - 1 to 16
-	* @param steps - The number of steps between the the low and high limits.
+	* @param steps - The number of steps between the low and high limits.
 	*                This can be any number between 1 and 4095.
 	*                On a typical RC servo a step value of 250 is recommended.
 	*                Defaults to 250
 	* @return position - value between 0 and the maximum number of steps.
-	*         Due to rounding errors when calculating the position, the returned value may not be exactly the same as the set value.
+	*         Due to rounding errors when calculating the position, the returned value may not be the same as the set value.
 	*/
 	if (channel < 1 || channel > 16){
 			throw std::out_of_range("get_position: channel out of range");
@@ -639,8 +638,8 @@ uint16_t Servo::get_position(uint8_t channel, uint16_t steps)
 void Servo::set_low_limit(double low_limit, uint8_t channel)
 {
 	/**
-	* Set the pulse length for the lower servo limits. Typically around 1ms.
-	* Warning: Setting the pulse limit below 1ms may damage your servo.
+	* Set the pulse length for the lower servo limits. Typically around 1 ms.
+	* Warning: Setting the pulse limit below 1 ms may damage your servo.
 	* @param low_limit - Pulse length in milliseconds for the lower limit.
 	* @param channel - The channel for which the low limit will be set.
 	*                  If this value is omitted or set to 0 the low limit will be set for all channels., defaults to 0
@@ -714,7 +713,7 @@ void Servo::set_frequency(uint16_t freq, uint8_t calibration)
 void Servo::output_disable()
 {
 	/**
-	* Disable the output via OE pin
+	* Disable the output via the OE pin
 	*/
 	pwm.output_disable();
 }
@@ -722,7 +721,7 @@ void Servo::output_disable()
 void Servo::output_enable()
 {
 	/**
-	* Enable the output via OE pin
+	* Enable the output via the OE pin
 	*/
 	pwm.output_enable();
 	calculate_offsets();
@@ -732,7 +731,7 @@ void Servo::offset_enable()
 {
 	/**
 	* Enable pulse offsets.
-	* This will set servo pulses to be staggered across the channels to reduce surges in current draw
+	* This will set servo pulses to be staggered across the channels to reduce surges in the current draw
 	*/
 	use_offset = true;
 	calculate_offsets();
@@ -779,7 +778,7 @@ PWM Servo::pwm(0x40, false);
 void Servo::refresh_channels()
 {
 	/**
- 	* private method for refreshing the servo positions
+ 	* Private method for refreshing the servo positions
  	*/
  	for (uint8_t i = 0; i < 16; i++){
 		if (pos[i] == 0){
@@ -799,7 +798,7 @@ void Servo::refresh_channels()
 void Servo::calculate_offsets()
 {
 	/**
-	* private method for calculating the start positions to stagger the servo position pulses
+	* Private method for calculating the start positions to stagger the servo position pulses
  	*/
  	uint16_t x = 0;
     for (uint8_t i = 0; i < 16; i++){

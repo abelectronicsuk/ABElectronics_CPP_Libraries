@@ -1,17 +1,16 @@
 /*
  ================================================
- AB Electronics UK IO Zero 32 : 32-Channel Port Expander
- See CHANGELOG.md for version number
+ AB Electronics UK IO Zero 32: 32-Channel Port Expander
  ================================================
 
  32-Channel Port Expander based on the PCA9535.
- The PCA9535 chip is split into two 8-bit ports.  Port 0 controls
- pins 1 to 8 while Port 1 controls pins 9 to 16.
+ The PCA9535 chip is split into two 8-bit ports.  
+ Port 0 controls pins 1 to 8 while Port 1 controls pins 9 to 16.
  When writing to or reading from a bus or port the least significant bit
  represents the lowest numbered pin on the selected port.
 
 
- Required package{
+ Required package:
  apt-get install libi2c-dev
  */
 
@@ -52,7 +51,7 @@ IOZero32::IOZero32(uint8_t address)
 void IOZero32::set_pin_direction(uint8_t pin, uint8_t direction)
 {
 	/**
-	* set IO direction for an individual pin
+	* Set the IO direction for an individual pin
 	* @param pins - 1 to 16
 	* @param direction - 1 = input, 0 = output
 	*/
@@ -62,7 +61,7 @@ void IOZero32::set_pin_direction(uint8_t pin, uint8_t direction)
 uint8_t IOZero32::get_pin_direction(uint8_t pin)
 {
 	/**
-	* get IO direction for an individual pin
+	* Get the IO direction for an individual pin
 	* @param pins - 1 to 16
 	*/
 	return get_pin(pin, PCA9535::CONFIGPORT0, PCA9535::CONFIGPORT1);
@@ -71,7 +70,7 @@ uint8_t IOZero32::get_pin_direction(uint8_t pin)
 void IOZero32::set_port_direction(uint8_t port, uint8_t direction)
 {
 	/**
-	* set direction for an IO port
+	* Set the direction for an IO port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @param direction - 0 to 255 (0xFF).  For each bit 1 = input, 0 = output
 	*/
@@ -81,7 +80,7 @@ void IOZero32::set_port_direction(uint8_t port, uint8_t direction)
 uint8_t IOZero32::get_port_direction(uint8_t port)
 {
 	/**
-	* get direction for an IO port
+	* Get the direction for an IO port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	*/
 	return get_port(port, PCA9535::CONFIGPORT0, PCA9535::CONFIGPORT1);
@@ -90,7 +89,7 @@ uint8_t IOZero32::get_port_direction(uint8_t port)
 void IOZero32::set_bus_direction(uint16_t direction)
 {
 	/**
-	* set direction for the IO bus
+	* Set the direction for the IO bus
 	* @param direction - 0 to 65535 (0xFFFF).  For each bit 1 = input, 0 = output
 	*/
 	write_word_data(PCA9535::CONFIGPORT0, direction);
@@ -99,7 +98,7 @@ void IOZero32::set_bus_direction(uint16_t direction)
 uint16_t IOZero32::get_bus_direction()
 {
 	/**
-	* get direction for the IO bus
+	* Get the direction for the IO bus
 	*/
 	return read_word_data(PCA9535::CONFIGPORT0);
 }
@@ -107,7 +106,7 @@ uint16_t IOZero32::get_bus_direction()
 void IOZero32::write_pin(uint8_t pin, uint8_t value)
 {
 	/**
-	* write to an individual pin 1 - 16
+	* Write to an individual pin 1 - 16
 	* @param pin - 1 to 16
 	* @param value - 0 = logic low, 1 = logic high
 	*/
@@ -117,7 +116,7 @@ void IOZero32::write_pin(uint8_t pin, uint8_t value)
 void IOZero32::write_port(uint8_t port, uint8_t value)
 {
 	/**
-	* write to all pins on the selected port
+	* Write to all pins on the selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @param value - 0 to 255 (0xFF)
 	*/
@@ -127,7 +126,7 @@ void IOZero32::write_port(uint8_t port, uint8_t value)
 void IOZero32::write_bus(uint16_t value)
 {
 	/**
-	* write to all pins on the selected bus
+	* Write to all pins on the selected bus
 	* @param value - 0 to 65535 (0xFFFF). For each bit 1 = logic high, 0 = logic low
 	*/
 	write_word_data(PCA9535::OUTPUTPORT0, value);
@@ -136,7 +135,7 @@ void IOZero32::write_bus(uint16_t value)
 uint8_t IOZero32::read_pin(uint8_t pin)
 {
 	/**
-	* read the value of an individual pin
+	* Read the value of an individual pin
 	* @param pin - 1 to 16
 	* @returns - 0 = logic low, 1 = logic high
 	*/
@@ -147,7 +146,7 @@ uint8_t IOZero32::read_pin(uint8_t pin)
 uint8_t IOZero32::read_port(uint8_t port)
 {
 	/**
-	* read all pins on the selected port
+	* Read all pins on the selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @returns - 0 to 255 (0xFF). For each bit 1 = logic high, 0 = logic low
 	*/
@@ -157,7 +156,7 @@ uint8_t IOZero32::read_port(uint8_t port)
 uint16_t IOZero32::read_bus()
 {
 	/**
-	* read all pins on the selected bus
+	* Read all pins on the selected bus
 	* @returns - 0 to 65535 (0xFFFF). For each bit 1 = logic high, 0 = logic low
 	*/
 	return read_word_data(PCA9535::INPUTPORT0);
@@ -166,7 +165,7 @@ uint16_t IOZero32::read_bus()
 void IOZero32::set_pin_polarity(uint8_t pin, uint8_t polarity)
 {
 	/**
-	* set the polarity of the selected pin
+	* Set the polarity of the selected pin
 	* @param pin - 1 to 16
 	* @param polarity - 0 = non-inverted, 1 = inverted
 	*/
@@ -176,7 +175,7 @@ void IOZero32::set_pin_polarity(uint8_t pin, uint8_t polarity)
 uint8_t IOZero32::get_pin_polarity(uint8_t pin)
 {
 	/**
-  	* get the polarity of the selected pin
+  	* Get the polarity of the selected pin
   	* @param pin - 1 to 16
   	*/
   	return get_pin(pin, PCA9535::INVERTPORT0, PCA9535::INVERTPORT1);
@@ -185,7 +184,7 @@ uint8_t IOZero32::get_pin_polarity(uint8_t pin)
 void IOZero32::set_port_polarity(uint8_t port, uint8_t polarity)
 {
 	/**
-	* set the polarity of the pins on a selected port
+	* Set the polarity of the pins on a selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @param polarity - 0 to 255 (0xFF). For each bit 0 = non-inverted, 1 = inverted
 	*/
@@ -195,7 +194,7 @@ void IOZero32::set_port_polarity(uint8_t port, uint8_t polarity)
 uint8_t IOZero32::get_port_polarity(uint8_t port)
 {
 	/**
-  	* get the polarity of the selected pin
+  	* Get the polarity of the selected pin
   	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
   	*/
   	return get_port(port, PCA9535::INVERTPORT0, PCA9535::INVERTPORT1);
@@ -204,7 +203,7 @@ uint8_t IOZero32::get_port_polarity(uint8_t port)
 void IOZero32::set_bus_polarity(uint16_t polarity)
 {
 	/**
-	* set the polarity of the pins on a selected bus
+	* Set the polarity of the pins on a selected bus
 	* @param polarity - 0 to 65535 (0xFFFF). For each bit 0 = non-inverted, 1 = inverted
 	*/
 	write_word_data(PCA9535::INVERTPORT0, polarity);
@@ -213,12 +212,12 @@ void IOZero32::set_bus_polarity(uint16_t polarity)
  uint16_t IOZero32::get_bus_polarity()
  {
 	 /**
-  	* get the polarity of the bus
+  	* Get the polarity of the bus
   	*/
   	return read_word_data(PCA9535::INVERTPORT0);
  }
 
-// stops file handle leakage on exceptions
+// Stops file handle leakage on exceptions
 class ScopedFileHandle
 {
 public:
@@ -237,7 +236,7 @@ private:
 uint8_t IOZero32::read_byte_data(uint8_t reg)
 {
 	/**
-	* private method for reading a byte from the I2C port
+	* Private method for reading a byte from the I2C port
 	*/
 	#ifdef TESTMODE		
 		buf[0] = unittest.i2c_emulator_read_byte_data(reg);
@@ -276,7 +275,7 @@ uint8_t IOZero32::read_byte_data(uint8_t reg)
 uint16_t IOZero32::read_word_data(uint8_t reg)
 {
 	/**
-	* private method for reading a byte from the I2C port
+	* Private method for reading a byte from the I2C port
 	*/
 	#ifdef TESTMODE		
 		return (unittest.i2c_emulator_read_word_data(reg));
@@ -316,7 +315,7 @@ uint16_t IOZero32::read_word_data(uint8_t reg)
 void IOZero32::write_byte_data(uint8_t reg, uint8_t value)
 {
 	/**
-	* private method for writing a byte to the I2C port
+	* Private method for writing a byte to the I2C port
 	*/
 	#ifdef TESTMODE
 		unittest.i2c_emulator_write_byte_data(reg, value);
@@ -349,7 +348,7 @@ void IOZero32::write_byte_data(uint8_t reg, uint8_t value)
 void IOZero32::write_word_data(uint8_t reg, uint16_t value)
 {
 	/**
-	* private method for writing a byte to the I2C port
+	* Private method for writing a byte to the I2C port
 	*/
 	#ifdef TESTMODE
 		unittest.i2c_emulator_write_word_data(reg, value);
@@ -384,7 +383,7 @@ void IOZero32::write_word_data(uint8_t reg, uint16_t value)
 uint8_t IOZero32::updatebyte(uint8_t byte, uint8_t bit, uint8_t value)
 {
 	/**
-	* private method for updating a bit within a byte
+	* Private method for updating a bit within a byte
 	*/
 	if (value == 0)
 	{
@@ -399,7 +398,7 @@ uint8_t IOZero32::updatebyte(uint8_t byte, uint8_t bit, uint8_t value)
 uint8_t IOZero32::checkbit(uint8_t byte, uint8_t bit)
 {
 	/**
-	* private method for checking the status of a bit within a byte
+	* Private method for checking the status of a bit within a byte
 	*/
 	if (byte & (1 << bit))
 	{
@@ -414,7 +413,7 @@ uint8_t IOZero32::checkbit(uint8_t byte, uint8_t bit)
 void IOZero32::set_pin(uint8_t pin, uint8_t value, uint8_t a_register, uint8_t b_register)
 {
 	/**
-	* private method for setting the value of a single bit within the device registers
+	* Private method for setting the value of a single bit within the device registers
 	*/
 	uint8_t reg = 0;
 	uint8_t p = 0;
@@ -445,7 +444,7 @@ void IOZero32::set_pin(uint8_t pin, uint8_t value, uint8_t a_register, uint8_t b
 uint8_t IOZero32::get_pin(uint8_t pin, uint8_t a_register, uint8_t b_register)
 {
 	/**
-	* private method for getting the value of a single bit within the device registers
+	* Private method for getting the value of a single bit within the device registers
 	*/
 
 		uint8_t value = 0;
@@ -469,7 +468,7 @@ uint8_t IOZero32::get_pin(uint8_t pin, uint8_t a_register, uint8_t b_register)
 void IOZero32::set_port(uint8_t port, uint8_t value, uint8_t a_register, uint8_t b_register)
 {
 	/**
-	* private method for setting the value of a device register
+	* Private method for setting the value of a device register
 	*/
 	if (port == 0)
 	{
@@ -488,7 +487,7 @@ void IOZero32::set_port(uint8_t port, uint8_t value, uint8_t a_register, uint8_t
 uint8_t IOZero32::get_port(uint8_t port, uint8_t a_register, uint8_t b_register)
 {
 	/**
-	* private method for getting the value of a device register
+	* Private method for getting the value of a device register
 	*/
 	if (port == 0)
 	{
@@ -506,7 +505,7 @@ uint8_t IOZero32::get_port(uint8_t port, uint8_t a_register, uint8_t b_register)
 
 void IOZero32::set_bus(uint16_t value, uint8_t a_register){
 	/**
-	* private method for writing a 16-bit value to two consecutive device registers
+	* Private method for writing a 16-bit value to two consecutive device registers
 	*/
 	write_word_data(a_register, value);
 }

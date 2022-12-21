@@ -26,7 +26,7 @@ int main(int argc, char **argv){
 		bus1.set_port_direction(1, 0x00); // set the direction for bank 1 to be outputs
 		bus1.write_port(1, 0xFF);
 		while (1){
-			bus1.write_pin(1, 1); // turn pin 1 on and off at 1 second intervals
+			bus1.write_pin(1, 1); // turn pin 1 on and off at 1-second intervals
 			usleep(1000000);
 			bus1.write_pin(1, 0);
 			usleep(1000000);

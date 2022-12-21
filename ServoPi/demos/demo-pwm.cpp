@@ -3,8 +3,7 @@
  *
  *	Set the PWM output on channel 1 using the PWM class and change the pulse width between 0 and 4095
  *
- *	The ServoPi library uses Wiring Pi library.  This is because the Servo Pi uses the GPIO port to control
- *	the Output Enable function.  
+ *	The ServoPi library uses Wiring Pi library.  This is because the Servo Pi uses the GPIO port to control the Output Enable function.  
  *	
  *	If Wiring Pi is not installed you can install it using the command "sudo apt-get install wiringpi"
  *
@@ -43,11 +42,11 @@ int main(int argc, char **argv) {
 
 	while (1) {
 		for (x = 1; x <= 4095; x = x + 5) {
-			pwm.set_pwm(1, 0, x); // set the pwm width to x
+			pwm.set_pwm(1, 0, x); // set the PWM width to x
 		}
 
 		for (x = 4095; x >= 0; x = x - 5) {
-			pwm.set_pwm(1, 0, x); // set the pwm width to x
+			pwm.set_pwm(1, 0, x); // set the PWM width to x
 		}
 	}
 

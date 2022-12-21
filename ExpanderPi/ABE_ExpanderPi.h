@@ -1,6 +1,7 @@
 /*
 ================================================
 ABElectronics UK Expander Pi
+See CHANGELOG.md for the version number.
 ================================================
 
 Required package{
@@ -22,8 +23,8 @@ public:
 /**
 * Initialise the Expander Pi Object
 * @param init (optional) -  initialise the IO chip.
-* @param usertc (optional) -  initialise the RTC chip. Set to false when using the RTC with the linux ds1307 module
-* When the IO is initialised the pins will be set as inputs and non-inverted. Pull-ups resistors are disabled.
+* @param usertc (optional) -  initialise the RTC chip. Set to false when using the RTC with the Linux ds1307 module
+* When the IO is initialised the pins will be set as inputs and non-inverted. Pullups resistors are disabled.
 */
 ExpanderPi(bool init=true, bool usertc=true);
 
@@ -52,16 +53,16 @@ double adc_read_voltage(int channel, int mode);
 * Read the raw value from the ADC
 * @param channel -  1 to 8
 * @param mode -  0 = Single Ended or 1 = Differential
-* When in differential mode setting channel to 1 will make IN1 = IN+ and IN2 = IN-
-* When in differential mode setting channel to 2 will make IN1 = IN- and IN2 = IN+
-* @returns 12 bit value between 0 and 4096
+* When in differential mode setting the channel to 1 will make IN1 = IN+ and IN2 = IN-
+* When in differential mode setting the channel to 2 will make IN1 = IN- and IN2 = IN+
+* @returns 12-bit value between 0 and 4096
 */
 int adc_read_raw(int channel, int mode);
 
 /** 
-* Set the reference voltage for the adc
+* Set the reference voltage for the ADC
 * @param ref - Set this value to be the same as the voltage measured on the Vref pin on the Expander Pi
-* If using the on board voltage reference then the value will be 4.096
+* If using the onboard voltage reference then the value will be 4.096
 */
 void adc_set_refvoltage(double ref);
 
@@ -83,13 +84,13 @@ void dac_close();
 * Set the raw value from the selected channel on the DAC
 * @param raw - between 0 and 4095
 * @param channel - 1 or 2
-* @param gain - 1 or 2  - The output voltage will be between 0 and 2.048V when gain is set to 1,  0 and 4.096V when gain is set to 2
+* @param gain - 1 or 2  - The output voltage will be between 0 and 2.048V when the gain is set to 1,  0 and 4.096V when the gain is set to 2
 */
 void dac_set_raw(uint16_t raw, int channel, int gain);
 
 /** 
 * Set the DAC voltage
-* @param voltage - between 0 and 2.048 when gain is set to 1,  0 and 4.096 when gain is set to 2
+* @param voltage - between 0 and 2.048 when the gain is set to 1,  0 and 4.096 when the gain is set to 2
 * @param channel - 1 or 2
 * @param gain - 1 or 2
 */
@@ -99,51 +100,51 @@ void dac_set_voltage(double voltage, int channel, int gain);
 /*=================== IO Methods ===================*/
 
 /**
-* set IO direction for an individual pin
+* Set IO direction for an individual pin
 * @param pins - 1 to 16
 * @param direction - 1 = input, 0 = output
 */
 void io_set_pin_direction(uint8_t pin, uint8_t direction);
 
  /**
-* get IO direction for an individual pin
+* Get IO direction for an individual pin
 * @param pins - 1 to 16
 */
 uint8_t io_get_pin_direction(uint8_t pin);
 
 /**
-* set direction for an IO port
+* Set direction for an IO port
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 * @param direction - 0 to 255 (0xFF).  For each bit 1 = input, 0 = output
 */
 void io_set_port_direction(uint8_t port, uint8_t direction);
 
 /**
-* get direction for an IO port
+* Get the direction for an IO port
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 */
 uint8_t io_get_port_direction(uint8_t port);
 
 /**
-* set direction for the IO bus
+* Set direction for the IO bus
 * @param direction - 0 to 65535 (0xFFFF).  For each bit 1 = input, 0 = output
 */
 void io_set_bus_direction(uint16_t direction);
 
 /**
-* get direction for the IO bus
+* Get the direction for the IO bus
 */
 uint16_t io_get_bus_direction();
 
 /**
-* set the internal 100K pull-up resistors for an individual pin
+* Set the internal 100K pull-up resistors for an individual pin
 * @param pin - 1 to 16
 * @param value - 1 = enabled, 0 = disabled
 */
 void io_set_pin_pullup(uint8_t pin, uint8_t value);
 
 /**
-* get the internal 100K pull-up resistors for an individual pin
+* Get the internal 100K pull-up resistors for an individual pin
 * @param pin - 1 to 16
 */
 uint8_t io_get_pin_pullup(uint8_t pin);
@@ -156,7 +157,7 @@ uint8_t io_get_pin_pullup(uint8_t pin);
 void io_set_port_pullups(uint8_t port, uint8_t value);
 
 /**
-* get the internal 100K pull-up resistors for the selected IO port
+* Get the internal 100K pull-up resistors for the selected IO port
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 */
 uint8_t io_get_port_pullups(uint8_t port);
@@ -168,84 +169,84 @@ uint8_t io_get_port_pullups(uint8_t port);
 void io_set_bus_pullups(uint16_t value);
 
 /**
-* get internal 100K pull-up resistors for the IO bus
+* Get internal 100K pull-up resistors for the IO bus
 */
 uint16_t io_get_bus_pullups();
 
 /**
-* write to an individual pin 1 - 16
+* Write to an individual pin 1 - 16
 * @param pin - 1 to 16
 * @param value - 0 = logic low, 1 = logic high
 */
 void io_write_pin(uint8_t pin, uint8_t value);
 
 /**
-* write to all pins on the selected port
+* Write to all pins on the selected port
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 * @param value - 0 to 255 (0xFF)
 */
 void io_write_port(uint8_t port, uint8_t value);
 
 /**
-* write to all pins on the selected bus
+* Write to all pins on the selected bus
 * @param value - 0 to 65535 (0xFFFF). For each bit 1 = logic high, 0 = logic low
 */
 void io_write_bus(uint16_t value);
 
 /**
-* read the value of an individual pin
+* Read the value of an individual pin
 * @param pin - 1 to 16
 * @returns - 0 = logic low, 1 = logic high
 */
 uint8_t io_read_pin(uint8_t pin);
 
 /**
-* read all pins on the selected port
+* Read all pins on the selected port
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 * @returns - 0 to 255 (0xFF). For each bit 1 = logic high, 0 = logic low
 */
 uint8_t io_read_port(uint8_t port);
 
 /**
-* read all pins on the selected bus
+* Read all pins on the selected bus
 * @returns - 0 to 65535 (0xFFFF). For each bit 1 = logic high, 0 = logic low
 */
 uint16_t io_read_bus();
 
 /**
-* invert the polarity of the selected pin
+* Invert the polarity of the selected pin
 * @param pin - 1 to 16
 * @param polarity - 0 = non-inverted, 1 = inverted
 */
 void io_invert_pin(uint8_t pin, uint8_t polarity);
 
 /**
-* get the polarity of the selected pin
+* Get the polarity of the selected pin
 * @param pin - 1 to 16
 */
 uint8_t io_get_pin_polarity(uint8_t pin);
 
 /**
-* invert the polarity of the pins on a selected port
+* Invert the polarity of the pins on a selected port
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 * @param polarity - 0 to 255 (0xFF). For each bit 0 = non-inverted, 1 = inverted
 */
 void io_invert_port(uint8_t port, uint8_t polarity);
 
 /**
-* get the polarity of the selected pin
+* Get the polarity of the selected pin
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 */
 uint8_t io_get_port_polarity(uint8_t port);
 
 /**
-* invert the polarity of the pins on a selected bus
+* Invert the polarity of the pins on a selected bus
 * @param polarity - 0 to 65535 (0xFFFF). For each bit 0 = non-inverted, 1 = inverted
 */
 void io_invert_bus(uint16_t polarity);
 
 /**
-* get the polarity of the bus
+* Get the polarity of the bus
 */
 uint16_t io_get_bus_polarity();
 
@@ -281,7 +282,7 @@ uint8_t io_get_interrupt_type(uint8_t port);
 
 /**
 * These bits set the compare value for pins configured for interrupt-on-change on the selected port.
-* If the associated pin level is the opposite from the register bit, an interrupt occurs.
+* If the associated pin level is the opposite of the register bit, an interrupt occurs.
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 * @param value - default state for the port. 0 to 255 (0xFF).
 */
@@ -289,7 +290,7 @@ void io_set_interrupt_defaults(uint8_t port, uint8_t value);
 
 /**
 * Get the compare value for pins configured for interrupt-on-change on the selected port.
-* If the associated pin level is the opposite from the register bit, an interrupt occurs.
+* If the associated pin level is the opposite of the register bit, an interrupt occurs.
 * @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 */
 uint8_t io_get_interrupt_defaults(uint8_t port);
@@ -355,7 +356,7 @@ void io_reset_interrupts(void);
 
 /**
 * Set the date on the RTC
-* @param - date - struct tm formated date and time
+* @param - date - struct tm formatted date and time
 */
 void rtc_set_date(struct tm date);
 
@@ -384,10 +385,10 @@ void rtc_set_frequency(uint8_t frequency);
 
 /**
 * write to the memory on the ds1307
-* the ds1307 contains 56 - Byte, battery - backed RAM with Unlimited Writes
+* the ds1307 contains 56 - Byte, battery-backed RAM with Unlimited Writes
 * @param address - 0x08 to 0x3F
 * @param valuearray - byte array containing data to be written to memory
-* @param length - up to 56 bytes.  length of byte array can not exceed the avaiable address space.
+* @param length - up to 56 bytes.  length of the byte array can not exceed the available address space.
 */
 void rtc_write_memory(uint8_t address, uint8_t *valuearray, uint8_t length);
 
@@ -395,7 +396,7 @@ void rtc_write_memory(uint8_t address, uint8_t *valuearray, uint8_t length);
 * read from the memory on the ds1307
 * the ds1307 contains 56-Byte, battery-backed RAM with Unlimited Writes
 * @param address - 0x08 to 0x3F
-* @param length - up to 56 bytes.  length can not exceed the avaiable address space.
+* @param length - up to 56 bytes.  length can not exceed the available address space.
 * @returns - pointer to a byte array where the data will be saved
 */
 uint8_t *rtc_read_memory(uint8_t address, uint8_t length);
@@ -416,7 +417,7 @@ unsigned char readbuffer[60];
 /** ADC Variables */
 
 uint8_t adctx[3]; // transmit buffer for the ADC
-char adcrx[3]; // receive buffer for the adc;
+char adcrx[3]; // receive buffer for the ADC;
 int adc; // adc object
 double adcrefvoltage; // reference voltage for the ADC chip.
 
@@ -432,12 +433,12 @@ int rtcCentury;
 // Private Members
 
 /**
-* private method for converting bcd formatted numbers to decimal
+* private method for converting BCD formatted numbers to decimal
 */
 uint8_t bcd_to_dec(uint8_t bcd);
 
 /**
-* private method for converting decimal formatted numbers to bcd
+* private method for converting decimal formatted numbers to BCD
 */
 uint8_t dec_to_bcd(uint8_t dec);
 

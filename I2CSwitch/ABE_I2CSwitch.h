@@ -1,6 +1,7 @@
 /*
 ================================================
-ABElectronics UK I2C Switch
+AB Electronics UK I2C Switch
+See CHANGELOG.md for the version number.
 ================================================
 
 I2C Switch class for the PCA9546A controller from NXP

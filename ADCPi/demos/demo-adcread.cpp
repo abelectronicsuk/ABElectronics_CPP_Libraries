@@ -26,8 +26,8 @@ void clearscreen ()
 int main(int argc, char **argv){
 	setvbuf (stdout, NULL, _IONBF, 0); // needed to print to the command line
 
-	ADCPi adc(0x68, 0x69, 18);
-
+	ADCPi adc(0x68, 0x69, 12);
+	adc.set_pga(2);
 	adc.set_conversion_mode(0);
 
 	while (1){

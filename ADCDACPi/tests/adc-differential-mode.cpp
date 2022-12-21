@@ -10,11 +10,11 @@
  *  Voltage values should range from 0.0V to 3.299V
  *  Hex values should range from 0x000 to 0xfff
  * 
- *  To test apply a voltage on between ADC channels 1 and 2 from 0V to 3.3V.  
+ *  To test apply a voltage between ADC channels 1 and 2 from 0V to 3.3V.  
  *  Channel 1 should be the positive input.
  *  Channel 2 should be the negative input
  *  
- *  Console output when 1.5V is applied between channel 1 and 2 should be:
+ *  Console output when 1.5V is applied between channels 1 and 2 should be:
  * 
  *  Voltage: 1.50095
  *  Raw: 0x747
@@ -42,7 +42,7 @@ int main(int argc, char **argv){
 
 	ADCDACPi adcdac;
 
-	if (adcdac.open_adc() != 1){ // open the ADC spi channel
+	if (adcdac.open_adc() != 1){ // open the ADC SPI channel
 			return (1); // if the SPI bus fails to open exit the program
 	}
 

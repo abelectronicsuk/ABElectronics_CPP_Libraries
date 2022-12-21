@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
 
 	RTCPi rtc;
 	
-	struct tm datetime; // create a tm struct to store the date
+	struct tm datetime; // Create a tm struct to store the date
 
 	// set the date
 	datetime.tm_sec = 00; // seconds

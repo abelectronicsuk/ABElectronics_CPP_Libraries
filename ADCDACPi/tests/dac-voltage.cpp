@@ -8,15 +8,15 @@
  * 
  *  Tests the set_dac_voltage() function.
  * 
- *  This test outputs a rising voltage on DAC channel 1 and falling voltage on DAC channel 2
+ *  This test outputs a rising voltage on DAC channel 1 and a falling voltage on DAC channel 2.
  *  When displayed on an oscilloscope both channels should display opposing saw tooth waveforms.
  * 
  *  To test connect an oscilloscope to channels 1 and 2.  
  * 
  *  To test the DAC gain set the gain variable to 1 or 2.
  * 
- *  Voltages when the gain variable is set to 1 should range from 0V to 2.035V.
- *  Voltages when the gain variable is set to 2 should range from 0V to 3.299V.
+ *  Voltages when the gain variable is set to 1, should range from 0V to 2.035V.
+ *  Voltages when the gain variable is set to 2, should range from 0V to 3.299V.
  *   
  *  Console output:
  * 
@@ -47,7 +47,7 @@ int main(int argc, char **argv){
 
 	ADCDACPi adcdac;
 
-	if (adcdac.open_dac() != 1){ // open the DAC spi channel
+	if (adcdac.open_dac() != 1){ // open the DAC SPI channel
 			return (1); // if the SPI bus fails to open exit the program
 	}
     

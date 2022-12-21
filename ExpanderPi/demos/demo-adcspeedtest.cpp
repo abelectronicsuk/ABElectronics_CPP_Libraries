@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 	ExpanderPi expi;
 
 	if (expi.adc_open() != 1)
-	{				// open the DAC spi channel
+	{				// open the DAC SPI channel
 		return (1); // if the SPI bus fails to open exit the program
 	}
 
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 
 	for (x = 0; x < numberofsamples; x++)
 	{
-		samplearray[x] = expi.adc_read_voltage(1, 0); // read from adc channel 1
+		samplearray[x] = expi.adc_read_voltage(1, 0); // read from ADC channel 1
 	}
 
 	// stop timer

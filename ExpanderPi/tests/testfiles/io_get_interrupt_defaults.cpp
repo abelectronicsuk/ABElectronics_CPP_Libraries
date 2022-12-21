@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 
 	uint8_t x = 0;
 
-	// out of bounds tests
+	// out-of-bounds tests
 	try
 	{
 		bus.io_get_interrupt_defaults(2);

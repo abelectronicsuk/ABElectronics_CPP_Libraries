@@ -1,7 +1,7 @@
 /*
  ================================================
- ABElectronics UK ADC Differential Pi 8-Channel Analogue to Digital Converter
- Version 1.1 Updated 21/04/2020
+ AB Electronics UK ADC Differential Pi 8-Channel Analogue to Digital Converter
+ See CHANGELOG.md for the version number.
  ================================================
 
 Reads from the MCP3424 ADC on the ADC Differential Pi.
@@ -57,8 +57,8 @@ ADCDifferentialPi::ADCDifferentialPi(uint8_t address1, uint8_t address2, uint8_t
 	currentchannel2 = (uint8_t)1; // channel variable for adc2
 	bitrate = (uint8_t)18;		 // current bitrate
 	conversionmode = (uint8_t)1;  // Conversion Mode
-	pga = 0.5;			 // current pga setting
-	lsb = 0.000007812;   // default lsb value for 18 bit
+	pga = 0.5;			 // current PGA setting
+	lsb = 0.000007812;   // default LSB value for 18 bit
 
 	set_bit_rate(rate);
 }
@@ -145,7 +145,7 @@ uint32_t ADCDifferentialPi::read_raw(uint8_t channel)
 		x++;
 	} while (1);
 
-	// extract the returned bytes and combine in the correct order
+	// extract the returned bytes and combine them in the correct order
 	switch (bitrate)
 	{
 	case 18:

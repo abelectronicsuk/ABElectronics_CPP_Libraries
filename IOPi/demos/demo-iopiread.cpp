@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 		IoPi bus1(0x20);
 		IoPi bus2(0x21);
 
-		// initialise one of the io pi buses on i2c address  default address for bus 1
+		// initialise one of the IO Pi buses on the default I2C address for bus 1
 
 		bus1.set_port_direction(0, 0xFF); // set bank 0 to be inputs
 		bus1.set_port_direction(1, 0xFF); // set bank 1 to be inputs

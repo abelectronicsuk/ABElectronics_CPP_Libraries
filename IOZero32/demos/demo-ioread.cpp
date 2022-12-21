@@ -4,7 +4,7 @@
  *      compile with "g++ demo-ioread.cpp ../ABE_IOZero32.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-ioread"
  *      run with "./demo-ioread"
  * 
- *  This demo sets all pins on the IO Zero 32 to be inputs and reads from each pin individually.
+ *  This demo sets all pins on the IO Zero 32 as inputs and reads from each pin individually.
  * 
  *  Pull-up or pull-down resistors may be needed to keep the inputs from sitting in a floating state. 
  */
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 		IOZero32 bus1(0x20);
 		IOZero32 bus2(0x21);
 
-		// initialise one of the io pi buses on i2c address  default address for bus 1
+		// initialise one of the io pi buses on I2C address  default address for bus 1
 
 		bus1.set_port_direction(0, 0xFF); // set bank 0 to be inputs
 		bus1.set_port_direction(1, 0xFF); // set bank 1 to be inputs

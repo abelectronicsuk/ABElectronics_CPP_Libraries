@@ -1,7 +1,7 @@
 /*
 ================================================
-ABElectronics UK ADC-DAC Pi
-Version 1.1 Updated 21/04/2020
+AB Electronics UK ADC-DAC Pi
+See CHANGELOG.md for the version number.
 ================================================
 */
 
@@ -93,8 +93,8 @@ double ADCDACPi::read_adc_voltage(uint8_t channel, uint8_t mode) {
 	* Read the voltage from the ADC
 	* @param channel - 1 or 2
 	* @param mode - 0 = Single Ended or 1 = Differential
-	* When in differential mode setting channel to 1 will make IN1 = IN+ and IN2 = IN-
-	* When in differential mode setting channel to 2 will make IN1 = IN- and IN2 = IN+
+	* When in differential mode, setting the channel to 1 will make IN1 = IN+ and IN2 = IN-
+	* When in differential mode, setting the channel to 2 will make IN1 = IN- and IN2 = IN+
 	* @returns between 0V and the reference voltage
 	*/
 
@@ -107,9 +107,9 @@ uint16_t ADCDACPi::read_adc_raw(uint8_t channel, uint8_t mode) {
 	* Read the raw value from the ADC
 	* @param channel -  1 to 8
 	* @param mode -  0 = Single Ended or 1 = Differential
-	* When in differential mode setting channel to 1 will make IN1 = IN+ and IN2 = IN-
-	* When in differential mode setting channel to 2 will make IN1 = IN- and IN2 = IN+
-	* @returns 12 bit value between 0 and 4096
+	* When in differential mode, setting the channel to 1 will make IN1 = IN+ and IN2 = IN-
+	* When in differential mode, setting the channel to 2 will make IN1 = IN- and IN2 = IN+
+	* @returns 12-bit value between 0 and 4096
 	*/
 
 	if (channel == 1) {
@@ -152,7 +152,7 @@ uint16_t ADCDACPi::read_adc_raw(uint8_t channel, uint8_t mode) {
 
 void ADCDACPi::set_adc_refvoltage(double ref) {
 	/**
-	* Set the reference voltage for the adc
+	* Set the reference voltage for the ADC.
 	* @param ref - Set this value to be the same as the voltage measured on the 3.3V GPIO pin
 	*/
 	adcrefvoltage = ref;
@@ -160,8 +160,8 @@ void ADCDACPi::set_adc_refvoltage(double ref) {
 
 void ADCDACPi::set_dac_voltage(double voltage, uint8_t channel) {
 	/**
-	* Set the DAC voltage
-	* @param voltage - between 0 and 2.048 when gain is set to 1,  0 and 3.3 when gain is set to 2
+	* Set the DAC voltage.
+	* @param voltage - between 0 and 2.048 when the gain is set to 1,  0 and 3.3 when the gain is set to 2
 	* @param channel - 1 or 2
 	*/
 	if (channel < 1 && channel > 2) {
@@ -178,7 +178,7 @@ void ADCDACPi::set_dac_voltage(double voltage, uint8_t channel) {
 
 void ADCDACPi::set_dac_raw(uint16_t raw, uint8_t channel) {
 	/**
-	* Set the raw value from the selected channel on the DAC
+	* Set the raw value from the selected channel on the DAC.
 	* @param raw - between 0 and 4095
 	* @param channel - 1 or 2
 	*/
@@ -205,15 +205,15 @@ void ADCDACPi::set_dac_raw(uint16_t raw, uint8_t channel) {
 	tr.cs_change = 0;
 
 	// Write data
-	if (ioctl(dac, SPI_IOC_MESSAGE(1), &tr) == -1) throw std::runtime_error("error setting dac raw value");;
+	if (ioctl(dac, SPI_IOC_MESSAGE(1), &tr) == -1) throw std::runtime_error("error setting the dac raw value");;
 	return;
 
 }
 
 void ADCDACPi::set_dac_gain(uint8_t gain) {
 	/**
-	* Set the DAC gain
-	* @param gain - 1 or 2 - The output voltage will be between 0 and 2.048V when gain is set to 1,  0 and 3.3V when gain is set to 2
+	* Set the DAC gain.
+	* @param gain - 1 or 2 - The output voltage will be between 0 and 2.048V when the gain is set to 1,  0 and 3.3V when the gain is set to 2
 	*/
 	if (gain == 1) {
 		dacgain = 1;

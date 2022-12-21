@@ -7,7 +7,7 @@ The example C++ files can be found in /ABElectronics_CPP_Libraries/ServoPi/demos
 
 ### Downloading and Installing the library
 
-To download to your Raspberry Pi type in terminal: 
+To download to your Raspberry Pi type in the terminal: 
 
 ```
 git clone https://github.com/abelectronicsuk/ABElectronics_CPP_Libraries.git
@@ -19,7 +19,7 @@ Classes:
 ```
 PWM(uint8_t address, uint8_t use_oe_pin)
 ```
-The PWM class provides control over the pulse-width modution outputs on the PCA9685 controller.  Methods include setting the frequency and duty cycle for each channel.  
+The PWM class provides control over the pulse-width modulation outputs on the PCA9685 controller.  Methods include setting the frequency and duty cycle for each channel.  
 
 **Note:** The PWM class was previously called ServoPi.
 
@@ -47,7 +47,7 @@ Set the output for single channels
 **Parameter:** channel - 1 to 16  
 **Parameter:** on - time period 0 to 4095  
 **Parameter:** off - time period 0 to 4095.  
-Total on time and off time can not exceed 4095  
+Total on-time and off-time can not exceed 4095  
 **Returns:** null  
 
 ---  
@@ -96,7 +96,7 @@ set_all_pwm(uint16_t on, uint16_t off)
 Set the output on all channels  
 **Parameter:** on - time period  
 **Parameter:** off - time period 0 to 4095.  
-Total on time and off time can not exceed 4095  
+Total on-time and off-time can not exceed 4095  
 **Returns:** null  
 
 ---  
@@ -104,7 +104,7 @@ Total on time and off time can not exceed 4095
 ```
 output_disable()
 ```
-Disable the output via OE pin  
+Disable the output via the OE pin  
 **Parameter:** null  
 **Returns:** null  
 
@@ -113,7 +113,7 @@ Disable the output via OE pin
 ```
 output_enable()
 ```
-Enable the output via OE pin  
+Enable the output via the OE pin  
 **Parameter:** null  
 **Returns:** null  
 
@@ -220,9 +220,9 @@ Initialise with the I2C address for the Servo Pi.
 Servo(uint8_t address, double low_limit, double high_limit, bool reset, bool use_oe_pin)
 ```
 **Parameter:** address - i2c address for the ServoPi board, defaults to 0x40  
-**Optional Parameter:** low_limit - Pulse length in milliseconds for the lower  servo limit. (default = 1.0ms)  
+**Optional Parameter:** low_limit - Pulse length in milliseconds for the lower servo limit. (default = 1.0ms)  
 **Optional Parameter:** high_limit - Pulse length in milliseconds for the upper servo limit. (default = 2.0ms)  
-**Optional Parameter:** reset - true: reset the servo controller and turn off all channels .  false: initialise with existing servo positions and frequency. (default = true)  
+**Optional Parameter:** reset - true: reset the servo controller and turn off all channels.  false: initialise with existing servo positions and frequency. (default = true)  
 **Optional Parameter:** use_oe_pin - true = Enable the Output Enable pin on the GPIO port. false = Output Enable pin not used. Defaults to true.
 
 Methods:
@@ -234,7 +234,7 @@ move(channel, position, steps=250)
 Set the servo position  
 **Parameter:**  channel - 1 to 16  
 **Parameter:**  position - value between 0 and the maximum number of steps.  
-**Optional Parameter:** steps - The number of steps between the the low and high servo limits.  This is preset at 250 but can be any number between 0 and 4095.  On a typical RC servo a step value of 250 is recommended.  
+**Optional Parameter:** steps - The number of steps between the low and high servo limits.  This is preset at 250 but can be any number between 0 and 4095.  On a typical RC servo a step value of 250 is recommended.  
 **Returns:** null  
 
 ---  
@@ -244,16 +244,16 @@ get_position(channel, steps=250)
 ```
 Get the servo position  
 **Parameter:** channel - 1 to 16  
-**Optional Parameter:** steps - The number of steps between the the low and high servo limits.  This is preset at 250 but can be any number between 0 and 4095.  On a typical RC servo a step value of 250 is recommended.  
-**Returns:** (uint16_t) position - value between 0 and the maximum number of steps. Due to rounding errors when calculating the position, the returned value may not be exactly the same as the set value. 
+**Optional Parameter:** steps - The number of steps between the low and high servo limits.  This is preset at 250 but can be any number between 0 and 4095.  On a typical RC servo, a step value of 250 is recommended.  
+**Returns:** (uint16_t) position - value between 0 and the maximum number of steps. Due to rounding errors when calculating the position, the returned value may not be the same as the set value. 
 
 ---  
 
 ```
 set_low_limit(low_limit, channel)
 ```
-Set the pulse length for the lower servo limits.  Typically around 1ms.  
-Warning: Setting the pulse limit below 1ms may damage your servo.  
+Set the pulse length for the lower servo limits.  Typically around 1 ms.  
+Warning: Setting the pulse limit below 1 ms may damage your servo.  
 **Parameter:** low_limit - Pulse length in milliseconds for the lower servo limit.  
 **Optional Parameter:** channel - The channel for which the low limit will be set.  If this value is omitted or set to 0 the low limit will be set for all channels.  
 **Returns:** null  
@@ -285,7 +285,7 @@ Set the PWM frequency
 ```
 output_disable()
 ```
-Disable the output via OE pin  
+Disable the output via the OE pin  
 **Parameter:** null  
 **Returns:** null  
 
@@ -294,7 +294,7 @@ Disable the output via OE pin
 ```
 output_enable()
 ```
-Enable the output via OE pin  
+Enable the output via the OE pin  
 **Parameter:** null  
 **Returns:** null  
 
@@ -304,7 +304,7 @@ Enable the output via OE pin
 offset_enable()
 ```
 Enable pulse offsets.  
-This will set servo pulses to be staggered across the channels to reduce surges in current draw.  
+This will set servo pulses to be staggered across the channels to reduce surges in the current draw.  
 **Parameter:** null  
 **Returns:** null  
 
@@ -354,16 +354,16 @@ To use the Servo Pi PWM class in your code you must first import the class:
 ```
 from ServoPi import PWM
 ```
-Next you must initialise the PWM object:
+Next, you must initialise the PWM object:
 ```
 pwm = PWM(0x40)
 ```
-Set PWM frequency to 200 Hz and enable the output
+Set the PWM frequency to 200 Hz and enable the output
 ```
 pwm.set_pwm_freq(200)  
 pwm.output_enable()  
 ```
-Set the pulse with of channel 1 to 1024 or 25% duty cycle
+Set the pulse width of channel 1 to 1024 or 25% duty cycle
 ```
 pwm.set_pwm(1, 0, 1024) 
 ```
@@ -374,7 +374,7 @@ To use the Servo Pi Servo class in your code you must first import the class:
 ```
 from ServoPi import Servo
 ```
-Next you must initialise the Servo object:
+Next, you must initialise the Servo object:
 ```
 servo = Servo(0x40)
 ```

@@ -4,7 +4,7 @@
  *  Version 1.1 Updated 21/04/2020
  *
  *  	This demonstration uses an array of data points to draw a tree on an oscilloscope.
- *      The oscilloscope will need to be set into x-y mode with probes on channels 1 and 2 to display the picture.
+ *      The oscilloscope will need to be set to x-y mode with probes on channels 1 and 2 to display the picture.
  *
  *      compile with "g++ demo-drawtree.cpp ../ABE_ADCDACPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-drawtree"
  *      run with "./demo-drawtree"
@@ -38,11 +38,11 @@ int main(int argc, char **argv){
 
 	ADCDACPi adcdac;
 
-	if (adcdac.open_dac() != 1){ // open the DAC spi channel
+	if (adcdac.open_dac() != 1){ // open the DAC SPI channel
 		return(1); // if the SPI bus fails to open exit the program
 	}
 
-	adcdac.set_dac_gain(1); // set the dac gain to 1 which will give a voltage range of 0 to 2.048V
+	adcdac.set_dac_gain(1); // set the DAC gain to 1 which will give a voltage range of 0 to 2.048V
 
 	arraysize = sizeof(xpoints) / sizeof(uint16_t);
 

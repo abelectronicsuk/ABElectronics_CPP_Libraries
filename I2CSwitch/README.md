@@ -7,7 +7,7 @@ The example C++ files can be found in /ABElectronics_CPP_Libraries/I2CSwitch/dem
 
 ### Downloading and Installing the library
 
-To download to your Raspberry Pi type in terminal: 
+To download to your Raspberry Pi type in the terminal: 
 
 ```
 git clone https://github.com/abelectronicsuk/ABElectronics_CPP_Libraries.git
@@ -53,5 +53,5 @@ ___
 ```
 reset() 
 ```
-Reset the PCA9546A I2C switch.  Resetting allows the PCA9546A to recover from a situation in which one of the downstream I2C buses is stuck in a low state.  All channels will be set to an off state.  
+Reset the PCA9546A I2C switch.  Resetting allows the PCA9546A to recover from a situation in which one of the downstream I2C buses is stuck in a low state.  All channels will be set to an off-state.  
 **Returns:** null  

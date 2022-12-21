@@ -1,3 +1,7 @@
+#### 2022-12-21 Andrew Dorey
+
+* 1.1.9 Fixed spelling and grammar in README files and comments.
+
 #### 2022-10-31 Andrew Dorey
 
 * 1.1.8 Added usertc parameter to the Expander Pi library.

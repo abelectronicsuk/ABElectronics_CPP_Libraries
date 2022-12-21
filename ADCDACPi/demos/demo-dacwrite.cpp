@@ -28,18 +28,18 @@ int main(int argc, char **argv){
 
 	ADCDACPi adcdac;
 
-	if (adcdac.open_dac() != 1){ // open the DAC spi channel
+	if (adcdac.open_dac() != 1){ // open the DAC SPI channel
 		return(1); // if the SPI bus fails to open exit the program
 	}
 
-	adcdac.set_dac_gain(2); // set the dac gain to 2 which will give a voltage range of 0 to 3.3V
+	adcdac.set_dac_gain(2); // set the DAC gain to 2 which will give a voltage range of 0 to 3.3V
 
 	adcdac.set_dac_voltage(1.2, 1); // set the voltage on channel 1 to 1.2V
 	adcdac.set_dac_voltage(3.1, 2); // set the voltage on channel 2 to 3.1V
 
 	adcdac.close_dac();
 
-	printf("dac values written\n");
+	printf("DAC values written\n");
 
 	(void)argc;
 	(void)argv;

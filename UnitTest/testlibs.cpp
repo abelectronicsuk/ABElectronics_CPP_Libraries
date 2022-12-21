@@ -105,8 +105,8 @@ void TestLibs::test_gpio_direction(uint8_t gpio, uint8_t value){
 }
 
 void TestLibs::test_exception_failed(std::string message){
-    // This function is called inside a try catch if an exception failed to be called.
-    cout << "Execption Handling on " << message << " : FAILED" << endl; 
+    // This function is called inside a try/catch if an exception failed to be called.
+    cout << "Exception Handling on " << message << " : FAILED" << endl; 
     failcount += 1;
 }
 
@@ -133,7 +133,7 @@ bool TestLibs::test_get_bit(uint8_t byte, uint8_t bit)
 
 bool TestLibs::test_get_bit(uint16_t byte, uint8_t bit)
 {
-	// checking the status of a bit within an 16-bit variable
+	// checking the status of a bit within a 16-bit variable
 	if (byte & (1 << bit)) return (true);
 	else return (false);
 }

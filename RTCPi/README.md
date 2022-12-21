@@ -7,7 +7,7 @@ The example C++ files can be found in /ABElectronics_CPP_Libraries/RTCPi/demos
 
 ### Downloading and Installing the library
 
-To download to your Raspberry Pi type in terminal: 
+To download to your Raspberry Pi type in the terminal:  
 
 ```
 git clone https://github.com/abelectronicsuk/ABElectronics_CPP_Libraries.git
@@ -19,7 +19,7 @@ Clases:
 ```
 RTCPi(date) 
 ```
-RTC class for accessing the DS1307 real time clock.  
+RTC class for accessing the DS1307 real-time clock.  
 
 
 Methods:
@@ -29,7 +29,7 @@ Methods:
 set_date(struct tm date) 
 ```
 Set the date and time on the RTC   
-**Parameter:** date - struct tm formated date and time  
+**Parameter:** date - struct tm formatted date and time  
 **Returns:** null
 ___
 ```

@@ -19,7 +19,7 @@
  *  Raw Pin 1: 0x747
  *  Raw Pin 2: 0x7
  * 
- *  Note: if one if the channels is left floating it will show a low voltage just above 0V 
+ *  Note: if one of the channels is left floating it will show a low voltage just above 0V 
  *        from background noise being picked up by the ADC pin.
  */
 
@@ -44,16 +44,16 @@ int main(int argc, char **argv){
 
 	ADCDACPi adcdac;
 
-	if (adcdac.open_adc() != 1){ // open the ADC spi channel
+	if (adcdac.open_adc() != 1){ // open the ADC SPI channel
 			return (1); // if the SPI bus fails to open exit the program
 	}
 
 	while (1){
 		
-		printf("Voltage Pin 1: %G \n", adcdac.read_adc_voltage(1, 0)); // read the voltage from channel 1 in single ended mode
-		printf("Voltage Pin 2: %G \n", adcdac.read_adc_voltage(2, 0)); // read the voltage from channel 2 in single ended mode
-        printf("Raw Pin 1: 0x%x \n", adcdac.read_adc_raw(1, 0)); // read the raw value from channel 1 in single ended mode
-		printf("Raw Pin 2: 0x%x \n", adcdac.read_adc_raw(2, 0)); // read the raw value from channel 2 in single ended mode
+		printf("Voltage Pin 1: %G \n", adcdac.read_adc_voltage(1, 0)); // read the voltage from channel 1 in single-ended mode
+		printf("Voltage Pin 2: %G \n", adcdac.read_adc_voltage(2, 0)); // read the voltage from channel 2 in single-ended mode
+        printf("Raw Pin 1: 0x%x \n", adcdac.read_adc_raw(1, 0)); // read the raw value from channel 1 in single-ended mode
+		printf("Raw Pin 2: 0x%x \n", adcdac.read_adc_raw(2, 0)); // read the raw value from channel 2 in single-ended mode
 		usleep(200000); // sleep 0.2 seconds
 
 	}

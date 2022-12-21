@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 	{
 		ExpanderPi expi;
 
-		// initialise one of the io pi buses on i2c address  default address for bus 1
+		// initialise one of the io pi buses on I2C address  default address for bus 1
 
 		expi.io_set_port_direction(0, 0xFF); // set bank 0 to be inputs
 		expi.io_set_port_direction(1, 0xFF); // set bank 1 to be inputs

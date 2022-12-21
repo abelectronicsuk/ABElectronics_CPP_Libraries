@@ -1,9 +1,8 @@
 /*
 ================================================
-ABElectronics UK Servo Pi 16-Channel PWM Servo Controller
+AB Electronics UK Servo Pi 16-Channel PWM Servo Controller
+See CHANGELOG.md for the version number.
 ================================================
-
-See CHANGELOG.md for version number.
 
 Note:  From version 1.1.3 the ServoPi class is called PWM.
 
@@ -163,13 +162,13 @@ void enable_oe_pin();
 
 private:
 
-// private variables
+// Private variables
 int i2cbus; // I2C bus 
 uint8_t i2caddress; // I2C address
 uint8_t buf[10];
 bool oe_pin_enabled = false;
 
-// private methods
+// Private methods
 uint8_t read_byte_data(uint8_t reg);
 void write_byte_data(uint8_t reg, uint8_t value);
 };
@@ -200,7 +199,7 @@ Servo(uint8_t address=0x40, double low_limit=1.0, double high_limit=2.0, bool re
 * Set the servo position
 * @param channel - 1 to 16
 * @param position - value between 0 and the maximum number of steps.
-* @param steps - The number of steps between the the low and high limits.
+* @param steps - The number of steps between the low and high limits.
 *                This can be any number between 0 and 4095.
 *                On a typical RC servo a step value of 250 is recommended.
 *                Defaults to 250
@@ -211,19 +210,19 @@ void move(uint8_t channel, uint16_t position, uint16_t steps=250);
 /**
 * Get the servo position
 * @param channel - 1 to 16
-* @param steps - The number of steps between the the low and high limits.
+* @param steps - The number of steps between the low and high limits.
 *                This can be any number between 0 and 4095.
 *                On a typical RC servo a step value of 250 is recommended.
 *                Defaults to 250
 * @return position - value between 0 and the maximum number of steps.
-*         Due to rounding errors when calculating the position, the returned value may not be exactly the same as the set value.
+*         Due to rounding errors when calculating the position, the returned value may not be the same as the set value.
 */
 uint16_t get_position(uint8_t channel, uint16_t steps=250);
 
 
 /**
-* Set the pulse length for the lower servo limits. Typically around 1ms.
-* Warning: Setting the pulse limit below 1ms may damage your servo.
+* Set the pulse length for the lower servo limits. Typically around 1 ms.
+* Warning: Setting the pulse limit below 1 ms may damage your servo.
 * @param low_limit - Pulse length in milliseconds for the lower limit.
 * @param channel - The channel for which the low limit will be set.
 *                  If this value is omitted or set to 0 the low limit will be set for all channels., defaults to 0
@@ -250,20 +249,20 @@ void set_frequency(uint16_t freq, uint8_t calibration=0);
 
 
 /**
-* Disable the output via OE pin
+* Disable the output via the OE pin
 */
 void output_disable();
 
 
 /**
-* Enable the output via OE pin
+* Enable the output via the OE pin
 */
 void output_enable();
 
 
 /**
 * Enable pulse offsets.
-* This will set servo pulses to be staggered across the channels to reduce surges in current draw
+* This will set servo pulses to be staggered across the channels to reduce surges in the current draw
 */
 void offset_enable();
 
@@ -296,7 +295,7 @@ bool is_sleeping();
 
 private:
 
-// private variables
+// Private variables
 std::vector <uint16_t> pos {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 std::vector <uint16_t> lowpos {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 std::vector <uint16_t> highpos {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -304,16 +303,16 @@ std::vector <uint16_t> offset {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 uint16_t frequency = 50;
 bool use_offset = false;
 
-// private methods
+// Private methods
 static PWM pwm;
 
 /**
- * private method for refreshing the servo positions
+ * Private method for refreshing the servo positions
  */
 void refresh_channels(); 
 
 /**
- * private method for calculating the start positions to stagger the servo position pulses
+ * Private method for calculating the start positions to stagger the servo position pulses
  */
 void calculate_offsets();
 };

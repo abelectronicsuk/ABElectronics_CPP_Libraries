@@ -7,7 +7,7 @@ The example demo files can be found in /ABElectronics_CPP_Libraries/IOZero32/dem
 
 ### Downloading and Installing the library
 
-To download to your Raspberry Pi type in terminal: 
+To download to your Raspberry Pi type in the terminal: 
 
 ```
 git clone https://github.com/abelectronicsuk/ABElectronics_CPP_Libraries.git
@@ -19,7 +19,7 @@ Classes:
 IOZero32(address)
 ```
 **Parameters:**  
-address: i2c address for the target device. 0x20 to 0x27  
+address: I2C address for the target device. 0x20 to 0x27  
 
 
 Methods:

@@ -1,8 +1,8 @@
 /*
 ================================================
-ABElectronics UK Expander Pi
+AB Electronics UK Expander Pi
+See CHANGELOG.md for the version number.
 ================================================
-
 
 Required package{
 apt-get install libi2c-dev
@@ -47,8 +47,8 @@ enum MCP23017
     IODIRB = 0x01,   /* IO direction B - 1= input 0 = output */
     IPOLA = 0x02,    /* Input polarity A */
     IPOLB = 0x03,    /* Input polarity B */
-    GPINTENA = 0x04, /* Controls the interrupt-onchange on port A */
-    GPINTENB = 0x05, /* Controls the interrupt-onchange on port B */
+    GPINTENA = 0x04, /* Controls the interrupt-on-change on port A */
+    GPINTENB = 0x05, /* Controls the interrupt-on-change on port B */
     DEFVALA = 0x06,  /* Default value for port A */
     DEFVALB = 0x07,  /* Default value for port B */
     INTCONA = 0x08,  /* Interrupt control register for port A */
@@ -88,8 +88,8 @@ ExpanderPi::ExpanderPi(bool init, bool usertc){ /* init = true */
 	/**
 	* Initialise the Expander Pi Object
 	* @param init (optional) -  initialise the IO chip.
-	* @param usertc (optional) -  initialise the RTC chip. Set to false when using the RTC with the linux ds1307 module
-	* When the IO is initialised the pins will be set as inputs and non-inverted. Pull-ups resistors are disabled.
+	* @param usertc (optional) -  initialise the RTC chip. Set to false when using the RTC with the Linux ds1307 module
+	* When the IO is initialised the pins will be set as inputs and non-inverted. Pullups resistors are disabled.
 	*/
 
 	/* SPI Bus Variables */
@@ -168,9 +168,9 @@ int ExpanderPi::adc_read_raw(int channel, int mode) {
 	* Read the raw value from the ADC
 	* @param channel -  1 to 8
 	* @param mode -  0 = Single Ended or 1 = Differential
-	* When in differential mode setting channel to 1 will make IN1 = IN+ and IN2 = IN-
-	* When in differential mode setting channel to 2 will make IN1 = IN- and IN2 = IN+
-	* @returns 12 bit value between 0 and 4096
+	* When in differential mode setting the channel to 1 will make IN1 = IN+ and IN2 = IN-
+	* When in differential mode setting the channel to 2 will make IN1 = IN- and IN2 = IN+
+	* @returns 12-bit value between 0 and 4096
 	*/
 
 	channel = channel - 1;
@@ -207,9 +207,9 @@ int ExpanderPi::adc_read_raw(int channel, int mode) {
 
 void ExpanderPi::adc_set_refvoltage(double ref) {
 	/**
-	* Set the reference voltage for the adc
+	* Set the reference voltage for the ADC
 	* @param ref - Set this value to be the same as the voltage measured on the Vref pin on the Expander Pi
-	* If using the on board voltage reference then the value will be 4.096
+	* If using the onboard voltage reference then the value will be 4.096
 	*/
 	adcrefvoltage = ref;
 }
@@ -249,7 +249,7 @@ void ExpanderPi::dac_set_raw(uint16_t raw, int channel, int gain) {
 	* Set the raw value from the selected channel on the DAC
 	* @param raw - between 0 and 4095
 	* @param channel - 1 or 2
-	* @param gain - 1 or 2  - The output voltage will be between 0 and 2.048V when gain is set to 1,  0 and 4.096V when gain is set to 2
+	* @param gain - 1 or 2  - The output voltage will be between 0 and 2.048V when the gain is set to 1,  0 and 4.096V when the gain is set to 2
 	*/
 
 	uint8_t dactx[2];
@@ -288,7 +288,7 @@ void ExpanderPi::dac_set_raw(uint16_t raw, int channel, int gain) {
 void ExpanderPi::dac_set_voltage(double voltage, int channel, int gain) {
 	/**
 	* Set the DAC voltage
-	* @param voltage - between 0 and 2.047 when gain is set to 1,  0 and 4.096 when gain is set to 2
+	* @param voltage - between 0 and 2.047 when the gain is set to 1,  0 and 4.096 when the gain is set to 2
 	* @param channel - 1 or 2
 	* @param gain - 1 or 2
 	*/
@@ -315,7 +315,7 @@ void ExpanderPi::dac_set_voltage(double voltage, int channel, int gain) {
 void ExpanderPi::io_set_pin_direction(uint8_t pin, uint8_t direction)
 {
 	/**
-	* set IO direction for an individual pin
+	* Set IO direction for an individual pin
 	* @param pins - 1 to 16
 	* @param direction - 1 = input, 0 = output
 	*/
@@ -325,7 +325,7 @@ void ExpanderPi::io_set_pin_direction(uint8_t pin, uint8_t direction)
 uint8_t ExpanderPi::io_get_pin_direction(uint8_t pin)
 {
 	/**
-	* get IO direction for an individual pin
+	* Get IO direction for an individual pin
 	* @param pins - 1 to 16
 	*/
 	return get_pin(pin, MCP23017::IODIRA, MCP23017::IODIRB);
@@ -334,7 +334,7 @@ uint8_t ExpanderPi::io_get_pin_direction(uint8_t pin)
 void ExpanderPi::io_set_port_direction(uint8_t port, uint8_t direction)
 {
 	/**
-	* set direction for an IO port
+	* Set direction for an IO port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @param direction - 0 to 255 (0xFF).  For each bit 1 = input, 0 = output
 	*/
@@ -344,7 +344,7 @@ void ExpanderPi::io_set_port_direction(uint8_t port, uint8_t direction)
 uint8_t ExpanderPi::io_get_port_direction(uint8_t port)
 {
 	/**
-	* get direction for an IO port
+	* Get the direction for an IO port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	*/
 	return get_port(port, MCP23017::IODIRA, MCP23017::IODIRB);
@@ -353,7 +353,7 @@ uint8_t ExpanderPi::io_get_port_direction(uint8_t port)
 void ExpanderPi::io_set_bus_direction(uint16_t direction)
 {
 	/**
-	* set direction for the IO bus
+	* set the direction for the IO bus
 	* @param direction - 0 to 65535 (0xFFFF).  For each bit 1 = input, 0 = output
 	*/
 	write_word_data(MCP23017::IOADDRESS, MCP23017::IODIRA, direction);
@@ -362,7 +362,7 @@ void ExpanderPi::io_set_bus_direction(uint16_t direction)
 uint16_t ExpanderPi::io_get_bus_direction()
 {
 	/**
-	* get direction for the IO bus
+	* Get the direction for the IO bus
 	*/
 	return read_word_data(MCP23017::IOADDRESS, MCP23017::IODIRA);
 }
@@ -380,7 +380,7 @@ void ExpanderPi::io_set_pin_pullup(uint8_t pin, uint8_t value)
 uint8_t ExpanderPi::io_get_pin_pullup(uint8_t pin)
 {
 	/**
-	* get the internal 100K pull-up resistors for an individual pin
+	* Get the internal 100K pull-up resistors for an individual pin
 	* @param pin - 1 to 16
 	*/
 
@@ -390,7 +390,7 @@ uint8_t ExpanderPi::io_get_pin_pullup(uint8_t pin)
 void ExpanderPi::io_set_port_pullups(uint8_t port, uint8_t value)
 {
 	/**
-	* set the internal 100K pull-up resistors for the selected IO port
+	* Set the internal 100K pull-up resistors for the selected IO port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @param value - 0 to 255 (0xFF). For each bit 1 = enabled, 0 = disabled
 	*/
@@ -400,7 +400,7 @@ void ExpanderPi::io_set_port_pullups(uint8_t port, uint8_t value)
 uint8_t ExpanderPi::io_get_port_pullups(uint8_t port)
 {
 	/**
-	* get the internal 100K pull-up resistors for the selected IO port
+	* Get the internal 100K pull-up resistors for the selected IO port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	*/
 	return get_port(port, MCP23017::GPPUA, MCP23017::GPPUB);
@@ -409,7 +409,7 @@ uint8_t ExpanderPi::io_get_port_pullups(uint8_t port)
 void ExpanderPi::io_set_bus_pullups(uint16_t value)
 {
 	/**
-	* set internal 100K pull-up resistors for the IO bus
+	* Set internal 100K pull-up resistors for the IO bus
 	* @param value - 0 to 65535 (0xFFFF).  For each bit 1 = enabled, 0 = disabled
 	*/
 	write_word_data(MCP23017::IOADDRESS, MCP23017::GPPUA, value);
@@ -418,7 +418,7 @@ void ExpanderPi::io_set_bus_pullups(uint16_t value)
 uint16_t ExpanderPi::io_get_bus_pullups()
 {
 	/**
-	* get internal 100K pull-up resistors for the IO bus
+	* Get internal 100K pull-up resistors for the IO bus
 	*/
 	return read_word_data(MCP23017::IOADDRESS, MCP23017::GPPUA);
 }
@@ -426,7 +426,7 @@ uint16_t ExpanderPi::io_get_bus_pullups()
 void ExpanderPi::io_write_pin(uint8_t pin, uint8_t value)
 {
 	/**
-	* write to an individual pin 1 - 16
+	* Write to an individual pin 1 - 16
 	* @param pin - 1 to 16
 	* @param value - 0 = logic low, 1 = logic high
 	*/
@@ -436,7 +436,7 @@ void ExpanderPi::io_write_pin(uint8_t pin, uint8_t value)
 void ExpanderPi::io_write_port(uint8_t port, uint8_t value)
 {
 	/**
-	* write to all pins on the selected port
+	* Write to all pins on the selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @param value - 0 to 255 (0xFF)
 	*/
@@ -446,7 +446,7 @@ void ExpanderPi::io_write_port(uint8_t port, uint8_t value)
 void ExpanderPi::io_write_bus(uint16_t value)
 {
 	/**
-	* write to all pins on the selected bus
+	* Write to all pins on the selected bus
 	* @param value - 0 to 65535 (0xFFFF). For each bit 1 = logic high, 0 = logic low
 	*/
 	write_word_data(MCP23017::IOADDRESS, MCP23017::GPIOA, value);
@@ -455,7 +455,7 @@ void ExpanderPi::io_write_bus(uint16_t value)
 uint8_t ExpanderPi::io_read_pin(uint8_t pin)
 {
 	/**
-	* read the value of an individual pin
+	* Read the value of an individual pin
 	* @param pin - 1 to 16
 	* @returns - 0 = logic low, 1 = logic high
 	*/
@@ -466,7 +466,7 @@ uint8_t ExpanderPi::io_read_pin(uint8_t pin)
 uint8_t ExpanderPi::io_read_port(uint8_t port)
 {
 	/**
-	* read all pins on the selected port
+	* Read all pins on the selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @returns - 0 to 255 (0xFF). For each bit 1 = logic high, 0 = logic low
 	*/
@@ -476,7 +476,7 @@ uint8_t ExpanderPi::io_read_port(uint8_t port)
 uint16_t ExpanderPi::io_read_bus()
 {
 	/**
-	* read all pins on the selected bus
+	* Read all pins on the selected bus
 	* @returns - 0 to 65535 (0xFFFF). For each bit 1 = logic high, 0 = logic low
 	*/
 	return read_word_data(MCP23017::IOADDRESS, MCP23017::GPIOA);
@@ -485,7 +485,7 @@ uint16_t ExpanderPi::io_read_bus()
 void ExpanderPi::io_invert_pin(uint8_t pin, uint8_t polarity)
 {
 	/**
-	* invert the polarity of the selected pin
+	* Invert the polarity of the selected pin
 	* @param pin - 1 to 16
 	* @param polarity - 0 = non-inverted, 1 = inverted
 	*/
@@ -495,7 +495,7 @@ void ExpanderPi::io_invert_pin(uint8_t pin, uint8_t polarity)
 uint8_t ExpanderPi::io_get_pin_polarity(uint8_t pin)
 {
 	/**
-  	* get the polarity of the selected pin
+  	* Get the polarity of the selected pin
   	* @param pin - 1 to 16
   	*/
   	return get_pin(pin, MCP23017::IPOLA, MCP23017::IPOLB);
@@ -504,7 +504,7 @@ uint8_t ExpanderPi::io_get_pin_polarity(uint8_t pin)
 void ExpanderPi::io_invert_port(uint8_t port, uint8_t polarity)
 {
 	/**
-	* invert the polarity of the pins on a selected port
+	* Invert the polarity of the pins on a selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @param polarity - 0 to 255 (0xFF). For each bit 0 = non-inverted, 1 = inverted
 	*/
@@ -514,7 +514,7 @@ void ExpanderPi::io_invert_port(uint8_t port, uint8_t polarity)
 uint8_t ExpanderPi::io_get_port_polarity(uint8_t port)
 {
 	/**
-  	* get the polarity of the selected pin
+  	* Get the polarity of the selected pin
   	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
   	*/
   	return get_port(port, MCP23017::IPOLA, MCP23017::IPOLB);
@@ -523,7 +523,7 @@ uint8_t ExpanderPi::io_get_port_polarity(uint8_t port)
 void ExpanderPi::io_invert_bus(uint16_t polarity)
 {
 	/**
-	* invert the polarity of the pins on a selected bus
+	* Invert the polarity of the pins on a selected bus
 	* @param polarity - 0 to 65535 (0xFFFF). For each bit 0 = non-inverted, 1 = inverted
 	*/
 	write_word_data(MCP23017::IOADDRESS, MCP23017::IPOLA, polarity);
@@ -532,7 +532,7 @@ void ExpanderPi::io_invert_bus(uint16_t polarity)
  uint16_t ExpanderPi::io_get_bus_polarity()
  {
 	 /**
-  	* get the polarity of the bus
+  	* Get the polarity of the bus
   	*/
   	return read_word_data(MCP23017::IOADDRESS, MCP23017::IPOLA);
  }
@@ -616,7 +616,7 @@ void ExpanderPi::io_set_interrupt_defaults(uint8_t port, uint8_t value)
 {
 	/**
 	* These bits set the compare value for pins configured for interrupt-on-change on the selected port.
-	* If the associated pin level is the opposite from the register bit, an interrupt occurs.
+	* If the associated pin level is the opposite of the register bit, an interrupt occurs.
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @param value - default state for the port. 0 to 255 (0xFF).
 	*/
@@ -627,7 +627,7 @@ uint8_t ExpanderPi::io_get_interrupt_defaults(uint8_t port)
 {
 	/**
   	* Get the compare value for pins configured for interrupt-on-change on the selected port.
-  	* If the associated pin level is the opposite from the register bit, an interrupt occurs.
+  	* If the associated pin level is the opposite of the register bit, an interrupt occurs.
   	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
   	*/
   	return get_port(port, MCP23017::DEFVALA, MCP23017::DEFVALB);
@@ -814,7 +814,7 @@ void ExpanderPi::rtc_set_frequency(unsigned char frequency) {
 void ExpanderPi::rtc_write_memory(uint8_t address, uint8_t *valuearray, uint8_t length) {
 	/**
 	* write to the memory on the ds1307
-	* the ds1307 contains 56 - Byte, battery - backed RAM with Unlimited Writes
+	* the ds1307 contains 56 - Byte, battery-backed RAM with Unlimited Writes
 	* @param address - 0x08 to 0x3F
 	* @param valuearray - byte array containing data to be written to memory
 	*/
@@ -857,7 +857,7 @@ uint8_t *ExpanderPi::rtc_read_memory(uint8_t address, uint8_t length) {
 	* read from the memory on the ds1307
 	* the ds1307 contains 56-Byte, battery-backed RAM with Unlimited Writes
 	* @param address - 0x08 to 0x3F
-	* @param length - up to 56 bytes.  length can not exceed the avaiable address space.
+	* @param length - up to 56 bytes. length can not exceed the available address space.
 	* @returns - pointer to a byte array where the data will be saved
 	*/
 

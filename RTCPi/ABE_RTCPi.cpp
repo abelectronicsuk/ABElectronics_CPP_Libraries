@@ -1,14 +1,14 @@
 /*
 ================================================
-ABElectronics UK RTC Pi real-time clock
-See CHANGELOG.md for version number.
+AB Electronics UK RTC Pi real-time clock
+See CHANGELOG.md for the version number.
 ================================================
 
-Required package{
+Required package:
 apt-get install libi2c-dev
 */
 
-//#define TESTMODE // used for unit testing, comment out when using with the Servo Pi board
+//#define TESTMODE // used for unit testing, comment out when using with the RTC Pi board
 
 #include <stdint.h>
 #include <stdio.h>
@@ -34,7 +34,7 @@ using namespace ABElectronics_CPP_Libraries;
 
 #define fileName "/dev/i2c-1" // change to /dev/i2c-0 if you are using a Raspberry Pi revision 0002 or 0003 model B
 
-// Define registers values from datasheet
+// Define registers values from the datasheet
 #define RTCADDRESS 0x68
 #define SECONDS 0x00
 #define MINUTES 0x01
@@ -52,7 +52,7 @@ RTCPi::RTCPi(){
 	rtcCentury = 2000;
 }
 
-// stops file handle leakage on exceptions
+// Stops file handle leakage on exceptions
 class ScopedFileHandle{
 public:
     ScopedFileHandle(int fd) :_fd(fd){}
@@ -65,7 +65,7 @@ private:
 uint8_t RTCPi::read_byte_data(uint8_t reg)
 {
 	/**
-	* private method for reading a byte from the I2C port
+	* Private method for reading a byte from the I2C port
 	*/
 	#ifdef TESTMODE	
         TestLibs test;	
@@ -104,7 +104,7 @@ uint8_t RTCPi::read_byte_data(uint8_t reg)
 
 void RTCPi::read_byte_array(uint8_t reg, uint8_t length) {
 	/*
-	internal method for reading data from the i2c bus
+	* Private method for reading data from the i2c bus
 	*/
 
     #ifdef TESTMODE
@@ -143,7 +143,7 @@ void RTCPi::read_byte_array(uint8_t reg, uint8_t length) {
 
 void RTCPi::write_byte_data(uint8_t reg, uint8_t value) {
 	/**
-	* private method for writing a byte to the I2C port
+	* Private method for writing a byte to the I2C port
 	*/
 
     #ifdef TESTMODE
@@ -177,7 +177,7 @@ void RTCPi::write_byte_data(uint8_t reg, uint8_t value) {
 
 void RTCPi::write_byte_array(uint8_t buffer[], uint8_t length) {
 	/*
-	internal method for writing data to the i2c bus
+	* Private method for writing data to the i2c bus
 	*/
 
     #ifdef TESTMODE
@@ -213,7 +213,7 @@ void RTCPi::write_byte_array(uint8_t buffer[], uint8_t length) {
 
 uint8_t RTCPi::bcd_to_dec(uint8_t bcd) {
 	/*
-	internal method for converting a bcd formatted number to decimal
+	* Private method for converting a BCD formatted number to decimal
 	*/
 
 	return (uint8_t)((HI_NIBBLE(bcd) * 10) + (LO_NIBBLE(bcd)));
@@ -221,14 +221,14 @@ uint8_t RTCPi::bcd_to_dec(uint8_t bcd) {
 
 uint8_t RTCPi::dec_to_bcd(uint8_t dec) {
 	/*
-	internal method for converting a decimal formatted number to bcd
+	* Private method for converting a decimal formatted number to BCD
 	*/
 	return (uint8_t)((dec / 10) * 16) + (dec % 10);
 }
 
 uint8_t RTCPi::updatebyte(uint8_t byte, uint8_t bit, uint8_t value) {
 	/*
-	internal method for setting the value of a single bit within a byte
+	* Private method for setting the value of a single bit within a byte
 	*/
 	if (value == 0) {
 		return (byte &= ~(1 << bit));
@@ -243,7 +243,7 @@ uint8_t RTCPi::updatebyte(uint8_t byte, uint8_t bit, uint8_t value) {
 void RTCPi::set_date(struct tm date) {
 	/**
 	* Set the date on the RTC
-	* @param - date - struct tm formated date and time
+	* @param - date - struct tm formatted date and time
 	*/
 	writebuffer[0] = SECONDS; // register address for seconds
 	writebuffer[1] = dec_to_bcd(date.tm_sec); // seconds
@@ -331,8 +331,8 @@ void RTCPi::set_frequency(uint8_t frequency) {
 
 void RTCPi::write_memory(uint8_t address, uint8_t *valuearray, uint8_t length) {
 	/**
-	* write to the memory on the ds1307
-	* the ds1307 contains 56 - Byte, battery - backed RAM with Unlimited Writes
+	* Write to the memory on the DS1307
+	* The DS1307 contains 56 - Byte, battery-backed RAM with Unlimited Writes
 	* @param address - 0x08 to 0x3F
 	* @param valuearray - byte array containing data to be written to memory
 	*/
@@ -372,10 +372,10 @@ void RTCPi::write_memory(uint8_t address, uint8_t *valuearray, uint8_t length) {
 
 uint8_t *RTCPi::read_memory(uint8_t address, uint8_t length) {
 	/**
-	* read from the memory on the ds1307
-	* the ds1307 contains 56-Byte, battery-backed RAM with Unlimited Writes
+	* Read from the memory on the DS1307
+	* The DS1307 contains 56-Byte, battery-backed RAM with Unlimited Writes
 	* @param address - 0x08 to 0x3F
-	* @param length - up to 56 bytes.  length can not exceed the avaiable address space.
+	* @param length - up to 56 bytes.  length can not exceed the available address space.
 	* @returns - pointer to a byte array where the data will be saved
 	*/
 

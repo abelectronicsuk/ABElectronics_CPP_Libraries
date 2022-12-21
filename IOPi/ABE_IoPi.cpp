@@ -1,17 +1,18 @@
 /*
  ================================================
- ABElectronics UK IO Pi 32-Channel Port Expander
+ AB Electronics UK IO Pi 32-Channel Port Expander
+ See CHANGELOG.md for the version number.
  ================================================
 
-
- Each MCP23017 chip is split into two 8-bit ports.  port 0 controls
- pins 1 to 8 while port 1 controls pins 9 to 16.
+ Each MCP23017 chip is split into two 8-bit ports.  
+ Port 0 controls pins 1 to 8 while port 1 controls pins 9 to 16.
  When writing to or reading from a port the least significant bit represents
  the lowest numbered pin on the selected port.
 
+ Required package: libi2c-dev
 
- Required package{
  apt-get install libi2c-dev
+ 
  */
 
 //#define TESTMODE // used for unit testing, comment out when using with the IO Pi board
@@ -37,9 +38,9 @@ using namespace ABElectronics_CPP_Libraries;
 IoPi::IoPi(uint8_t address, bool initialise)
 {
 	/**
-	* initialise the MCP32017 IO chip with default values: ports are inputs, pull-up resistors are disabled and ports are not inverted
+	* Initialise the MCP32017 IO chip with default values: ports are inputs, pullup resistors are disabled and ports are not inverted
 	* @param address - I2C address for the target device
-	* @param initialise - true = direction set as inputs, pull-ups disabled, ports not inverted.
+	* @param initialise - true = direction set as inputs, pullups disabled, ports not inverted.
                           false = device state unaltered. Defaults to true
 	*/
 	if (address<0x20 || address> 0x27)
@@ -62,7 +63,7 @@ IoPi::IoPi(uint8_t address, bool initialise)
 void IoPi::set_pin_direction(uint8_t pin, uint8_t direction)
 {
 	/**
-	* set IO direction for an individual pin
+	* Set the IO direction for an individual pin
 	* @param pins - 1 to 16
 	* @param direction - 1 = input, 0 = output
 	*/
@@ -72,7 +73,7 @@ void IoPi::set_pin_direction(uint8_t pin, uint8_t direction)
 uint8_t IoPi::get_pin_direction(uint8_t pin)
 {
 	/**
-	* get IO direction for an individual pin
+	* Get the IO direction for an individual pin
 	* @param pins - 1 to 16
 	*/
 	return get_pin(pin, MCP23017::IODIRA, MCP23017::IODIRB);
@@ -81,7 +82,7 @@ uint8_t IoPi::get_pin_direction(uint8_t pin)
 void IoPi::set_port_direction(uint8_t port, uint8_t direction)
 {
 	/**
-	* set direction for an IO port
+	* Set the direction for an IO port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @param direction - 0 to 255 (0xFF).  For each bit 1 = input, 0 = output
 	*/
@@ -91,7 +92,7 @@ void IoPi::set_port_direction(uint8_t port, uint8_t direction)
 uint8_t IoPi::get_port_direction(uint8_t port)
 {
 	/**
-	* get direction for an IO port
+	* Get the direction for an IO port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	*/
 	return get_port(port, MCP23017::IODIRA, MCP23017::IODIRB);
@@ -100,7 +101,7 @@ uint8_t IoPi::get_port_direction(uint8_t port)
 void IoPi::set_bus_direction(uint16_t direction)
 {
 	/**
-	* set direction for the IO bus
+	* Set the direction for the IO bus
 	* @param direction - 0 to 65535 (0xFFFF).  For each bit 1 = input, 0 = output
 	*/
 	write_word_data(MCP23017::IODIRA, direction);
@@ -109,7 +110,7 @@ void IoPi::set_bus_direction(uint16_t direction)
 uint16_t IoPi::get_bus_direction()
 {
 	/**
-	* get direction for the IO bus
+	* Get the direction for the IO bus
 	*/
 	return read_word_data(MCP23017::IODIRA);
 }
@@ -117,7 +118,7 @@ uint16_t IoPi::get_bus_direction()
 void IoPi::set_pin_pullup(uint8_t pin, uint8_t value)
 {
 	/**
-	* set the internal 100K pull-up resistors for an individual pin
+	* Set the internal 100K pullup resistors for an individual pin
 	* @param pin - 1 to 16
 	* @param value - 1 = enabled, 0 = disabled
 	*/
@@ -127,7 +128,7 @@ void IoPi::set_pin_pullup(uint8_t pin, uint8_t value)
 uint8_t IoPi::get_pin_pullup(uint8_t pin)
 {
 	/**
-	* get the internal 100K pull-up resistors for an individual pin
+	* Get the internal 100K pullup resistors for an individual pin
 	* @param pin - 1 to 16
 	*/
 
@@ -137,7 +138,7 @@ uint8_t IoPi::get_pin_pullup(uint8_t pin)
 void IoPi::set_port_pullups(uint8_t port, uint8_t value)
 {
 	/**
-	* set the internal 100K pull-up resistors for the selected IO port
+	* Set the internal 100K pullup resistors for the selected IO port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @param value - 0 to 255 (0xFF). For each bit 1 = enabled, 0 = disabled
 	*/
@@ -147,7 +148,7 @@ void IoPi::set_port_pullups(uint8_t port, uint8_t value)
 uint8_t IoPi::get_port_pullups(uint8_t port)
 {
 	/**
-	* get the internal 100K pull-up resistors for the selected IO port
+	* Get the internal 100K pullup resistors for the selected IO port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	*/
 	return get_port(port, MCP23017::GPPUA, MCP23017::GPPUB);
@@ -156,7 +157,7 @@ uint8_t IoPi::get_port_pullups(uint8_t port)
 void IoPi::set_bus_pullups(uint16_t value)
 {
 	/**
-	* set internal 100K pull-up resistors for the IO bus
+	* Set the internal 100K pullup resistors for the IO bus
 	* @param value - 0 to 65535 (0xFFFF).  For each bit 1 = enabled, 0 = disabled
 	*/
 	write_word_data(MCP23017::GPPUA, value);
@@ -165,7 +166,7 @@ void IoPi::set_bus_pullups(uint16_t value)
 uint16_t IoPi::get_bus_pullups()
 {
 	/**
-	* get internal 100K pull-up resistors for the IO bus
+	* Get the internal 100K pullup resistors for the IO bus
 	*/
 	return read_word_data(MCP23017::GPPUA);
 }
@@ -173,7 +174,7 @@ uint16_t IoPi::get_bus_pullups()
 void IoPi::write_pin(uint8_t pin, uint8_t value)
 {
 	/**
-	* write to an individual pin 1 - 16
+	* Write to an individual pin 1 - 16
 	* @param pin - 1 to 16
 	* @param value - 0 = logic low, 1 = logic high
 	*/
@@ -183,7 +184,7 @@ void IoPi::write_pin(uint8_t pin, uint8_t value)
 void IoPi::write_port(uint8_t port, uint8_t value)
 {
 	/**
-	* write to all pins on the selected port
+	* Write to all pins on the selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @param value - 0 to 255 (0xFF)
 	*/
@@ -193,7 +194,7 @@ void IoPi::write_port(uint8_t port, uint8_t value)
 void IoPi::write_bus(uint16_t value)
 {
 	/**
-	* write to all pins on the selected bus
+	* Write to all pins on the selected bus
 	* @param value - 0 to 65535 (0xFFFF). For each bit 1 = logic high, 0 = logic low
 	*/
 	write_word_data(MCP23017::GPIOA, value);
@@ -202,7 +203,7 @@ void IoPi::write_bus(uint16_t value)
 uint8_t IoPi::read_pin(uint8_t pin)
 {
 	/**
-	* read the value of an individual pin
+	* Read the value of an individual pin
 	* @param pin - 1 to 16
 	* @returns - 0 = logic low, 1 = logic high
 	*/
@@ -213,7 +214,7 @@ uint8_t IoPi::read_pin(uint8_t pin)
 uint8_t IoPi::read_port(uint8_t port)
 {
 	/**
-	* read all pins on the selected port
+	* Read all pins on the selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @returns - 0 to 255 (0xFF). For each bit 1 = logic high, 0 = logic low
 	*/
@@ -223,7 +224,7 @@ uint8_t IoPi::read_port(uint8_t port)
 uint16_t IoPi::read_bus()
 {
 	/**
-	* read all pins on the selected bus
+	* Read all pins on the selected bus
 	* @returns - 0 to 65535 (0xFFFF). For each bit 1 = logic high, 0 = logic low
 	*/
 	return read_word_data(MCP23017::GPIOA);
@@ -232,7 +233,7 @@ uint16_t IoPi::read_bus()
 void IoPi::invert_pin(uint8_t pin, uint8_t polarity)
 {
 	/**
-	* invert the polarity of the selected pin
+	* Invert the polarity of the selected pin
 	* @param pin - 1 to 16
 	* @param polarity - 0 = non-inverted, 1 = inverted
 	*/
@@ -242,7 +243,7 @@ void IoPi::invert_pin(uint8_t pin, uint8_t polarity)
 uint8_t IoPi::get_pin_polarity(uint8_t pin)
 {
 	/**
-  	* get the polarity of the selected pin
+  	* Get the polarity of the selected pin
   	* @param pin - 1 to 16
   	*/
   	return get_pin(pin, MCP23017::IPOLA, MCP23017::IPOLB);
@@ -251,7 +252,7 @@ uint8_t IoPi::get_pin_polarity(uint8_t pin)
 void IoPi::invert_port(uint8_t port, uint8_t polarity)
 {
 	/**
-	* invert the polarity of the pins on a selected port
+	* Invert the polarity of the pins on a selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @param polarity - 0 to 255 (0xFF). For each bit 0 = non-inverted, 1 = inverted
 	*/
@@ -261,7 +262,7 @@ void IoPi::invert_port(uint8_t port, uint8_t polarity)
 uint8_t IoPi::get_port_polarity(uint8_t port)
 {
 	/**
-  	* get the polarity of the selected pin
+  	* Get the polarity of the selected pin
   	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
   	*/
   	return get_port(port, MCP23017::IPOLA, MCP23017::IPOLB);
@@ -270,7 +271,7 @@ uint8_t IoPi::get_port_polarity(uint8_t port)
 void IoPi::invert_bus(uint16_t polarity)
 {
 	/**
-	* invert the polarity of the pins on a selected bus
+	* Invert the polarity of the pins on a selected bus
 	* @param polarity - 0 to 65535 (0xFFFF). For each bit 0 = non-inverted, 1 = inverted
 	*/
 	write_word_data(MCP23017::IPOLA, polarity);
@@ -279,7 +280,7 @@ void IoPi::invert_bus(uint16_t polarity)
  uint16_t IoPi::get_bus_polarity()
  {
 	 /**
-  	* get the polarity of the bus
+  	* Get the polarity of the bus
   	*/
   	return read_word_data(MCP23017::IPOLA);
  }
@@ -363,7 +364,7 @@ void IoPi::set_interrupt_defaults(uint8_t port, uint8_t value)
 {
 	/**
 	* These bits set the compare value for pins configured for interrupt-on-change on the selected port.
-	* If the associated pin level is the opposite from the register bit, an interrupt occurs.
+	* If the associated pin level is the opposite of the register bit, an interrupt occurs.
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @param value - default state for the port. 0 to 255 (0xFF).
 	*/
@@ -374,7 +375,7 @@ uint8_t IoPi::get_interrupt_defaults(uint8_t port)
 {
 	/**
   	* Get the compare value for pins configured for interrupt-on-change on the selected port.
-  	* If the associated pin level is the opposite from the register bit, an interrupt occurs.
+  	* If the associated pin level is the opposite of the register bit, an interrupt occurs.
   	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
   	*/
   	return get_port(port, MCP23017::DEFVALA, MCP23017::DEFVALB);
@@ -438,7 +439,7 @@ void IoPi::set_interrupt_on_bus(uint16_t value)
 uint8_t IoPi::read_interrupt_status(uint8_t port)
 {
 	/**
-	* read the interrupt status for the pins on the selected port
+	* Read the interrupt status for the pins on the selected port
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @returns - 0 to 255 (0xFF). For each bit 1 = interrupt triggered, 0 = interrupt not triggered
 	*/
@@ -448,7 +449,7 @@ uint8_t IoPi::read_interrupt_status(uint8_t port)
 uint8_t IoPi::read_interrupt_capture(uint8_t port)
 {
 	/**
-	* read the value from the selected port at the time of the last interrupt trigger
+	* Read the value from the selected port at the time of the last interrupt trigger
 	* @param port - 0 = pins 1 to 8, port 1 = pins 9 to 16
 	* @returns - 0 to 255 (0xFF). For each bit 1 = interrupt triggered, 0 = interrupt not triggered
 	*/
@@ -464,7 +465,7 @@ void IoPi::reset_interrupts()
 	read_interrupt_capture(1);
 }
 
-// stops file handle leakage on exceptions
+// Stops file handle leakage on exceptions
 class ScopedFileHandle
 {
 public:
@@ -483,7 +484,7 @@ private:
 uint8_t IoPi::read_byte_data(uint8_t reg)
 {
 	/**
-	* private method for reading a byte from the I2C port
+	* Private method for reading a byte from the I2C port
 	*/
 	#ifdef TESTMODE		
 		buf[0] = unittest.i2c_emulator_read_byte_data(reg);
@@ -522,7 +523,7 @@ uint8_t IoPi::read_byte_data(uint8_t reg)
 uint16_t IoPi::read_word_data(uint8_t reg)
 {
 	/**
-	* private method for reading a byte from the I2C port
+	* Private method for reading a byte from the I2C port
 	*/
 	#ifdef TESTMODE		
 		return (unittest.i2c_emulator_read_word_data(reg));
@@ -562,7 +563,7 @@ uint16_t IoPi::read_word_data(uint8_t reg)
 void IoPi::write_byte_data(uint8_t reg, uint8_t value)
 {
 	/**
-	* private method for writing a byte to the I2C port
+	* Private method for writing a byte to the I2C port
 	*/
 	#ifdef TESTMODE
 		unittest.i2c_emulator_write_byte_data(reg, value);
@@ -595,7 +596,7 @@ void IoPi::write_byte_data(uint8_t reg, uint8_t value)
 void IoPi::write_word_data(uint8_t reg, uint16_t value)
 {
 	/**
-	* private method for writing a byte to the I2C port
+	* Private method for writing a byte to the I2C port
 	*/
 	#ifdef TESTMODE
 		unittest.i2c_emulator_write_word_data(reg, value);
@@ -630,7 +631,7 @@ void IoPi::write_word_data(uint8_t reg, uint16_t value)
 uint8_t IoPi::updatebyte(uint8_t byte, uint8_t bit, uint8_t value)
 {
 	/**
-	* private method for updating a bit within a byte
+	* Private method for updating a bit within a byte
 	*/
 	if (value == 0)
 	{
@@ -645,7 +646,7 @@ uint8_t IoPi::updatebyte(uint8_t byte, uint8_t bit, uint8_t value)
 uint8_t IoPi::checkbit(uint8_t byte, uint8_t bit)
 {
 	/**
-	* private method for checking the status of a bit within a byte
+	* Private method for checking the status of a bit within a byte
 	*/
 	if (byte & (1 << bit))
 	{
@@ -660,7 +661,7 @@ uint8_t IoPi::checkbit(uint8_t byte, uint8_t bit)
 void IoPi::set_pin(uint8_t pin, uint8_t value, uint8_t a_register, uint8_t b_register)
 {
 	/**
-	* private method for setting the value of a single bit within the device registers
+	* Private method for setting the value of a single bit within the device registers
 	*/
 	uint8_t reg = 0;
 	uint8_t p = 0;
@@ -691,7 +692,7 @@ void IoPi::set_pin(uint8_t pin, uint8_t value, uint8_t a_register, uint8_t b_reg
 uint8_t IoPi::get_pin(uint8_t pin, uint8_t a_register, uint8_t b_register)
 {
 	/**
-	* private method for getting the value of a single bit within the device registers
+	* Private method for getting the value of a single bit within the device registers
 	*/
 
 		uint8_t value = 0;
@@ -715,7 +716,7 @@ uint8_t IoPi::get_pin(uint8_t pin, uint8_t a_register, uint8_t b_register)
 void IoPi::set_port(uint8_t port, uint8_t value, uint8_t a_register, uint8_t b_register)
 {
 	/**
-	* private method for setting the value of a device register
+	* Private method for setting the value of a device register
 	*/
 	if (port == 0)
 	{
@@ -734,7 +735,7 @@ void IoPi::set_port(uint8_t port, uint8_t value, uint8_t a_register, uint8_t b_r
 uint8_t IoPi::get_port(uint8_t port, uint8_t a_register, uint8_t b_register)
 {
 	/**
-	* private method for getting the value of a device register
+	* Private method for getting the value of a device register
 	*/
 	if (port == 0)
 	{
@@ -752,7 +753,7 @@ uint8_t IoPi::get_port(uint8_t port, uint8_t a_register, uint8_t b_register)
 
 void IoPi::set_bus(uint16_t value, uint8_t a_register){
 	/**
-	* private method for writing a 16-bit value to two consecutive device registers
+	* Private method for writing a 16-bit value to two consecutive device registers
 	*/
 	write_word_data(a_register, value);
 }
