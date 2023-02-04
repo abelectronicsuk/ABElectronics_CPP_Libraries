@@ -1,3 +1,7 @@
+## 2023-02-04 Andrew Dorey  
+
+* 1.2.0 Updates to IO Pi and Expander Pi documentation.
+
 #### 2022-12-21 Andrew Dorey
 
 * 1.1.9 Fixed spelling and grammar in README files and comments.
