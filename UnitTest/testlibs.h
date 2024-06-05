@@ -106,26 +106,26 @@ public:
     };
 
     // I2C functions
-    void i2c_emulator_write_byte_data(uint8_t reg, uint8_t value);
-    void i2c_emulator_write_word_data(uint8_t reg, uint16_t value);
-    uint8_t i2c_emulator_read_byte_data(uint8_t reg);
-    uint16_t i2c_emulator_read_word_data(uint8_t reg);
+    static void i2c_emulator_write_byte_data(uint8_t reg, uint8_t value);
+    static void i2c_emulator_write_word_data(uint8_t reg, uint16_t value);
+    static uint8_t i2c_emulator_read_byte_data(uint8_t reg);
+    static uint16_t i2c_emulator_read_word_data(uint8_t reg);
 
-    void digitalWrite(uint8_t pin, uint8_t value);
-    void pinMode(uint8_t pin, uint8_t mode);
-    int wiringPiSetup();
+    static void digitalWrite(uint8_t pin, uint8_t value);
+    static void pinMode(uint8_t pin, uint8_t mode);
+    static int wiringPiSetup();
 
     // Test Functions
-    void start_test(std::string functionname);
-    void test_outcome();
-    void test_fail(std::string message);
-    void test_i2c_register(uint8_t reg, uint8_t value);
-    void test_gpio_state(uint8_t gpio, uint8_t value);
-    void test_gpio_direction(uint8_t gpio, uint8_t value);
-    void test_exception_failed(std::string message);
-    uint8_t test_set_bit(uint8_t a, uint8_t bit, bool value);
-    uint16_t test_set_bit(uint16_t a, uint8_t bit, bool value);
-    bool test_get_bit(uint8_t byte, uint8_t bit);
-    bool test_get_bit(uint16_t byte, uint8_t bit);
+    static void start_test(const std::string& function_name);
+    static void test_outcome();
+    static void test_fail(const std::string& message);
+    static void test_i2c_register(uint8_t reg, uint8_t value);
+    static void test_gpio_state(uint8_t gpio, uint8_t value);
+    static void test_gpio_direction(uint8_t gpio, uint8_t value);
+    static void test_exception_failed(const std::string& message);
+    static uint8_t test_set_bit(uint8_t a, uint8_t bit, bool value);
+    static uint16_t test_set_bit(uint16_t a, uint8_t bit, bool value);
+    static bool test_get_bit(uint8_t byte, uint8_t bit);
+    static bool test_get_bit(uint16_t byte, uint8_t bit);
 };
 #endif /* TESTLIBS_H_ */

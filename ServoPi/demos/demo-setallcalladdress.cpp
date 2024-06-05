@@ -1,6 +1,8 @@
 /*
  * demo-setallcalladdress.cpp
  *
+ *  Version 1.2 Updated 28/05/2024
+ *
  *  Set the All Call I2C address to 0x60 and enable All Call functionality.  This allows you to
  *  access several Servo Pi boards at the same time from a single I2C address.
  *
@@ -12,29 +14,25 @@
  *      run with "./demo-setallcalladdress"
  */
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdexcept>
-#include <time.h>
-#include <unistd.h>
-#include <iostream>
+#include <cstdio>
+#include <cstdint>
 
 #include "../ABE_ServoPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
 
-void clearscreen() {
+void clear_screen() {
 	printf("\033[2J\033[1;1H");
 }
 
 
 
 int main(int argc, char **argv) {
-	setvbuf(stdout, NULL, _IONBF, 0); // needed to print to the command line
+	setvbuf(stdout, nullptr, _IONBF, 0); // needed to print to the command line
 
-	// initialise the servo pi on I2C address 0x40.  Check the returned value to ensure the Servo Pi has been initialised correctly
+	// initialize the servo pi on I2C address 0x40.  Check the returned value to ensure the Servo Pi has been initialised correctly
 
-	PWM pwm(0x40, 1);
+	PWM pwm(0x40, true);
 
 	pwm.set_allcall_address(0x70);
 	pwm.enable_allcall_address();

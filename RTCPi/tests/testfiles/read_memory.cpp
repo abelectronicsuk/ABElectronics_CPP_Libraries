@@ -5,10 +5,7 @@
  *   
 */
 
-#include <stdio.h>
 #include <stdexcept>
-#include <unistd.h>
-#include <iostream>
 #include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_RTCPi.h"
 
@@ -17,8 +14,7 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    TestLibs test;
-	test.start_test("RTCPi class > read_memory()");
+	TestLibs::start_test("RTCPi class > read_memory()");
 	
     RTCPi rtc;  // new RTCPi object
     
@@ -26,28 +22,28 @@ int main(int argc, char **argv)
 	try
 	{
 		rtc.read_memory(0x07, 1);
-		test.test_exception_failed("read memory address low boundary out of bounds");
+		TestLibs::test_exception_failed("read memory address low boundary out of bounds");
 	}
 	catch(const std::exception& e){	}
 
     try
 	{
 		rtc.read_memory(0x40, 1);
-		test.test_exception_failed("read memory address high boundary out of bounds");
+		TestLibs::test_exception_failed("read memory address high boundary out of bounds");
 	}
 	catch(const std::exception& e){	}
 
     try
 	{
 		rtc.read_memory(0x08, 0);
-		test.test_exception_failed("read memory length low boundary out of bounds");
+		TestLibs::test_exception_failed("read memory length low boundary out of bounds");
 	}
 	catch(const std::exception& e){	}
 
     try
 	{
 		rtc.read_memory(0x08, 57);
-		test.test_exception_failed("read memory length high boundary out of bounds");
+		TestLibs::test_exception_failed("read memory length high boundary out of bounds");
 	}
 	catch(const std::exception& e){	}
 
@@ -59,21 +55,21 @@ int main(int argc, char **argv)
 
     for (uint8_t i = 0; i < size; i++){
         bytearray[i] = i;
-        test.i2c_emulator_write_byte_data(0x08 + i, i); // set register value
+        TestLibs::i2c_emulator_write_byte_data(0x08 + i, i); // set register value
     }
 
     uint8_t *readarray = rtc.read_memory(0x08, size);
 
 	for (uint8_t a = 0; a < size; a++) { // convert the bytes from readarray into a number
 		if (readarray[a] != bytearray[a]){
-            test.test_fail("failed to read memory");
+            TestLibs::test_fail("failed to read memory");
             break;
         }
 	}
 
 	free(readarray); // free the memory allocated to readarray
 
-    test.test_outcome();
+    TestLibs::test_outcome();
 
 	(void)argc;
 	(void)argv;

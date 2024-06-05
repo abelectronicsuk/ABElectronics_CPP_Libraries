@@ -17,9 +17,9 @@
 
 //#define TESTMODE // used for unit testing, comment out when using with the IO Pi board
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <stdexcept>
 #include <fcntl.h>
 #include <iostream>
@@ -295,12 +295,12 @@ void IoPi::mirror_interrupts(uint8_t value)
 
 	if (value == 0)
 	{        
-		config = updatebyte(config, 6, 0);
+		config = update_byte(config, 6, 0);
 		write_byte_data(MCP23017::IOCON, config);
 	}
 	else if (value == 1)
 	{
-		config = updatebyte(config, 6, 1);
+		config = update_byte(config, 6, 1);
 		write_byte_data(MCP23017::IOCON, config);
 	}
 	else
@@ -319,12 +319,12 @@ void IoPi::set_interrupt_polarity(uint8_t value)
     
 	if (value == 0)
 	{
-		config = updatebyte(config, 1, 0);
+		config = update_byte(config, 1, 0);
 		write_byte_data(MCP23017::IOCON, config);
 	}
 	else if (value == 1)
 	{
-		config = updatebyte(config, 1, 1);
+		config = update_byte(config, 1, 1);
 		write_byte_data(MCP23017::IOCON, config);
 	}
 	else
@@ -338,7 +338,7 @@ uint8_t IoPi::get_interrupt_polarity()
 	/**
   	* Get the polarity of the interrupt output pins.
   	*/
-  	return checkbit(read_byte_data(MCP23017::IOCON), 1);
+  	return check_bit(read_byte_data(MCP23017::IOCON), 1);
 }
 
 void IoPi::set_interrupt_type(uint8_t port, uint8_t value)
@@ -487,7 +487,7 @@ uint8_t IoPi::read_byte_data(uint8_t reg)
 	* Private method for reading a byte from the I2C port
 	*/
 	#ifdef TESTMODE		
-		buf[0] = unittest.i2c_emulator_read_byte_data(reg);
+		buf[0] = TestLibs::i2c_emulator_read_byte_data(reg);
 	#else
 
 	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
@@ -526,7 +526,7 @@ uint16_t IoPi::read_word_data(uint8_t reg)
 	* Private method for reading a byte from the I2C port
 	*/
 	#ifdef TESTMODE		
-		return (unittest.i2c_emulator_read_word_data(reg));
+		return (TestLibs::i2c_emulator_read_word_data(reg));
 	#else
 
 	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
@@ -566,7 +566,7 @@ void IoPi::write_byte_data(uint8_t reg, uint8_t value)
 	* Private method for writing a byte to the I2C port
 	*/
 	#ifdef TESTMODE
-		unittest.i2c_emulator_write_byte_data(reg, value);
+		TestLibs::i2c_emulator_write_byte_data(reg, value);
 	#else
 
 	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
@@ -599,7 +599,7 @@ void IoPi::write_word_data(uint8_t reg, uint16_t value)
 	* Private method for writing a byte to the I2C port
 	*/
 	#ifdef TESTMODE
-		unittest.i2c_emulator_write_word_data(reg, value);
+		TestLibs::i2c_emulator_write_word_data(reg, value);
 	#else
 
 	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
@@ -628,7 +628,7 @@ void IoPi::write_word_data(uint8_t reg, uint16_t value)
 	#endif
 }
 
-uint8_t IoPi::updatebyte(uint8_t byte, uint8_t bit, uint8_t value)
+uint8_t IoPi::update_byte(uint8_t byte, uint8_t bit, uint8_t value)
 {
 	/**
 	* Private method for updating a bit within a byte
@@ -643,7 +643,7 @@ uint8_t IoPi::updatebyte(uint8_t byte, uint8_t bit, uint8_t value)
 	}
 }
 
-uint8_t IoPi::checkbit(uint8_t byte, uint8_t bit)
+uint8_t IoPi::check_bit(uint8_t byte, uint8_t bit)
 {
 	/**
 	* Private method for checking the status of a bit within a byte
@@ -663,8 +663,8 @@ void IoPi::set_pin(uint8_t pin, uint8_t value, uint8_t a_register, uint8_t b_reg
 	/**
 	* Private method for setting the value of a single bit within the device registers
 	*/
-	uint8_t reg = 0;
-	uint8_t p = 0;
+	uint8_t reg;
+	uint8_t p;
 	if (pin >= 1 && pin <= 8)
 	{
 		reg = a_register;
@@ -685,7 +685,7 @@ void IoPi::set_pin(uint8_t pin, uint8_t value, uint8_t a_register, uint8_t b_reg
 		throw std::out_of_range("value out of range: 0 or 1");
 	}
 
-	uint8_t newval = updatebyte(read_byte_data(reg), p, value);
+	uint8_t newval = update_byte(read_byte_data(reg), p, value);
 	write_byte_data(reg, newval);
 }
 
@@ -695,15 +695,15 @@ uint8_t IoPi::get_pin(uint8_t pin, uint8_t a_register, uint8_t b_register)
 	* Private method for getting the value of a single bit within the device registers
 	*/
 
-		uint8_t value = 0;
+		uint8_t value;
 
         if (pin >= 1 && pin <= 8)
 		{
-            value = checkbit(read_byte_data(a_register), pin - 1);
+            value = check_bit(read_byte_data(a_register), pin - 1);
 		}
         else if (pin >= 9 && pin <= 16)
 		{
-            value = checkbit(read_byte_data(b_register), pin - 9);
+            value = check_bit(read_byte_data(b_register), pin - 9);
 		}
         else
 		{
@@ -718,18 +718,15 @@ void IoPi::set_port(uint8_t port, uint8_t value, uint8_t a_register, uint8_t b_r
 	/**
 	* Private method for setting the value of a device register
 	*/
-	if (port == 0)
-	{
-    	write_byte_data(a_register, value);
-	}
-    else if (port == 1)
-	{
-    	write_byte_data(b_register, value);
-	}
-	else
-	{
-		throw std::out_of_range("port out of range: 0 or 1");
-	}
+    if (port == 0) {
+        write_byte_data(a_register, value);
+    } else {
+        if (port == 1) {
+            write_byte_data(b_register, value);
+        } else {
+            throw std::out_of_range("port out of range: 0 or 1");
+        }
+    }
 }
 
 uint8_t IoPi::get_port(uint8_t port, uint8_t a_register, uint8_t b_register)
@@ -737,18 +734,15 @@ uint8_t IoPi::get_port(uint8_t port, uint8_t a_register, uint8_t b_register)
 	/**
 	* Private method for getting the value of a device register
 	*/
-	if (port == 0)
-	{
-    	return read_byte_data(a_register);
-	}
-    else if (port == 1)
-	{
-    	return read_byte_data(b_register);
-	}
-	else
-	{
-		throw std::out_of_range("port out of range: 0 or 1");
-	}
+    if (port == 0) {
+        return read_byte_data(a_register);
+    } else {
+        if (port == 1) {
+            return read_byte_data(b_register);
+        } else {
+            throw std::out_of_range("port out of range: 0 or 1");
+        }
+    }
 }
 
 void IoPi::set_bus(uint16_t value, uint8_t a_register){

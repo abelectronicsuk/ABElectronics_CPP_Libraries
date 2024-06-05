@@ -1,7 +1,7 @@
 /*
  * demo-io-interrupts.cpp
  *
- *  Version 1.2 Updated 01/07/2020
+ *  Version 1.2 Updated 28/05/2024
  * 
  *  This example shows how to use the interrupt methods on the IO port.
  *  The interrupts will be enabled and set so that a voltage applied
@@ -13,32 +13,30 @@
  *      run with "./demo-io-interrupts"
  */
 
-#include <stdio.h>
+#include <cstdio>
 #include <stdexcept>
-#include <time.h>
 #include <unistd.h>
 #include <iostream>
 #include "../ABE_IoPi.h"
 
 using namespace std;
 
-void clearscreen()
+void clear_screen()
 {
 	printf("\033[2J\033[1;1H");
 }
 
 int main(int argc, char **argv)
 {
-	setvbuf(stdout, NULL, _IONBF, 0); // needed to print to the command line
+	setvbuf(stdout, nullptr, _IONBF, 0); // needed to print to the command line
 
 	using namespace ABElectronics_CPP_Libraries;
 
 	try
 	{
 		IoPi bus1(0x20);
-		IoPi bus2(0x21);
 
-		// initialise one of the IO Pi buses on the default I2C address for bus 1
+		// initialize one of the IO Pi buses on the default I2C address for bus 1
 
 		bus1.set_port_direction(0, 0xFF); // set bank 0 to be inputs
 		bus1.set_port_direction(1, 0xFF); // set bank 1 to be inputs
@@ -66,9 +64,9 @@ int main(int argc, char **argv)
         bus1.set_interrupt_on_port(0, 0xFF);
         bus1.set_interrupt_on_port(1, 0xFF);
 
-		while (1)
+		while (true)
 		{
-			clearscreen();
+            clear_screen();
 			printf("%d\n", bus1.read_interrupt_capture(0));
 			printf("%d\n", bus1.read_interrupt_capture(1));
 			usleep(200000); // sleep 0.2 seconds

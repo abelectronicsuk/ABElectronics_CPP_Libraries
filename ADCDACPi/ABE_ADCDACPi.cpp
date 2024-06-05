@@ -5,8 +5,8 @@ See CHANGELOG.md for the version number.
 ================================================
 */
 
-#include <stdint.h>
-#include <stdio.h>
+#include <cstdint>
+#include <cstdio>
 #include <fcntl.h>
 #include <cstring>
 #include <stdexcept>
@@ -15,15 +15,15 @@ See CHANGELOG.md for the version number.
 #include <linux/spi/spidev.h>
 #include "ABE_ADCDACPi.h"
 
-#define adcdevice "/dev/spidev0.0"
-#define dacdevice "/dev/spidev0.1"
+#define adc_device "/dev/spidev0.0"
+#define dac_device "/dev/spidev0.1"
 
 using namespace ABElectronics_CPP_Libraries;
 
 
 
 ADCDACPi::ADCDACPi(){
-	mode = SPI_MODE_0; // SPI_MODE_0
+	spi_mode = SPI_MODE_0; // SPI_MODE_0
 	adcspeed = 1100000; // SPI ADC bus speed 1.1MHz
 	dacspeed = 20000000; // SPI DAC bus speed 20MHz
 
@@ -43,13 +43,13 @@ int ADCDACPi::open_adc() {
 	*/
 
 	// Open SPI device
-	if ((adc = open(adcdevice, O_RDWR)) < 0)
+	if ((adc = open(adc_device, O_RDWR)) < 0)
 		return (0);
 
 	if (ioctl(adc, SPI_IOC_WR_MAX_SPEED_HZ, &adcspeed) == -1)
 		return (0);
 	// Set SPI mode
-	if (ioctl(adc, SPI_IOC_WR_MODE, &mode) == -1)
+	if (ioctl(adc, SPI_IOC_WR_MODE, &spi_mode) == -1)
 		return (0);
 
 	return (1);
@@ -69,13 +69,13 @@ int ADCDACPi::open_dac() {
 	*/
 
 	// Open SPI device
-	if ((dac = open(dacdevice, O_RDWR)) < 0)
+	if ((dac = open(dac_device, O_RDWR)) < 0)
 		return (0);
 
 	if (ioctl(dac, SPI_IOC_WR_MAX_SPEED_HZ, &dacspeed) == -1)
 		return (0);
 	// Set SPI mode
-	if (ioctl(dac, SPI_IOC_WR_MODE, &mode) == -1)
+	if (ioctl(dac, SPI_IOC_WR_MODE, &spi_mode) == -1)
 		return (0);
 
 	return (1);
@@ -135,8 +135,8 @@ uint16_t ADCDACPi::read_adc_raw(uint8_t channel, uint8_t mode) {
 	struct spi_ioc_transfer spi;
 	memset(&spi,0,sizeof(spi));
 
-	spi.tx_buf = (uint32_t)adctx;
-	spi.rx_buf = (uint32_t)adcrx;
+	spi.tx_buf = (uint64_t)adctx;
+	spi.rx_buf = (uint64_t)adcrx;
 	spi.len = 3;
 	spi.speed_hz = adcspeed;
 	spi.delay_usecs = 0;
@@ -164,13 +164,13 @@ void ADCDACPi::set_dac_voltage(double voltage, uint8_t channel) {
 	* @param voltage - between 0 and 2.048 when the gain is set to 1,  0 and 3.3 when the gain is set to 2
 	* @param channel - 1 or 2
 	*/
-	if (channel < 1 && channel > 2) {
+	if (channel < 1 || channel > 2) {
 		throw std::out_of_range("set_dac_voltage channel out of range: 1 or 2");
 	}
 
 	if ((voltage >= 0.0) && (voltage < dacvoltage)) {
-		uint16_t rawval = ((voltage / 2.048) * 4096) / dacgain;
-		set_dac_raw(rawval, channel);
+		uint16_t raw_value = ((voltage / 2.048) * 4096) / dacgain;
+		set_dac_raw(raw_value, channel);
 	} else {
 		throw std::out_of_range("set_dac_voltage voltage out of range");
 	}
@@ -183,7 +183,7 @@ void ADCDACPi::set_dac_raw(uint16_t raw, uint8_t channel) {
 	* @param channel - 1 or 2
 	*/
 
-	uint8_t dactx[2];
+	//uint8_t dactx[2];
 
 	dactx[1] = (raw & 0xff);
 	dactx[0] = (((raw >> 8) & 0xff) | (channel - 1) << 7 | 0x1 << 5 | 1 << 4);
@@ -196,8 +196,8 @@ void ADCDACPi::set_dac_raw(uint16_t raw, uint8_t channel) {
 	struct spi_ioc_transfer tr;
     memset(&tr,0,sizeof(tr));
 
-	tr.tx_buf = (uint32_t)&dactx;
-	tr.rx_buf = (uint32_t)NULL;
+	tr.tx_buf = (uint64_t)&dactx;
+	tr.rx_buf = (uint64_t)NULL;
 	tr.len = 2;
 	tr.speed_hz = dacspeed;
 	tr.delay_usecs = 0;
@@ -205,7 +205,7 @@ void ADCDACPi::set_dac_raw(uint16_t raw, uint8_t channel) {
 	tr.cs_change = 0;
 
 	// Write data
-	if (ioctl(dac, SPI_IOC_MESSAGE(1), &tr) == -1) throw std::runtime_error("error setting the dac raw value");;
+	if (ioctl(dac, SPI_IOC_MESSAGE(1), &tr) == -1) throw std::runtime_error("error setting the dac raw value");
 	return;
 
 }
@@ -223,5 +223,4 @@ void ADCDACPi::set_dac_gain(uint8_t gain) {
 		dacgain = 2;
 		dacvoltage = 3.3;
 	}
-
 }

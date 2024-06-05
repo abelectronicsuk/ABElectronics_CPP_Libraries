@@ -5,10 +5,7 @@
  *   
 */
 
-#include <stdio.h>
 #include <stdexcept>
-#include <unistd.h>
-#include <iostream>
 #include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_ExpanderPi.h"
 
@@ -17,23 +14,22 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    TestLibs test;
-	test.start_test("ExpanderPi class > rtc_write_memory()");
+	TestLibs::start_test("ExpanderPi class > rtc_write_memory()");
 	
     ExpanderPi rtc;  // new ExpanderPi object
     
     // out of bounds tests
 	try
 	{
-		rtc.rtc_write_memory(0x07, {0}, 1);
-		test.test_exception_failed("read memory address low boundary out of bounds");
+		rtc.rtc_write_memory(0x07, nullptr, 1);
+		TestLibs::test_exception_failed("read memory address low boundary out of bounds");
 	}
 	catch(const std::exception& e){	}
 
     try
 	{
-		rtc.rtc_write_memory(0x40, {0}, 1);
-		test.test_exception_failed("read memory address high boundary out of bounds");
+		rtc.rtc_write_memory(0x40, nullptr, 1);
+		TestLibs::test_exception_failed("read memory address high boundary out of bounds");
 	}
 	catch(const std::exception& e){	}
 
@@ -41,7 +37,7 @@ int main(int argc, char **argv)
     // create random values
 
     const uint8_t size = 56;
-    uint8_t x = 0;
+    uint8_t x;
 
     uint8_t bytearray[size];
 
@@ -52,15 +48,15 @@ int main(int argc, char **argv)
     rtc.rtc_write_memory(0x08, bytearray, size);
 
     for (uint8_t i = 0; i < size; i++){
-        x = test.i2c_emulator_read_byte_data(0x08 + i); // get register value
+        x = TestLibs::i2c_emulator_read_byte_data(0x08 + i); // get register value
 
         if (x != bytearray[i]){
-            test.test_fail("failed to write memory");
+            TestLibs::test_fail("failed to write memory");
             break;
         }
     }
 
-    test.test_outcome();
+    TestLibs::test_outcome();
 
 	(void)argc;
 	(void)argv;

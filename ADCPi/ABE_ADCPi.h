@@ -73,7 +73,7 @@ void read_byte_array(uint8_t address, uint8_t reg, uint8_t length);
 /**
 * private method for setting the value of a single bit within a byte.
 */
-char update_byte(uint8_t byte, uint8_t bit, uint8_t value);
+static uint8_t update_byte(uint8_t byte, uint8_t bit, uint8_t value);
 
 /**
 * private method for setting the channel.

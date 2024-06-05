@@ -1,5 +1,7 @@
 /*
  * demo-io-interrupts.cpp
+ *
+ *  Version 1.2 Updated 28/05/2024
  * 
  *  This example shows how to use the interrupt methods on the IO port.
  *  The interrupts will be enabled and set so that a voltage applied
@@ -11,23 +13,22 @@
  *      run with "./demo-io-interrupts"
  */
 
-#include <stdio.h>
+#include <cstdio>
 #include <stdexcept>
-#include <time.h>
 #include <unistd.h>
 #include <iostream>
 #include "../ABE_ExpanderPi.h"
 
 using namespace std;
 
-void clearscreen()
+void clear_screen()
 {
 	printf("\033[2J\033[1;1H");
 }
 
 int main(int argc, char **argv)
 {
-	setvbuf(stdout, NULL, _IONBF, 0); // needed to print to the command line
+	setvbuf(stdout, nullptr, _IONBF, 0); // needed to print to the command line
 
 	using namespace ABElectronics_CPP_Libraries;
 
@@ -35,12 +36,12 @@ int main(int argc, char **argv)
 	{
 		ExpanderPi expi;
 
-		// initialise one of the io pi buses on I2C address  default address for bus 1
+		// initialize one of the IO buses on I2C address  default address for bus 1
 
 		expi.io_set_port_direction(0, 0xFF); // set bank 0 to be inputs
 		expi.io_set_port_direction(1, 0xFF); // set bank 1 to be inputs
-		expi.io_set_port_pullups(0, 0xFF);   // disable internal pullups for port 0
-		expi.io_set_port_pullups(1, 0xFF);   // disable internal pullups for port 1
+		expi.io_set_port_pullups(0, 0xFF);   // disable internal pull-ups for port 0
+		expi.io_set_port_pullups(1, 0xFF);   // disable internal pull-ups for port 1
 
 		expi.io_invert_port(0, 0xFF);
 		expi.io_invert_port(1, 0xFF);
@@ -63,9 +64,9 @@ int main(int argc, char **argv)
         expi.io_set_interrupt_on_port(0, 0xFF);
         expi.io_set_interrupt_on_port(1, 0xFF);
 
-		while (1)
+		while (true)
 		{
-			clearscreen();
+            clear_screen();
 			printf("%d\n", expi.io_read_interrupt_capture(0));
 			printf("%d\n", expi.io_read_interrupt_capture(1));
 			usleep(200000); // sleep 0.2 seconds

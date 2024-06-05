@@ -1,3 +1,7 @@
+## 2024-06-05 Andrew Dorey
+
+* 1.2.1 Updated all libraries, demos and tests. Replaced depreciated headers. Various bug fixes and code cleanup. 
+
 ## 2023-02-04 Andrew Dorey  
 
 * 1.2.0 Updates to IO Pi and Expander Pi documentation.

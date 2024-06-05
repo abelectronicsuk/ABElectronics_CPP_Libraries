@@ -6,8 +6,8 @@ See CHANGELOG.md for the version number.
 
 I2C Switch class for the PCA9546A controller from NXP
 
-Required packages: i2c-dev and wiringPi
-apt-get install libi2c-dev wiringpi
+Required packages: i2c-dev and pigpio
+apt-get install libi2c-dev pigpio
 */
 
 #ifndef I2CSWITCH_ABE_I2CSWITCH_H_
@@ -68,11 +68,7 @@ uint8_t buf[10];
 // private methods
 int read_byte_data();
 void write_byte_data(uint8_t value);
-uint8_t updatebyte(uint8_t byte, uint8_t bit, uint8_t value);
-uint8_t checkbit(uint8_t byte, uint8_t bit);
-int gpio_export(int pin);
-int gpio_direction(int pin, int dir);
-int gpio_write(int pin, int value);
-
+static uint8_t update_byte(uint8_t byte, uint8_t bit, uint8_t value);
+static uint8_t check_bit(uint8_t byte, uint8_t bit);
 };
 }

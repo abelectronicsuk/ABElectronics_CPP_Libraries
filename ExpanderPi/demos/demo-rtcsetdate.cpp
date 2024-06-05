@@ -1,29 +1,27 @@
 /*
 * demo-rtcsetdate.cpp
 *
-*  Version 1.1 Updated 21/04/2020
+ *  Version 1.2 Updated 28/05/2024
 *
 *      compile with "g++ demo-rtcsetdate.cpp ../ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-rtcsetdate"
 *      run with "./demo-rtcsetdate"
 *
 *  This demo shows how to write a date to the RTC and read it back again.
 */
-#include <stdint.h>
-#include <stdio.h>
-#include <stdexcept>
-#include <time.h>
+#include <cstdint>
+#include <cstdio>
+#include <ctime>
 #include <unistd.h>
-#include <iostream>
 
 #include "../ABE_ExpanderPi.h"
 
-int main(int argc, char **argv) {
+int main() {
 
 	using namespace ABElectronics_CPP_Libraries;
 
 	ExpanderPi expi;
 	
-	struct tm datetime; // Create a tm struct to store the date
+	struct tm datetime{}; // Create a tm struct to store the date
 
 	// set the date
 	datetime.tm_sec = 00; // seconds
@@ -38,7 +36,7 @@ int main(int argc, char **argv) {
 	
 	char buffer[80]; // used for converting the date to a string
 	
-	while (1) {
+	while (true) {
 		datetime = expi.rtc_read_date(); // read the date from the RTC into the tm struct
 
 		if (strftime(buffer, sizeof buffer, "%Y-%m-%dT%H:%M:%S", &datetime)) { // convert the date into a string and print it to the console
@@ -50,8 +48,4 @@ int main(int argc, char **argv) {
 
 		usleep(1000000); // sleep for a second
 	}
-
-	(void)argc;
-	(void)argv;
-	return (0);
 }

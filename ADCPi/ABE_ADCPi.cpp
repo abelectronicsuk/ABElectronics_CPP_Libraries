@@ -10,11 +10,11 @@ Reads from the MCP3424 ADC on the ADC Pi and ADC Pi Plus.
  apt-get install libi2c-dev
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <stdexcept>
-#include <errno.h>
+#include <cerrno>
 #include <fcntl.h>
 #include <iostream>
 #include <unistd.h>
@@ -74,13 +74,13 @@ uint32_t ADCPi::read_raw(uint8_t channel)
 	*/
 
 	// variables for storing the raw bytes from the ADC
-	char h = 0;
-	char l = 0;
-	char m = 0;
-	char s = 0;
-	char config = 0;
-	char address = 0;
-	long t = 0;
+    uint8_t h;
+    uint8_t l = 0;
+    uint8_t m;
+    uint8_t s;
+    uint8_t config;
+    uint8_t address;
+	long t;
 	signbit = 0;
 
 	// get the config and i2c address for the selected channel
@@ -143,7 +143,7 @@ uint32_t ADCPi::read_raw(uint8_t channel)
 		}
 
 		x++;
-	} while (1);
+	} while (true);
 
 	// extract the returned bytes and combine them in the correct order
 	switch (bitrate)
@@ -182,7 +182,6 @@ uint32_t ADCPi::read_raw(uint8_t channel)
 		break;
 	default:
 		throw std::runtime_error("read_raw() bitrate out of range");
-		break;
 	}
 
 	return (t);
@@ -239,7 +238,6 @@ void ADCPi::set_pga(uint8_t gain)
 		break;
 	default:
 		throw std::out_of_range("set_pga() gain out of range: 1, 2, 4, 8");
-		break;
 	}
 
 	write_byte(i2caddress1, config1);
@@ -280,7 +278,6 @@ void ADCPi::set_bit_rate(uint8_t rate)
 		break;
 	default:
 		throw std::out_of_range("set_bit_rate() rate out of range: 12, 14, 16, 18");
-		break;
 	}
 
 	write_byte(i2caddress1, config1);
@@ -370,7 +367,7 @@ void ADCPi::read_byte_array(uint8_t address, uint8_t reg, uint8_t length)
 	close(i2cbus);
 }
 
-char ADCPi::update_byte(uint8_t byte, uint8_t mask, uint8_t value)
+uint8_t ADCPi::update_byte(uint8_t byte, uint8_t mask, uint8_t value)
 {
 	/**
 	* private method for setting the value of a single bit within a byte
@@ -392,18 +389,20 @@ void ADCPi::set_channel(uint8_t channel)
 			currentchannel1 = channel;
 			switch (channel)
 			{
-			case 1:
-				config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x00);
-				break;
-			case 2:
-				config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x20);
-				break;
-			case 3:
-				config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x40);
-				break;
-			case 4:
-				config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x60);
-				break;
+                case 1:
+                    config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x00);
+                    break;
+                case 2:
+                    config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x20);
+                    break;
+                case 3:
+                    config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x40);
+                    break;
+                case 4:
+                    config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x60);
+                    break;
+                default:
+                    break;
 			}
 		}
 	}
@@ -414,18 +413,20 @@ void ADCPi::set_channel(uint8_t channel)
 			currentchannel2 = channel;
 			switch (channel)
 			{
-			case 5:
-				config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x00);
-				break;
-			case 6:
-				config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x20);
-				break;
-			case 7:
-				config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x40);
-				break;
-			case 8:
-				config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x60);
-				break;
+                case 5:
+                    config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x00);
+                    break;
+                case 6:
+                    config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x20);
+                    break;
+                case 7:
+                    config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x40);
+                    break;
+                case 8:
+                    config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x60);
+                    break;
+                default:
+                    break;
 			}
 		}
 	}

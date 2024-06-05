@@ -1,6 +1,8 @@
 /*
  * demo-servomove.cpp
  *
+ *  Version 1.2 Updated 28/05/2024
+ *
  *	Control a servo on channel 1 using the Servo class and change the position between three positions.
  *
  *	The Servo Pi library uses Wiring Pi library.  This is because the Servo Pi uses the GPIO port to control the Output Enable function.  
@@ -11,27 +13,24 @@
  *  run with "./demo-servomove"
  */
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdexcept>
-#include <time.h>
+#include <cstdio>
+#include <cstdint>
 #include <unistd.h>
-#include <iostream>
 
 #include "../ABE_ServoPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
 
-void clearscreen()
+void clear_screen()
 {
 	printf("\033[2J\033[1;1H");
 }
 
-int main(int argc, char **argv)
+int main()
 {
-	setvbuf(stdout, NULL, _IONBF, 0); // needed to print to the command line
+	setvbuf(stdout, nullptr, _IONBF, 0); // needed to print to the command line
 
-	// initialise a servo object with an I2C address of 0x40 and the Output Enable pin enabled.
+	// initialize a servo object with an I2C address of 0x40 and the Output Enable pin enabled.
 	Servo servo(0x40, 1.0, 2.0, true);
 
 	//Set the PWM frequency to 60 Hz and enable the output
@@ -47,8 +46,4 @@ int main(int argc, char **argv)
 		servo.move(1, 250, 250); // move the servo to position 250 of 250 steps
 		usleep(500000); // sleep 0.5 seconds
 	}
-
-	(void)argc;
-	(void)argv;
-	return (0);
 }

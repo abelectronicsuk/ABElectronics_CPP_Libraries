@@ -1,7 +1,7 @@
 /*
  *  dac-voltage.cpp
  *
- *  Version 1.0 Updated 02/10/2020
+ *  Version 1.1 Updated 28/05/2024
  *
  *  compile with "g++ dac-voltage.cpp ../ABE_ADCDACPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o dac-voltage"
  *  run with "./dac-voltage"
@@ -24,34 +24,30 @@
  * 
  */
 
-#include <stdint.h>
-#include <stdio.h>
+#include <cstdio>
 #include <stdexcept>
-#include <time.h>
-#include <unistd.h>
-#include <iostream>
 
 #include "../ABE_ADCDACPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
 
-void clearscreen ()
+void clear_screen ()
 {
     printf("\033[2J\033[1;1H");
 }
 
 int gain = 1;
 
-int main(int argc, char **argv){
-	setvbuf (stdout, NULL, _IONBF, 0); // needed to print to the command line
+int main(){
+	setvbuf (stdout, nullptr, _IONBF, 0); // needed to print to the command line
 
-	ADCDACPi adcdac;
+	ADCDACPi adc_dac;
 
-	if (adcdac.open_dac() != 1){ // open the DAC SPI channel
+	if (adc_dac.open_dac() != 1){ // open the DAC SPI channel
 			return (1); // if the SPI bus fails to open exit the program
 	}
     
-    adcdac.set_dac_gain(gain);
+    adc_dac.set_dac_gain(gain);
 
     double range = 2.047;
 
@@ -61,12 +57,8 @@ int main(int argc, char **argv){
 
 	while (1){
 		for (double i = 0; i < range; i+= 0.01){
-            adcdac.set_dac_voltage(i, 1);
-            adcdac.set_dac_voltage(2.047 - i, 2);
+            adc_dac.set_dac_voltage(i, 1);
+            adc_dac.set_dac_voltage(2.047 - i, 2);
         }
 	}
-
-	(void)argc;
-	(void)argv;
-	return (0);
 }

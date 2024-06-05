@@ -5,10 +5,6 @@
  *   
 */
 
-#include <stdio.h>
-#include <stdexcept>
-#include <unistd.h>
-#include <iostream>
 #include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_I2CSwitch.h"
 
@@ -17,18 +13,17 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    TestLibs test;
-	test.start_test("I2CSwitch class > reset()");
+	TestLibs::start_test("I2CSwitch class > reset()");
 	
-    I2CSwitch i2cswitch(0x70);  // new I2CSwitch object
+    I2CSwitch i2c_switch(0x70);  // new I2CSwitch object
 
-    test.digitalWrite(2, 0);
+    TestLibs::digitalWrite(2, 0);
 
-    i2cswitch.reset();
+    i2c_switch.reset();
 
-    test.test_gpio_state(2, true);
+    TestLibs::test_gpio_state(2, true);
 
-    test.test_outcome();
+    TestLibs::test_outcome();
 
 	(void)argc;
 	(void)argv;

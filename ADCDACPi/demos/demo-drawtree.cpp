@@ -1,7 +1,7 @@
 /*
  * demo-drawtree.cpp
  *
- *  Version 1.1 Updated 21/04/2020
+ *  Version 1.2 Updated 28/05/2024
  *
  *  	This demonstration uses an array of data points to draw a tree on an oscilloscope.
  *      The oscilloscope will need to be set to x-y mode with probes on channels 1 and 2 to display the picture.
@@ -10,12 +10,8 @@
  *      run with "./demo-drawtree"
  */
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdexcept>
-#include <time.h>
-#include <unistd.h>
-#include <iostream>
+#include <cstdint>
+#include <cstdio>
 
 #include "../ABE_ADCDACPi.h"
 
@@ -31,31 +27,25 @@ uint16_t ypoints[231] = {652,618,588,554,530,492,470,446,432,416,408,396,394,394
 
 
 int i;
-uint16_t arraysize;
+uint16_t array_size;
 
-int main(int argc, char **argv){
-	setvbuf (stdout, NULL, _IONBF, 0); // needed to print to the command line
+int main(){
+	setvbuf (stdout, nullptr, _IONBF, 0); // needed to print to the command line
 
-	ADCDACPi adcdac;
+	ADCDACPi adc_dac;
 
-	if (adcdac.open_dac() != 1){ // open the DAC SPI channel
+	if (adc_dac.open_dac() != 1){ // open the DAC SPI channel
 		return(1); // if the SPI bus fails to open exit the program
 	}
 
-	adcdac.set_dac_gain(1); // set the DAC gain to 1 which will give a voltage range of 0 to 2.048V
+	adc_dac.set_dac_gain(1); // set the DAC gain to 1 which will give a voltage range of 0 to 2.048V
 
-	arraysize = sizeof(xpoints) / sizeof(uint16_t);
+	array_size = sizeof(xpoints) / sizeof(uint16_t);
 
 	while (1){
-				for (i=0; i<arraysize; ++i){
-					adcdac.set_dac_raw(xpoints[i],2);
-					adcdac.set_dac_raw(ypoints[i],1);
+				for (i=0; i < array_size; ++i){
+					adc_dac.set_dac_raw(xpoints[i], 2);
+					adc_dac.set_dac_raw(ypoints[i], 1);
 				}
 	}
-
-	adcdac.close_dac();
-
-	(void)argc;
-	(void)argv;
-	return (0);
 }

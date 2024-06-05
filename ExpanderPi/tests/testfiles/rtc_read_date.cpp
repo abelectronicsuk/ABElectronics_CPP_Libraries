@@ -5,9 +5,6 @@
  *   
 */
 
-#include <stdio.h>
-#include <stdexcept>
-#include <unistd.h>
 #include <iostream>
 #include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_ExpanderPi.h"
@@ -17,50 +14,47 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    TestLibs test;
-	test.start_test("ExpanderPi class > rtc_read_date()");
+	TestLibs::start_test("ExpanderPi class > rtc_read_date()");
 	
     ExpanderPi rtc;  // new ExpanderPi object
 
     // set date register values
 
-    test.i2c_emulator_write_byte_data(test.DS1307_SECONDS, 0x25);
-    test.i2c_emulator_write_byte_data(test.DS1307_MINUTES, 0x12);
-    test.i2c_emulator_write_byte_data(test.DS1307_HOURS, 0x14);
-    test.i2c_emulator_write_byte_data(test.DS1307_DAYOFWEEK, 0x03);
-    test.i2c_emulator_write_byte_data(test.DS1307_DAY, 0x11);
-    test.i2c_emulator_write_byte_data(test.DS1307_MONTH, 0x09);
-    test.i2c_emulator_write_byte_data(test.DS1307_YEAR, 0x20);
+    TestLibs::i2c_emulator_write_byte_data(TestLibs::DS1307_SECONDS, 0x25);
+    TestLibs::i2c_emulator_write_byte_data(TestLibs::DS1307_MINUTES, 0x12);
+    TestLibs::i2c_emulator_write_byte_data(TestLibs::DS1307_HOURS, 0x14);
+    TestLibs::i2c_emulator_write_byte_data(TestLibs::DS1307_DAYOFWEEK, 0x03);
+    TestLibs::i2c_emulator_write_byte_data(TestLibs::DS1307_DAY, 0x11);
+    TestLibs::i2c_emulator_write_byte_data(TestLibs::DS1307_MONTH, 0x09);
+    TestLibs::i2c_emulator_write_byte_data(TestLibs::DS1307_YEAR, 0x20);
     
-    struct tm datetime; // create a tm struct to store the date
-
-    datetime = rtc.rtc_read_date();
+    struct tm datetime = rtc.rtc_read_date(); // create a tm struct to store the date
 
     // set the date
 	if (datetime.tm_sec != 25){
-            test.test_fail("failed to set seconds");
+            TestLibs::test_fail("failed to set seconds");
 	}
 	if (datetime.tm_min != 12){
-            test.test_fail("failed to set minutes");
+            TestLibs::test_fail("failed to set minutes");
 	}
 	if (datetime.tm_hour != 14){
-            test.test_fail("failed to set hour");
+            TestLibs::test_fail("failed to set hour");
 	}
 	if (datetime.tm_wday != 3){
-            test.test_fail("failed to set weekday");
+            TestLibs::test_fail("failed to set weekday");
 	}
 	if (datetime.tm_mday != 11){
-            test.test_fail("failed to set day");
+            TestLibs::test_fail("failed to set day");
 	}
 	if (datetime.tm_mon != 8){
-            test.test_fail("failed to set month");
+            TestLibs::test_fail("failed to set month");
 	}
 	if (datetime.tm_year != 120){
-            test.test_fail("failed to set year");
+            TestLibs::test_fail("failed to set year");
 	}
 
 
-    test.test_outcome();
+    TestLibs::test_outcome();
 
 	(void)argc;
 	(void)argv;

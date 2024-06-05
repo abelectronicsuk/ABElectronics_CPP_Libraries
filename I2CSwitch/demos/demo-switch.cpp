@@ -1,7 +1,7 @@
 /*
  * demo-switch.cpp
  *
- *  Version 1.1 Updated 21/04/2020
+ *  Version 1.2 Updated 28/05/2024
  *
  *	Set the I2C output to the specified channel.
  *
@@ -9,40 +9,36 @@
  *  run with "sudo ./demo-switch"
  */
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdexcept>
-#include <time.h>
-#include <unistd.h>
-#include <iostream>
+#include <cstdint>
+#include <cstdio>
 
 #include "../ABE_I2CSwitch.h"
 
 using namespace ABElectronics_CPP_Libraries;
 
-void clearscreen() {
+void clear_screen() {
 	printf("\033[2J\033[1;1H");
 }
 
 
 
 int main(int argc, char **argv) {
-	setvbuf(stdout, NULL, _IONBF, 0); // needed to print to the command line
+	setvbuf(stdout, nullptr, _IONBF, 0); // needed to print to the command line
 
-	// initialise the I2C switch on I2C address 0x70.
-	I2CSwitch i2cswitch(0x70);
+	// initialize the I2C switch on I2C address 0x70.
+	I2CSwitch i2c_switch(0x70);
 
 	// channel to select
-	unsigned char channel = 1; 
+	unsigned char channel = 2;
 
 	// reset the i2c switch
-	i2cswitch.reset();
+	i2c_switch.reset();
 
 	// switch to the selected channel
-	i2cswitch.switch_channel(channel); 
+	i2c_switch.switch_channel(channel);
 
 	// check the state of the selected channel
-	if (i2cswitch.get_channel_state(channel) == 1){ 
+	if (i2c_switch.get_channel_state(channel) == 1){
     	printf("I2C switch set to channel %d \n", channel);
 	}
 	else{

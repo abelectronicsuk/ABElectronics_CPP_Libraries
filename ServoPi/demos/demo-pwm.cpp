@@ -1,6 +1,8 @@
 /*
  * demo-pwm.cpp
  *
+ *  Version 1.2 Updated 28/05/2024
+ *
  *	Set the PWM output on channel 1 using the PWM class and change the pulse width between 0 and 4095
  *
  *	The ServoPi library uses Wiring Pi library.  This is because the Servo Pi uses the GPIO port to control the Output Enable function.  
@@ -11,27 +13,21 @@
  *  run with "./demo-pwm"
  */
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdexcept>
-#include <time.h>
-#include <unistd.h>
-#include <iostream>
+#include <cstdio>
+#include <cstdint>
 
 #include "../ABE_ServoPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
 
-void clearscreen() {
+void clear_screen() {
 	printf("\033[2J\033[1;1H");
 }
 
+int main() {
+	setvbuf(stdout, nullptr, _IONBF, 0); // needed to print to the command line
 
-
-int main(int argc, char **argv) {
-	setvbuf(stdout, NULL, _IONBF, 0); // needed to print to the command line
-
-	// initialise the servo pi on I2C address 0x40 with the Output Enable pin enabled.
+	// initialize the servo pi on I2C address 0x40 with the Output Enable pin enabled.
 	PWM pwm(0x40, true);
 
 	//Set PWM frequency to 1 Khz and enable the output
@@ -40,7 +36,7 @@ int main(int argc, char **argv) {
 
 	int x;
 
-	while (1) {
+	while (true) {
 		for (x = 1; x <= 4095; x = x + 5) {
 			pwm.set_pwm(1, 0, x); // set the PWM width to x
 		}
@@ -49,8 +45,4 @@ int main(int argc, char **argv) {
 			pwm.set_pwm(1, 0, x); // set the PWM width to x
 		}
 	}
-
-	(void)argc;
-	(void)argv;
-	return (0);
 }

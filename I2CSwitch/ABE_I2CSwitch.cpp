@@ -12,16 +12,16 @@ apt-get install libi2c-dev wiringpi
 
 //#define TESTMODE // used for unit testing, comment out when using with the I2C Switch board
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <stdexcept>
-#include <errno.h>
+#include <cerrno>
 #include <fcntl.h>
 #include <cstring>
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/i2c-dev.h>
-#include <time.h>
+#include <ctime>
 #include <unistd.h>
 
 #ifdef TESTMODE
@@ -38,16 +38,6 @@ using namespace ABElectronics_CPP_Libraries;
 // change to /dev/i2c-0 if you are using a revision 0002 or 0003 model B
 
 #define RESETPIN 2 // GPIO Reset Pin
-
-// values used for I2C and GPIO communication
-#define OUT 1
-#define IN  0
-#define LOW  0
-#define HIGH 1
-#define VALUE_MAX 30
-#define BUFFER_MAX 3
-#define DIRECTION_MAX 35
-
 
 // public methods
 
@@ -68,8 +58,7 @@ I2CSwitch::I2CSwitch(uint8_t address)
 	//Enable GPIO Reset pin
 
     #ifdef TESTMODE
-        TestLibs test;
-        test.digitalWrite (RESETPIN, 1);
+        TestLibs::digitalWrite (RESETPIN, 1);
     #else
 	if (wiringPiSetup () == -1) throw std::runtime_error("reset: Failed to reset switch. GPIO error!");
 
@@ -88,9 +77,9 @@ void I2CSwitch::switch_channel(uint8_t channel) {
 	if (channel < 1 || channel > 4){
 		throw std::runtime_error("switch_channel: channel out of range. 1 - 4");
 	}
-	uint8_t cval = 0;
-	cval = updatebyte(cval, channel - 1, 1);
-	write_byte_data(cval);
+	uint8_t value = 0;
+    value = update_byte(value, channel - 1, 1);
+	write_byte_data(value);
 }
 
 void I2CSwitch::set_channel_state(uint8_t channel, uint8_t state) {
@@ -105,11 +94,10 @@ void I2CSwitch::set_channel_state(uint8_t channel, uint8_t state) {
 	}
 	if (state > 1){
 		throw std::runtime_error("set_channel_state: state out of range. 0 or 1");
-		fprintf(stderr, "state out of range. 0 or 1\n");
 	}
-	uint8_t cval = read_byte_data();
-	cval = updatebyte(cval, channel -1, state);
-	write_byte_data(cval);
+	uint8_t value = read_byte_data();
+    value = update_byte(value, channel - 1, state);
+	write_byte_data(value);
 }
 
 uint8_t I2CSwitch::get_channel_state(uint8_t channel) {
@@ -121,8 +109,8 @@ uint8_t I2CSwitch::get_channel_state(uint8_t channel) {
 	if (channel < 1 || channel > 4){
 		throw std::runtime_error("get_channel_state: channel out of range. 1 - 4");
 	}
-	uint8_t cval = read_byte_data();
-	return (checkbit(cval, channel - 1));
+	uint8_t value = read_byte_data();
+	return (check_bit(value, channel - 1));
 }
 
 void I2CSwitch::reset(){
@@ -132,26 +120,25 @@ void I2CSwitch::reset(){
 
 	//Enable GPIO pins
 	#ifdef TESTMODE
-        TestLibs test;
-        test.digitalWrite (RESETPIN, 0);
-		test.digitalWrite (RESETPIN, 1);
+        TestLibs::digitalWrite (RESETPIN, 0);
+		TestLibs::digitalWrite (RESETPIN, 1);
     #else
 	if (wiringPiSetup () == -1) throw std::runtime_error("reset: Failed to reset switch. GPIO error!");
 
 	pinMode (RESETPIN, OUTPUT) ;
-	
+
 	// set reset pin low
 	digitalWrite (RESETPIN, 0);
-	
+
 	// wait 1ms before setting reset pin high
-	usleep (1000);  
+	usleep (1000);
 
 	digitalWrite (RESETPIN, 1);
 
 	#endif
 
 	// wait 1ms for the switch to reset
-	usleep (1000);  
+	usleep (1000);
 }
 
 // private methods
@@ -172,8 +159,7 @@ int I2CSwitch::read_byte_data()
 	internal method for reading data from the i2c bus
 	*/
 	#ifdef TESTMODE		
-        TestLibs test;		
-		buf[0] = test.i2c_emulator_read_byte_data(0x00);
+		buf[0] = TestLibs::i2c_emulator_read_byte_data(0x00);
 	#else
 
 	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
@@ -206,8 +192,7 @@ void I2CSwitch::write_byte_data(uint8_t value)
 	*/
 
 	#ifdef TESTMODE
-		TestLibs test;
-		test.i2c_emulator_write_byte_data(0x00, value);
+		TestLibs::i2c_emulator_write_byte_data(0x00, value);
 	#else
 
     ScopedFileHandle i2cbus(open(fileName, O_RDWR));
@@ -233,7 +218,7 @@ void I2CSwitch::write_byte_data(uint8_t value)
 	#endif
 }
 
-uint8_t I2CSwitch::updatebyte(uint8_t byte, uint8_t bit, uint8_t value) {
+uint8_t I2CSwitch::update_byte(uint8_t byte, uint8_t bit, uint8_t value) {
 	/*
 	 internal method for setting the value of a single bit within a byte
 	 */
@@ -246,7 +231,7 @@ uint8_t I2CSwitch::updatebyte(uint8_t byte, uint8_t bit, uint8_t value) {
 
 }
 
-uint8_t I2CSwitch::checkbit(uint8_t byte, uint8_t bit) {
+uint8_t I2CSwitch::check_bit(uint8_t byte, uint8_t bit) {
 	/*
 	 internal method for reading the value of a single bit within a byte
 	 */

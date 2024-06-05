@@ -7,10 +7,6 @@
  *   
 */
 
-#include <stdio.h>
-#include <stdexcept>
-#include <unistd.h>
-#include <iostream>
 #include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_ExpanderPi.h"
 
@@ -19,14 +15,13 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-	TestLibs test;
-	test.start_test("ExpanderPi class > io_reset_interrupts()");
+	TestLibs::start_test("ExpanderPi class > io_reset_interrupts()");
 
 	ExpanderPi bus(false);
 
 	bus.io_reset_interrupts();
 
-    test.test_outcome();
+    TestLibs::test_outcome();
 
 	(void)argc;
 	(void)argv;

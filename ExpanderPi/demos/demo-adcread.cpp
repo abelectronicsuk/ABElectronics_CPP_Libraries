@@ -1,30 +1,28 @@
 /*
  * demo-adcread.cpp
  *
- *  Version 1.1 Updated 21/04/2020
+ *  Version 1.2 Updated 28/05/2024
  *
  *      compile with "g++ demo-adcread.cpp ../ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-adcread"
  *      run with "./demo-adcread"
  */
 
-#include <stdint.h>
-#include <stdio.h>
+#include <cstdio>
 #include <stdexcept>
-#include <time.h>
+#include <ctime>
 #include <unistd.h>
-#include <iostream>
 
 #include "../ABE_ExpanderPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
 
-void clearscreen ()
+void clear_screen ()
 {
     printf("\033[2J\033[1;1H");
 }
 
-int main(int argc, char **argv){
-	setvbuf (stdout, NULL, _IONBF, 0); // needed to print to the command line
+int main(){
+	setvbuf (stdout, nullptr, _IONBF, 0); // needed to print to the command line
 
 	ExpanderPi expi(true, false);
 
@@ -32,8 +30,8 @@ int main(int argc, char **argv){
 			return (1); // if the SPI bus fails to open exit the program
 	}
 
-	while (1){
-		clearscreen();
+	while (true){
+        clear_screen();
 		printf("Pin 1: %G \n", expi.adc_read_voltage(1, 0)); // read the voltage from channel 1 in single-ended mode
 		printf("Pin 2: %G \n", expi.adc_read_voltage(2, 0)); // read the voltage from channel 2 in single-ended mode
 		printf("Pin 3: %G \n", expi.adc_read_voltage(3, 0)); // read the voltage from channel 1 in single-ended mode
@@ -46,8 +44,4 @@ int main(int argc, char **argv){
 		usleep(200000); // sleep 0.2 seconds
 
 	}
-
-	(void)argc;
-	(void)argv;
-	return (0);
 }

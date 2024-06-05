@@ -5,10 +5,7 @@
  *   
 */
 
-#include <stdio.h>
 #include <stdexcept>
-#include <unistd.h>
-#include <iostream>
 #include "../../../UnitTest/testlibs.cpp"
 #include "../../ABE_IOZero32.h"
 
@@ -17,49 +14,48 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-	TestLibs test;
-	test.start_test("IOZero32 class > get_pin_polarity()");
+	TestLibs::start_test("IOZero32 class > get_pin_polarity()");
 
 	IOZero32 bus(0x20);
-	uint8_t x = 0;
-	uint16_t y = 0;
+	uint8_t x;
+	uint16_t y;
 
 	// out of bounds tests
 	try
 	{
 		bus.get_pin_polarity(0);
-		test.test_exception_failed("pin low out of bounds");
+		TestLibs::test_exception_failed("pin low out of bounds");
 	}
 	catch (exception &e){}
 
 	try
 	{
 		bus.get_pin_polarity(17);
-		test.test_exception_failed("pin high out of bounds");
+		TestLibs::test_exception_failed("pin high out of bounds");
 	}
 	catch (exception &e){}
 
 	for (uint8_t a = 1; a < 17; a++){
 		y = 65535;
 		
-		y = test.test_set_bit(y, a-1, false);	
-		test.i2c_emulator_write_word_data(test.PCA9535_INVERTPORT0, y);
+		y = TestLibs::test_set_bit(y, a-1, false);	
+		TestLibs::i2c_emulator_write_word_data(TestLibs::PCA9535_INVERTPORT0, y);
         x = bus.get_pin_polarity(a);
         if (x != 0){
-            test.test_exception_failed("get pin failed on set to 0");
+            TestLibs::test_exception_failed("get pin failed on set to 0");
             break;
 		}
 		y = 0;
-		y = test.test_set_bit(y, a-1, true);
-        test.i2c_emulator_write_word_data(test.PCA9535_INVERTPORT0, y);
+		y = TestLibs::test_set_bit(y, a-1, true);
+        TestLibs::i2c_emulator_write_word_data(TestLibs::PCA9535_INVERTPORT0, y);
         x = bus.get_pin_polarity(a);
         if (x != 1){
-            test.test_exception_failed("get pin failed on set to 1");
+            TestLibs::test_exception_failed("get pin failed on set to 1");
             break;
 		}
 	}
 
-    test.test_outcome();
+    TestLibs::test_outcome();
 
 	(void)argc;
 	(void)argv;

@@ -280,7 +280,7 @@ namespace ABElectronics_CPP_Libraries
     /**
 	* Reset the interrupts A and B to 0
 	*/
-    void reset_interrupts(void);
+    void reset_interrupts();
 
     private:
     const char* fileName = "/dev/i2c-1"; // change to /dev/i2c-0 if you are using a Raspberry Pi revision 0002 or 0003 model B
@@ -352,12 +352,12 @@ namespace ABElectronics_CPP_Libraries
     /**
 	    * Private method for updating a bit within a byte
 	    */
-    uint8_t updatebyte(uint8_t byte, uint8_t bit, uint8_t value);
+    static uint8_t update_byte(uint8_t byte, uint8_t bit, uint8_t value);
 
     /**
 	    * Private method for checking the status of a bit within a byte
 	    */
-    uint8_t checkbit(uint8_t byte, uint8_t bit);
+    static uint8_t check_bit(uint8_t byte, uint8_t bit);
 
     /**
 	    * Private method for setting the value of a single bit within the device registers

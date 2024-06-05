@@ -85,10 +85,10 @@ uint8_t readbuffer[60];
 uint8_t read_byte_data(uint8_t reg);
 void read_byte_array(uint8_t reg, uint8_t length);
 void write_byte_data(uint8_t reg, uint8_t value);
-void write_byte_array(uint8_t buffer[], uint8_t length);
-uint8_t bcd_to_dec(uint8_t bcd);
-uint8_t dec_to_bcd(uint8_t dec);
-uint8_t updatebyte(uint8_t byte, uint8_t bit, uint8_t value);
+static void write_byte_array(uint8_t buffer[], uint8_t length);
+static uint8_t bcd_to_dec(uint8_t bcd);
+static uint8_t dec_to_bcd(uint8_t dec);
+static uint8_t update_byte(uint8_t byte, uint8_t bit, uint8_t value);
 
 };
 }

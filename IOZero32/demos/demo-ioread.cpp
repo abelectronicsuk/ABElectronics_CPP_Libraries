@@ -9,23 +9,22 @@
  *  Pull-up or pull-down resistors may be needed to keep the inputs from sitting in a floating state. 
  */
 
-#include <stdio.h>
+#include <cstdio>
 #include <stdexcept>
-#include <time.h>
 #include <unistd.h>
 #include <iostream>
 #include "../ABE_IOZero32.h"
 
 using namespace std;
 
-void clearscreen()
+void clear_screen()
 {
 	printf("\033[2J\033[1;1H");
 }
 
 int main(int argc, char **argv)
 {
-	setvbuf(stdout, NULL, _IONBF, 0); // needed to print to the command line
+	setvbuf(stdout, nullptr, _IONBF, 0); // needed to print to the command line
 
 	using namespace ABElectronics_CPP_Libraries;
 
@@ -34,7 +33,7 @@ int main(int argc, char **argv)
 		IOZero32 bus1(0x20);
 		IOZero32 bus2(0x21);
 
-		// initialise one of the io pi buses on I2C address  default address for bus 1
+		// initialize one of the io pi buses on I2C address  default address for bus 1
 
 		bus1.set_port_direction(0, 0xFF); // set bank 0 to be inputs
 		bus1.set_port_direction(1, 0xFF); // set bank 1 to be inputs
@@ -42,9 +41,9 @@ int main(int argc, char **argv)
 		bus2.set_port_direction(0, 0xFF); // set bank 0 to be inputs
 		bus2.set_port_direction(1, 0xFF); // set bank 1 to be inputs
 
-		while (1)
+		while (true)
 		{
-			clearscreen();
+            clear_screen();
 			printf("Bus 1 Pin 1:  %x		Bus 2 Pin 1:  %x\n", bus1.read_pin(1), bus2.read_pin(1));
 			printf("Bus 1 Pin 2:  %x		Bus 2 Pin 2:  %x\n", bus1.read_pin(2), bus2.read_pin(2));
 			printf("Bus 1 Pin 3:  %x		Bus 2 Pin 3:  %x\n", bus1.read_pin(3), bus2.read_pin(3));

@@ -10,17 +10,17 @@ apt-get install libi2c-dev
 
 //#define TESTMODE // used for unit testing, comment out when using with the RTC Pi board
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
 #include <stdexcept>
-#include <errno.h>
+#include <cerrno>
 #include <fcntl.h>
 #include <cstring>
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/i2c-dev.h>
-#include <time.h>
+#include <ctime>
 #include <vector>
 #include <unistd.h>
 
@@ -68,8 +68,7 @@ uint8_t RTCPi::read_byte_data(uint8_t reg)
 	* Private method for reading a byte from the I2C port
 	*/
 	#ifdef TESTMODE	
-        TestLibs test;	
-		readbuffer[0] = test.i2c_emulator_read_byte_data(reg);
+		readbuffer[0] = TestLibs::i2c_emulator_read_byte_data(reg);
 	#else
 
 	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
@@ -108,10 +107,9 @@ void RTCPi::read_byte_array(uint8_t reg, uint8_t length) {
 	*/
 
     #ifdef TESTMODE
-		TestLibs test;
         if (length > 1){
             for (uint8_t i = 0; i <= length; i++){
-                readbuffer[i] = test.i2c_emulator_read_byte_data(reg + i);
+                readbuffer[i] = TestLibs::i2c_emulator_read_byte_data(reg + i);
             }
         }		
 	#else
@@ -147,8 +145,7 @@ void RTCPi::write_byte_data(uint8_t reg, uint8_t value) {
 	*/
 
     #ifdef TESTMODE
-		TestLibs test;
-		test.i2c_emulator_write_byte_data(reg, value);
+		TestLibs::i2c_emulator_write_byte_data(reg, value);
 	#else
 
     ScopedFileHandle i2cbus(open(fileName, O_RDWR));
@@ -181,11 +178,10 @@ void RTCPi::write_byte_array(uint8_t buffer[], uint8_t length) {
 	*/
 
     #ifdef TESTMODE
-		TestLibs test;
         uint8_t address = buffer[0];
         if (length > 1){
             for (uint8_t i = 1; i <= length; i++){
-                test.i2c_emulator_write_byte_data(address + (i-1), buffer[i]);
+                TestLibs::i2c_emulator_write_byte_data(address + (i-1), buffer[i]);
             }
         }		
 	#else
@@ -226,7 +222,7 @@ uint8_t RTCPi::dec_to_bcd(uint8_t dec) {
 	return (uint8_t)((dec / 10) * 16) + (dec % 10);
 }
 
-uint8_t RTCPi::updatebyte(uint8_t byte, uint8_t bit, uint8_t value) {
+uint8_t RTCPi::update_byte(uint8_t byte, uint8_t bit, uint8_t value) {
 	/*
 	* Private method for setting the value of a single bit within a byte
 	*/
@@ -264,7 +260,7 @@ struct tm RTCPi::read_date() {
 	*/
 
 	read_byte_array(0, 7);
-	struct tm date;
+	struct tm date{};
 	date.tm_sec = bcd_to_dec(readbuffer[0]); // seconds
 	date.tm_min = bcd_to_dec(readbuffer[1]); // minutes
 	date.tm_hour = bcd_to_dec(readbuffer[2]);// hours
@@ -281,8 +277,8 @@ void RTCPi::enable_output() {
 	* Enable the squarewave output pin
 	*/
 	uint8_t config = read_byte_data(CONTROL);
-	config = updatebyte(config, 7, 1);
-	config = updatebyte(config, 4, 1);
+	config = update_byte(config, 7, 1);
+	config = update_byte(config, 4, 1);
 	write_byte_data(CONTROL, config);
 }
 
@@ -291,8 +287,8 @@ void RTCPi::disable_output() {
 	* Disable the squarewave output pin
 	*/
     uint8_t config = read_byte_data(CONTROL);
-	config = updatebyte(config, 7, 0);
-	config = updatebyte(config, 4, 0);
+	config = update_byte(config, 7, 0);
+	config = update_byte(config, 4, 0);
 	write_byte_data(CONTROL, config);
 }
 
@@ -305,23 +301,23 @@ void RTCPi::set_frequency(uint8_t frequency) {
 
 	switch (frequency) {
 		case 1:
-			config = updatebyte(config, 0, 0);
-			config = updatebyte(config, 1, 0);
+			config = update_byte(config, 0, 0);
+			config = update_byte(config, 1, 0);
 			write_byte_data(CONTROL, config);
 			break;
 		case 2:
-			config = updatebyte(config, 0, 1);
-			config = updatebyte(config, 1, 0);
+			config = update_byte(config, 0, 1);
+			config = update_byte(config, 1, 0);
 			write_byte_data(CONTROL, config);
 			break;
 		case 3:
-			config = updatebyte(config, 0, 0);
-			config = updatebyte(config, 1, 1);
+			config = update_byte(config, 0, 0);
+			config = update_byte(config, 1, 1);
 			write_byte_data(CONTROL, config);
 			break;
 		case 4:
-			config = updatebyte(config, 0, 1);
-			config = updatebyte(config, 1, 1);
+			config = update_byte(config, 0, 1);
+			config = update_byte(config, 1, 1);
 			write_byte_data(CONTROL, config);
 			break;
 		default:
@@ -340,24 +336,24 @@ void RTCPi::write_memory(uint8_t address, uint8_t *valuearray, uint8_t length) {
 	if (address >= 0x08 && address <= 0x3F) {
 		if (address <= (0x3F - (length - 1))) {
 			
-			uint8_t *writearray = (uint8_t*)malloc(length + 1);
+			auto *write_array = (uint8_t*)malloc(length + 1);
 
 			if (errno == ENOMEM) { // Fail!!!!
-				free(writearray);
+				free(write_array);
 				throw std::runtime_error("memory allocation error: not enough system memory to allocate array");
 			}
 			else {
 
-				writearray[0] = address;
+                write_array[0] = address;
 
 				int a;
 				for (a = 0; a < length; a++) {
-					writearray[a + 1] = valuearray[a];
+                    write_array[a + 1] = valuearray[a];
 				}
 				
-				write_byte_array(writearray, length);
+				write_byte_array(write_array, length);
 				
-				free(writearray);
+				free(write_array);
 			}
 
 		}
@@ -386,33 +382,30 @@ uint8_t *RTCPi::read_memory(uint8_t address, uint8_t length) {
 	if (address >= 0x08 && address <= 0x3F) {
 		if (address <= (0x3F - (length - 1))) {
 
-			uint8_t *writearray = (uint8_t*)malloc(length);
+			auto *write_array = (uint8_t*)malloc(length);
 
 			if (errno == ENOMEM) { // Fail!!!!
-				free(writearray);
+				free(write_array);
 				throw std::runtime_error("memory allocation error: not enough system memory to allocate array");
-				return NULL;
 			}
 			else {
 				read_byte_array(address, length); // read the values from the SRAM into the read buffer
 
-				// copy the read buffer into the writearray
-				int i = 0;
+				// copy the read buffer into the write_array
+				int i;
 				for (i = 0; i < length; i++) {
-					writearray[i] = readbuffer[i];
+                    write_array[i] = readbuffer[i];
 				}
 
-				return writearray;
+				return write_array;
 			}
 
 		}
 		else {
 			throw std::runtime_error("memory overflow error: address + length exceeds 0x3F");
-			return NULL;
 		}
 	}
 	else {
 		throw std::out_of_range("address out of range");
-		return NULL;
-	}		
+	}
 }

@@ -12,17 +12,17 @@ apt-get install libi2c-dev wiringpi
 
 //#define TESTMODE // used for unit testing, comment out when using with the Servo Pi board
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
 #include <stdexcept>
-#include <errno.h>
+#include <cerrno>
 #include <fcntl.h>
 #include <cstring>
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/i2c-dev.h>
-#include <math.h>
+#include <cmath>
 #include <vector>
 #include <unistd.h>
 #include <iostream>
@@ -117,16 +117,16 @@ void PWM::set_pwm_freq(double freq, uint8_t calibration)
 		throw std::out_of_range("set_pwm_freq: freq out of range: 40 to 1000");
 	}
 
-	double scaleval = ((25000000 / 4096) / freq) - 0.5; // 25MHz
-	uint8_t prescale = (uint8_t)floor(scaleval);
-	prescale+= calibration;
-	uint8_t oldmode = read_byte_data((uint8_t)MODE1);
-	uint8_t newmode = (oldmode & 0x7F) | 0x10;
+	double scale_value = ((double(25000000) / 4096) / freq) - 0.5; // 25MHz
+	auto prescaler = (uint8_t)floor(scale_value);
+    prescaler+= calibration;
+	uint8_t old_mode = read_byte_data((uint8_t)MODE1);
+	uint8_t new_mode = (old_mode & 0x7F) | 0x10;
 
-	write_byte_data((uint8_t)MODE1, newmode); // enable sleep mode
-	write_byte_data((uint8_t)PRE_SCALE, prescale); // update prescale register
-	write_byte_data((uint8_t)MODE1, oldmode); // disable sleep mode
-	write_byte_data((uint8_t)MODE1, oldmode | (uint8_t)0x80); // restart
+	write_byte_data((uint8_t)MODE1, new_mode); // enable sleep mode
+	write_byte_data((uint8_t)PRE_SCALE, prescaler); // update prescaler register
+	write_byte_data((uint8_t)MODE1, old_mode); // disable sleep mode
+	write_byte_data((uint8_t)MODE1, old_mode | (uint8_t)0x80); // restart
 }
 
 void PWM::set_pwm(uint8_t channel, uint16_t on_time, uint16_t off_time)
@@ -214,9 +214,9 @@ uint16_t PWM::get_pwm_on_time(uint8_t channel)
 	}
 
 	channel = channel - 1;
-    uint8_t lowbyte = read_byte_data(LED0_ON_L + 4 * channel);
-    uint8_t highbyte = read_byte_data(LED0_ON_H + 4 * channel);
-    return (uint16_t)(lowbyte | highbyte << 8);
+    uint8_t low_byte = read_byte_data(LED0_ON_L + 4 * channel);
+    uint8_t high_byte = read_byte_data(LED0_ON_H + 4 * channel);
+    return (uint16_t)(low_byte | high_byte << 8);
 }
 
 uint16_t PWM::get_pwm_off_time(uint8_t channel)
@@ -231,9 +231,9 @@ uint16_t PWM::get_pwm_off_time(uint8_t channel)
 	}
 
 	channel = channel - 1;
-    uint8_t lowbyte = read_byte_data(LED0_OFF_L + 4 * channel);
-    uint8_t highbyte = read_byte_data(LED0_OFF_H + 4 * channel);
-    return (uint16_t)(lowbyte | highbyte << 8);
+    uint8_t low_byte = read_byte_data(LED0_OFF_L + 4 * channel);
+    uint8_t high_byte = read_byte_data(LED0_OFF_H + 4 * channel);
+    return (uint16_t)(low_byte | high_byte << 8);
 }
 
 void PWM::set_all_pwm(uint16_t on_time, uint16_t off_time)
@@ -269,8 +269,7 @@ void PWM::output_disable()
 	*/
 	if (oe_pin_enabled) {
         #ifdef TESTMODE
-        TestLibs test;
-		test.digitalWrite(ENABLE_PIN, 1);
+		TestLibs::digitalWrite(ENABLE_PIN, 1);
         #else
             digitalWrite(ENABLE_PIN, 1);
         #endif
@@ -287,8 +286,7 @@ void PWM::output_enable()
 	*/
 	if (oe_pin_enabled) {
 		#ifdef TESTMODE
-        TestLibs test;
-		test.digitalWrite(ENABLE_PIN, 0);
+		TestLibs::digitalWrite(ENABLE_PIN, 0);
         #else
             digitalWrite(ENABLE_PIN, 0);
         #endif
@@ -309,9 +307,9 @@ void PWM::set_allcall_address(uint8_t allcalladdress)
 			throw std::out_of_range("set_allcall_address: i2c address out of range 0x40 to 0x7F");
 	}
 
-	uint8_t oldmode = read_byte_data(MODE1);
-	uint8_t newmode = oldmode | (1 << MODE1_ALLCALL);
-	write_byte_data((uint8_t)MODE1, newmode);
+	uint8_t old_mode = read_byte_data(MODE1);
+	uint8_t new_mode = old_mode | (1 << MODE1_ALLCALL);
+	write_byte_data((uint8_t)MODE1, new_mode);
 	write_byte_data((uint8_t)ALLCALLADR, allcalladdress << 1);
 }
 
@@ -320,9 +318,9 @@ void PWM::enable_allcall_address()
 	/**
 	* Enable the I2C address for the All Call function
 	*/
-	uint8_t oldmode = read_byte_data(MODE1);
-	uint8_t newmode = oldmode | (1 << MODE1_ALLCALL);
-	write_byte_data((uint8_t)MODE1, newmode);
+	uint8_t old_mode = read_byte_data(MODE1);
+	uint8_t new_mode = old_mode | (1 << MODE1_ALLCALL);
+	write_byte_data((uint8_t)MODE1, new_mode);
 }
 
 void PWM::disable_allcall_address()
@@ -330,9 +328,9 @@ void PWM::disable_allcall_address()
 	/**
 	* Disable the I2C address for the All Call function
 	*/
-	uint8_t oldmode = read_byte_data(MODE1);
-	uint8_t newmode = oldmode & ~(1 << MODE1_ALLCALL);
-	write_byte_data((uint8_t)MODE1, newmode);
+	uint8_t old_mode = read_byte_data(MODE1);
+	uint8_t new_mode = old_mode & ~(1 << MODE1_ALLCALL);
+	write_byte_data((uint8_t)MODE1, new_mode);
 }
 
 void PWM::sleep()
@@ -340,9 +338,9 @@ void PWM::sleep()
 	/**
 	* Put the device into a sleep state
 	*/
-	uint8_t oldmode = read_byte_data(MODE1);
-    uint8_t newmode = oldmode | (1 << MODE1_SLEEP);
-    write_byte_data((uint8_t)MODE1, newmode);
+	uint8_t old_mode = read_byte_data(MODE1);
+    uint8_t new_mode = old_mode | (1 << MODE1_SLEEP);
+    write_byte_data((uint8_t)MODE1, new_mode);
 }
 
 void PWM::wake()
@@ -350,9 +348,9 @@ void PWM::wake()
 	/**
 	* Wake the device from its sleep state
 	*/
-	uint8_t oldmode = read_byte_data(MODE1);
-    uint8_t newmode = oldmode & ~(1 << MODE1_SLEEP);
-    write_byte_data((uint8_t)MODE1, newmode);
+	uint8_t old_mode = read_byte_data(MODE1);
+    uint8_t new_mode = old_mode & ~(1 << MODE1_SLEEP);
+    write_byte_data((uint8_t)MODE1, new_mode);
 }
 
 bool PWM::is_sleeping()
@@ -377,16 +375,9 @@ void PWM::invert_output(bool state)
 	* Invert the PWM output on all channels
 	* @param true = inverted, false = non-inverted
 	*/
-	if (state){
-		uint8_t oldmode = read_byte_data(MODE2);
-    	uint8_t newmode = oldmode | (1 << MODE2_INVRT);
-    	write_byte_data((uint8_t)MODE2, newmode);
-	}
-    else{
-		uint8_t oldmode = read_byte_data(MODE2);
-    	uint8_t newmode = oldmode & ~(1 << MODE2_INVRT);
-    	write_byte_data((uint8_t)MODE2, newmode);
-	}
+    uint8_t old_mode = read_byte_data(MODE2);
+    uint8_t new_mode = state ? old_mode | (1 << MODE2_INVRT) : old_mode & ~(1 << MODE2_INVRT);
+    write_byte_data((uint8_t) MODE2, new_mode);
 }
 
 void PWM::set_address(uint8_t address){
@@ -415,11 +406,10 @@ void PWM::enable_oe_pin(){
 	* Enable the Output Enable Pin on the GPIO header
 	*/
     #ifdef TESTMODE
-        TestLibs test;
-        if (test.wiringPiSetup() == -1)
+        if (TestLibs::wiringPiSetup() == -1)
             throw std::runtime_error("Error setting up GPIO pin");
         oe_pin_enabled = true;
-        test.pinMode(ENABLE_PIN, test.Direction::Output);
+        TestLibs::pinMode(ENABLE_PIN, TestLibs::Output);
     #else
         if (wiringPiSetup() == -1)
 		    throw std::runtime_error("Error setting up GPIO pin");
@@ -453,8 +443,7 @@ uint8_t PWM::read_byte_data(uint8_t reg)
 	*/
 
 	#ifdef TESTMODE		
-        TestLibs test;		
-		buf[0] = test.i2c_emulator_read_byte_data(reg);
+		buf[0] = TestLibs::i2c_emulator_read_byte_data(reg);
 	#else
 	
 	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
@@ -494,8 +483,7 @@ void PWM::write_byte_data(uint8_t reg, uint8_t value)
 	*/
 
 	#ifdef TESTMODE
-		TestLibs test;
-		test.i2c_emulator_write_byte_data(reg, value);
+		TestLibs::i2c_emulator_write_byte_data(reg, value);
 	#else
 	ScopedFileHandle i2cbus(open(fileName, O_RDWR));
 	if (i2cbus < 0)
@@ -594,7 +582,7 @@ void Servo::move(uint8_t channel, uint16_t position, uint16_t steps)
 	uint16_t high = highpos[channel - 1];
     uint16_t low = lowpos[channel - 1];
 	
-	uint16_t pwm_value = uint16_t((((high - low) / double(steps)) * double(position)) + low);
+	auto pwm_value = uint16_t((((high - low) / double(steps)) * double(position)) + low);
 
     pos[channel - 1] = pwm_value;
 
@@ -626,7 +614,7 @@ uint16_t Servo::get_position(uint8_t channel, uint16_t steps)
 			throw std::out_of_range("get_position: steps out of range");
 	}
 
-	uint16_t pwm_value = uint16_t(pwm.get_pwm_off_time(channel));
+	auto pwm_value = uint16_t(pwm.get_pwm_off_time(channel));
 
 	if (use_offset){
 		pwm_value = pwm_value - offset[channel - 1];
@@ -649,20 +637,20 @@ void Servo::set_low_limit(double low_limit, uint8_t channel)
 			throw std::out_of_range("set_low_limit: channel out of range");
 	}
 
-	uint16_t pos = uint16_t(4096.0 * (low_limit / 1000.0) * frequency);
+	auto position = uint16_t(4096.0 * (low_limit / 1000.0) * frequency);
 
-	if (pos > 4095){
+	if (position > 4095){
 		throw std::out_of_range("set_low_limit: pulse time to high for the current frequency");
 	}
 
 	if (channel > 0){
 		// update the specified channel
-		lowpos[channel - 1] = pos;
+		lowpos[channel - 1] = position;
 	}
 	else{
 		// no channel specified so update all channels
 		for (uint8_t i = 0; i < 16; i++){
-			lowpos[i] = pos;
+			lowpos[i] = position;
 		}
 	}
 }
@@ -681,20 +669,20 @@ void Servo::set_high_limit(double high_limit, uint8_t channel)
 			throw std::out_of_range("set_high_limit: channel out of range");
 	}
 
-	uint16_t pos = uint16_t(4096.0 * (high_limit / 1000.0) * frequency);
+	auto position = uint16_t(4096.0 * (high_limit / 1000.0) * frequency);
 
-	if (pos > 4095){
+	if (position > 4095){
 		throw std::out_of_range("set_high_limit: pulse time to high for the current frequency");
 	}
 
 	if (channel > 0){
 		// update the specified channel
-		highpos[channel - 1] = pos;
+		highpos[channel - 1] = position;
 	}
 	else{
 		// no channel specified so update all channels
 		for (uint8_t i = 0; i < 16; i++){
-			highpos[i] = pos;
+			highpos[i] = position;
 		}
 	}
 }

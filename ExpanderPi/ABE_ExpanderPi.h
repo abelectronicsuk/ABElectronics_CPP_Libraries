@@ -349,7 +349,7 @@ uint8_t io_read_interrupt_capture(uint8_t port);
 /**
 * Reset the interrupts A and B to 0
 */
-void io_reset_interrupts(void);
+void io_reset_interrupts();
 
 
 /*=================== RTC Methods ===================*/
@@ -435,12 +435,12 @@ int rtcCentury;
 /**
 * private method for converting BCD formatted numbers to decimal
 */
-uint8_t bcd_to_dec(uint8_t bcd);
+static uint8_t bcd_to_dec(uint8_t bcd);
 
 /**
 * private method for converting decimal formatted numbers to BCD
 */
-uint8_t dec_to_bcd(uint8_t dec);
+static uint8_t dec_to_bcd(uint8_t dec);
 
 /**
 * private method for reading a byte from the I2C port
@@ -475,12 +475,12 @@ void write_word_data(uint8_t address, uint8_t reg, uint16_t value);
 /**
 * private method for updating a bit within a byte
 */
-uint8_t updatebyte(uint8_t byte, uint8_t bit, uint8_t value);
+static uint8_t updatebyte(uint8_t byte, uint8_t bit, uint8_t value);
 
 /**
 * private method for checking the status of a bit within a byte
 */
-uint8_t checkbit(uint8_t byte, uint8_t bit);
+static uint8_t checkbit(uint8_t byte, uint8_t bit);
 
 /**
 * private method for setting the value of a single bit within the device registers

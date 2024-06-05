@@ -10,18 +10,18 @@ apt-get install libi2c-dev
 
 //#define TESTMODE /* used for unit testing, comment out when using with the Expander Pi board */
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
 #include <stdexcept>
-#include <errno.h>
+#include <cerrno>
 #include <fcntl.h>
 #include <cstring>
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
 #include <linux/i2c-dev.h>
-#include <time.h>
+#include <ctime>
 #include <unistd.h>
 
 #include "ABE_ExpanderPi.h"
@@ -36,8 +36,8 @@ apt-get install libi2c-dev
 #define fileName "/dev/i2c-1" /* change to /dev/i2c-0 if you are using a revision 0002 or 0003 model B */
 
 /* SPI Bus Definitions */
-#define adcdevice "/dev/spidev0.0"
-#define dacdevice "/dev/spidev0.1"
+#define adc_device "/dev/spidev0.0"
+#define dac_device "/dev/spidev0.1"
 
 /* MCP23017 register addresses */
 enum MCP23017
@@ -106,12 +106,12 @@ ExpanderPi::ExpanderPi(bool init, bool usertc){ /* init = true */
 	/* RTC Variables */
 	rtcCentury = 2000;
 
-	/*initialise the DS1307 RTC chip with default values */
+	/*initialize the DS1307 RTC chip with default values */
 	if (usertc){
 		write_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL, (unsigned char)0x03);
 	}
 
-	/*initialise the MCP32017 IO chip with default values: ports are inputs, pull-up resistors are disabled and ports are not inverted */
+	/*initialize the MCP32017 IO chip with default values: ports are inputs, pull-up resistors are disabled and ports are not inverted */
 	write_byte_data(MCP23017::IOADDRESS, IOCON, (unsigned char)0x02);
 
 	if (init){
@@ -133,7 +133,7 @@ int ExpanderPi::adc_open() {
 	*/
 
 	/* Open SPI device */
-	if ((adc = open(adcdevice, O_RDWR)) < 0)
+	if ((adc = open(adc_device, O_RDWR)) < 0)
 		return (0);
 
 	if (ioctl(adc, SPI_IOC_WR_MAX_SPEED_HZ, &speed) == -1)
@@ -159,8 +159,8 @@ double ExpanderPi::adc_read_voltage(int channel, int mode) {
 	* @param mode - 0 = Single Ended or 1 = Differential
 	* @returns between 0V and the reference voltage
 	*/
-	int rawval = adc_read_raw(channel, mode);
-	return ((adcrefvoltage / 4096) * (double)rawval);
+	int raw_value = adc_read_raw(channel, mode);
+	return ((adcrefvoltage / 4096) * (double)raw_value);
 }
 
 int ExpanderPi::adc_read_raw(int channel, int mode) {
@@ -225,7 +225,7 @@ int ExpanderPi::dac_open() {
 	*/
 
 	/* Open SPI device */
-	if ((dac = open(dacdevice, O_RDWR)) < 0)
+	if ((dac = open(dac_device, O_RDWR)) < 0)
 		return (0);
 
 	if (ioctl(dac, SPI_IOC_WR_MAX_SPEED_HZ, &speed) == -1)
@@ -269,8 +269,8 @@ void ExpanderPi::dac_set_raw(uint16_t raw, int channel, int gain) {
 	struct spi_ioc_transfer tr;
     memset(&tr,0,sizeof(tr));
 
-	tr.tx_buf = (unsigned long)&dactx;
-	tr.rx_buf = (unsigned long)NULL;
+	tr.tx_buf = (uint64_t)&dactx;
+	tr.rx_buf = (uint64_t)NULL;
 	tr.len = 2;
 	tr.speed_hz = 20000000; /* 20MHz clock speed */
 	tr.delay_usecs = 0;
@@ -292,15 +292,15 @@ void ExpanderPi::dac_set_voltage(double voltage, int channel, int gain) {
 	* @param channel - 1 or 2
 	* @param gain - 1 or 2
 	*/
-	double dacvoltage = 2.048;
+	double dac_voltage = 2.048;
 
 	if (gain == 2) {
-		dacvoltage = 4.096;
+        dac_voltage = 4.096;
 	}
 
-	if ((voltage >= 0.0) && (voltage < dacvoltage)) {
-		uint16_t rawval = (voltage / 2.048) * 4096 / gain;
-		dac_set_raw(rawval, channel, gain);
+	if ((voltage >= 0.0) && (voltage < dac_voltage)) {
+		auto raw_value = (uint16_t)((voltage / 2.048) * 4096 / gain);
+		dac_set_raw(raw_value, channel, gain);
 	}
 	else {
 		throw std::out_of_range("dac_set_voltage voltage out of range");
@@ -543,17 +543,17 @@ void ExpanderPi::io_mirror_interrupts(uint8_t value)
 	* Set the interrupt pins to be mirrored or for separate ports
 	* @param value - 1 = The interrupt pins are internally connected, 0 = The interrupt pins are not connected. INTA is associated with PortA and INTB is associated with PortB
 	*/
-    uint8_t ioconfig =  read_byte_data(MCP23017::IOADDRESS, MCP23017::IOCON);
+    uint8_t io_config =  read_byte_data(MCP23017::IOADDRESS, MCP23017::IOCON);
 
 	if (value == 0)
-	{        
-		ioconfig = updatebyte(ioconfig, 6, 0);
-		write_byte_data(MCP23017::IOADDRESS, MCP23017::IOCON, ioconfig);
+	{
+        io_config = updatebyte(io_config, 6, 0);
+		write_byte_data(MCP23017::IOADDRESS, MCP23017::IOCON, io_config);
 	}
 	else if (value == 1)
 	{
-		ioconfig = updatebyte(ioconfig, 6, 1);
-		write_byte_data(MCP23017::IOADDRESS, MCP23017::IOCON, ioconfig);
+        io_config = updatebyte(io_config, 6, 1);
+		write_byte_data(MCP23017::IOADDRESS, MCP23017::IOCON, io_config);
 	}
 	else
 	{
@@ -567,17 +567,17 @@ void ExpanderPi::io_set_interrupt_polarity(uint8_t value)
 	* This sets the polarity of the interrupt output pins.
 	* @param value - 1 = Active-high, 0 = Active-low.
 	*/
-    uint8_t ioconfig =  read_byte_data(MCP23017::IOADDRESS, MCP23017::IOCON);
+    uint8_t io_config =  read_byte_data(MCP23017::IOADDRESS, MCP23017::IOCON);
     
 	if (value == 0)
 	{
-		ioconfig = updatebyte(ioconfig, 1, 0);
-		write_byte_data(MCP23017::IOADDRESS, MCP23017::IOCON, ioconfig);
+		io_config = updatebyte(io_config, 1, 0);
+		write_byte_data(MCP23017::IOADDRESS, MCP23017::IOCON, io_config);
 	}
 	else if (value == 1)
 	{
-		ioconfig = updatebyte(ioconfig, 1, 1);
-		write_byte_data(MCP23017::IOADDRESS, MCP23017::IOCON, ioconfig);
+		io_config = updatebyte(io_config, 1, 1);
+		write_byte_data(MCP23017::IOADDRESS, MCP23017::IOCON, io_config);
 	}
 	else
 	{
@@ -746,7 +746,7 @@ struct tm ExpanderPi::rtc_read_date() {
 	*/
 
 	read_byte_array(DS1307::RTCADDRESS, 0, 7);
-	struct tm date;
+	struct tm date{};
 	date.tm_sec = bcd_to_dec(readbuffer[0]);       /* seconds */
 	date.tm_min = bcd_to_dec(readbuffer[1]);       /* minutes */
 	date.tm_hour = bcd_to_dec(readbuffer[2]);      /* hours */
@@ -760,51 +760,51 @@ struct tm ExpanderPi::rtc_read_date() {
 
 void ExpanderPi::rtc_enable_output() {
 	/**
-	* Enable the squarewave output pin
+	* Enable the square-wave output pin
 	*/
-	uint8_t rtcconfig = read_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL);
-	rtcconfig = updatebyte(rtcconfig, 7, 1);
-	rtcconfig = updatebyte(rtcconfig, 4, 1);
-	write_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL, rtcconfig);
+	uint8_t rtc_config = read_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL);
+    rtc_config = updatebyte(rtc_config, 7, 1);
+    rtc_config = updatebyte(rtc_config, 4, 1);
+	write_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL, rtc_config);
 }
 
 void ExpanderPi::rtc_disable_output() {
 	/**
-	* Disable the squarewave output pin
+	* Disable the square-wave output pin
 	*/
-	uint8_t rtcconfig = read_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL);
-	rtcconfig = updatebyte(rtcconfig, 7, 0);
-	rtcconfig = updatebyte(rtcconfig, 4, 0);
-	write_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL, rtcconfig);
+	uint8_t rtc_config = read_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL);
+    rtc_config = updatebyte(rtc_config, 7, 0);
+    rtc_config = updatebyte(rtc_config, 4, 0);
+	write_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL, rtc_config);
 }
 
 void ExpanderPi::rtc_set_frequency(unsigned char frequency) {
 	/**
-	* Set the squarewave output frequency
+	* Set the square-wave output frequency
 	* @param - 1 = 1Hz, 2 = 4.096KHz, 3 = 8.192KHz, 4 = 32.768KHz
 	*/
-    uint8_t rtcconfig = read_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL);
+    uint8_t rtc_config = read_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL);
 
 	switch (frequency) {
 		case 1:
-			rtcconfig = updatebyte(rtcconfig, 0, 0);
-			rtcconfig = updatebyte(rtcconfig, 1, 0);
-			write_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL, rtcconfig);
+            rtc_config = updatebyte(rtc_config, 0, 0);
+            rtc_config = updatebyte(rtc_config, 1, 0);
+			write_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL, rtc_config);
 			break;
 		case 2:
-			rtcconfig = updatebyte(rtcconfig, 0, 1);
-			rtcconfig = updatebyte(rtcconfig, 1, 0);
-			write_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL, rtcconfig);
+            rtc_config = updatebyte(rtc_config, 0, 1);
+            rtc_config = updatebyte(rtc_config, 1, 0);
+			write_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL, rtc_config);
 			break;
 		case 3:
-			rtcconfig = updatebyte(rtcconfig, 0, 0);
-			rtcconfig = updatebyte(rtcconfig, 1, 1);
-			write_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL, rtcconfig);
+            rtc_config = updatebyte(rtc_config, 0, 0);
+            rtc_config = updatebyte(rtc_config, 1, 1);
+			write_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL, rtc_config);
 			break;
 		case 4:
-			rtcconfig = updatebyte(rtcconfig, 0, 1);
-			rtcconfig = updatebyte(rtcconfig, 1, 1);
-			write_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL, rtcconfig);
+            rtc_config = updatebyte(rtc_config, 0, 1);
+            rtc_config = updatebyte(rtc_config, 1, 1);
+			write_byte_data(DS1307::RTCADDRESS, DS1307::RTCCONTROL, rtc_config);
 			break;
 		default:
 			throw std::out_of_range("Error: rtc_set_frequency() - value must be between 1 and 4");
@@ -822,24 +822,24 @@ void ExpanderPi::rtc_write_memory(uint8_t address, uint8_t *valuearray, uint8_t 
 	if (address >= 0x08 && address <= 0x3F) {
 		if (address <= (0x3F - (length - 1))) {
 			
-			uint8_t *writearray = (uint8_t*)malloc(length + 1);
+			auto *write_array = (uint8_t*)malloc(length + 1);
 
 			if (errno == ENOMEM) { /* Fail!!!! */
-				free(writearray);
+				free(write_array);
 				throw std::runtime_error("memory allocation error: not enough system memory to allocate array");
 			}
 			else {
 
-				writearray[0] = address;
+                write_array[0] = address;
 
 				int a;
 				for (a = 0; a < length; a++) {
-					writearray[a + 1] = valuearray[a];
+                    write_array[a + 1] = valuearray[a];
 				}
 				
-				write_byte_array(DS1307::RTCADDRESS, writearray, length);
+				write_byte_array(DS1307::RTCADDRESS, write_array, length);
 				
-				free(writearray);
+				free(write_array);
 			}
 
 		}
@@ -868,35 +868,31 @@ uint8_t *ExpanderPi::rtc_read_memory(uint8_t address, uint8_t length) {
 	if (address >= 0x08 && address <= 0x3F) {
 		if (address <= (0x3F - (length - 1))) {
 
-			uint8_t *writearray = (uint8_t*)malloc(length);
+			auto *write_array = (uint8_t*)malloc(length);
 
 			if (errno == ENOMEM) { /* Fail!!!! */
-				free(writearray);
+				free(write_array);
 				throw std::runtime_error("memory allocation error: not enough system memory to allocate array");
-				return NULL;
 			}
 			else {
 				read_byte_array(DS1307::RTCADDRESS, address, length); /* read the values from the SRAM into the read buffer */
 
-				/* copy the read buffer into the writearray */
-				int i = 0;
-				for (i = 0; i < length; i++) {
-					writearray[i] = readbuffer[i];
+				/* copy the read buffer into the write_array */
+				for (int i = 0; i < length; i++) {
+                    write_array[i] = readbuffer[i];
 				}
 
-				return writearray;
+				return write_array;
 			}
 
 		}
 		else {
 			throw std::runtime_error("memory overflow error: address + length exceeds 0x3F");
-			return NULL;
 		}
 	}
 	else {
 		throw std::out_of_range("address out of range");
-		return NULL;
-	}		
+	}
 }
 
 /*===================RTC Methods End ===================*/
@@ -1191,8 +1187,8 @@ void ExpanderPi::set_pin(uint8_t pin, uint8_t value, uint8_t a_register, uint8_t
 	/**
 	* private method for setting the value of a single bit within the device registers
 	*/
-	uint8_t reg = 0;
-	uint8_t p = 0;
+	uint8_t reg;
+	uint8_t p;
 	if (pin >= 1 && pin <= 8)
 	{
 		reg = a_register;
@@ -1213,8 +1209,8 @@ void ExpanderPi::set_pin(uint8_t pin, uint8_t value, uint8_t a_register, uint8_t
 		throw std::out_of_range("value out of range: 0 or 1");
 	}
 
-	uint8_t newval = updatebyte(read_byte_data(MCP23017::IOADDRESS, reg), p, value);
-	write_byte_data(MCP23017::IOADDRESS, reg, newval);
+	uint8_t new_value = updatebyte(read_byte_data(MCP23017::IOADDRESS, reg), p, value);
+	write_byte_data(MCP23017::IOADDRESS, reg, new_value);
 }
 
 uint8_t ExpanderPi::get_pin(uint8_t pin, uint8_t a_register, uint8_t b_register)
@@ -1223,7 +1219,7 @@ uint8_t ExpanderPi::get_pin(uint8_t pin, uint8_t a_register, uint8_t b_register)
 	* private method for getting the value of a single bit within the device registers
 	*/
 
-		uint8_t value = 0;
+		uint8_t value;
 
         if (pin >= 1 && pin <= 8)
 		{
@@ -1246,18 +1242,15 @@ void ExpanderPi::set_port(uint8_t port, uint8_t value, uint8_t a_register, uint8
 	/**
 	* private method for setting the value of a device register
 	*/
-	if (port == 0)
-	{
-    	write_byte_data(MCP23017::IOADDRESS, a_register, value);
-	}
-    else if (port == 1)
-	{
-    	write_byte_data(MCP23017::IOADDRESS, b_register, value);
-	}
-	else
-	{
-		throw std::out_of_range("port out of range: 0 or 1");
-	}
+    if (port == 0) {
+        write_byte_data(MCP23017::IOADDRESS, a_register, value);
+    } else {
+        if (port == 1) {
+            write_byte_data(MCP23017::IOADDRESS, b_register, value);
+        } else {
+            throw std::out_of_range("port out of range: 0 or 1");
+        }
+    }
 }
 
 uint8_t ExpanderPi::get_port(uint8_t port, uint8_t a_register, uint8_t b_register)
@@ -1265,18 +1258,15 @@ uint8_t ExpanderPi::get_port(uint8_t port, uint8_t a_register, uint8_t b_registe
 	/**
 	* private method for getting the value of a device register
 	*/
-	if (port == 0)
-	{
-    	return read_byte_data(MCP23017::IOADDRESS, a_register);
-	}
-    else if (port == 1)
-	{
-    	return read_byte_data(MCP23017::IOADDRESS, b_register);
-	}
-	else
-	{
-		throw std::out_of_range("port out of range: 0 or 1");
-	}
+    if (port == 0) {
+        return read_byte_data(MCP23017::IOADDRESS, a_register);
+    } else {
+        if (port == 1) {
+            return read_byte_data(MCP23017::IOADDRESS, b_register);
+        } else {
+            throw std::out_of_range("port out of range: 0 or 1");
+        }
+    }
 }
 
 void ExpanderPi::set_bus(uint16_t value, uint8_t a_register){

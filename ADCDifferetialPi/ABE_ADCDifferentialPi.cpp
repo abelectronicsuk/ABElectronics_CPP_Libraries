@@ -10,12 +10,12 @@ Reads from the MCP3424 ADC on the ADC Differential Pi.
  apt-get install libi2c-dev
  */
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
 #include <stdexcept>
-#include <errno.h>
+#include <cerrno>
 #include <fcntl.h>
 #include <iostream>
 #include <unistd.h>
@@ -74,13 +74,13 @@ uint32_t ADCDifferentialPi::read_raw(uint8_t channel)
 	*/
 
 	// variables for storing the raw bytes from the ADC
-	uint8_t h = 0;
+	uint8_t h;
 	uint8_t l = 0;
-	uint8_t m = 0;
-	uint8_t s = 0;
-	uint8_t config = 0;
-	uint8_t address = 0;
-	uint32_t t = 0;
+	uint8_t m;
+	uint8_t s;
+	uint8_t config;
+	uint8_t address;
+	uint32_t t;
 	signbit = 0;
 
 	// get the config and i2c address for the selected channel
@@ -143,7 +143,7 @@ uint32_t ADCDifferentialPi::read_raw(uint8_t channel)
 		}
 
 		x++;
-	} while (1);
+	} while (true);
 
 	// extract the returned bytes and combine them in the correct order
 	switch (bitrate)
@@ -182,7 +182,6 @@ uint32_t ADCDifferentialPi::read_raw(uint8_t channel)
 		break;
 	default:
 		throw std::runtime_error("read_raw() bitrate out of range");
-		break;
 	}
 
 	return (t);
@@ -196,17 +195,17 @@ double ADCDifferentialPi::read_voltage(uint8_t channel)
 	* @param channel - 1 to 8
 	* @returns - double voltage value from ADC
 	*/
-	int raw = read_raw(channel); // get the raw value
+	unsigned  int raw = read_raw(channel); // get the raw value
 
-	if (signbit == 1) // if the signbit is 1 the value is negative and most likely noise so it can be ignored.
+	if (signbit == 1) // if the signbit is 1 the value is negative and most likely noise, so it can be ignored.
 	{
 		double voltage = ((double)raw * (lsb / pga)) - (2.048 / (pga * 2)); // calculate the voltage and return it
-		return (voltage);
+        return voltage;
 	}
 	else
 	{
 		double voltage = ((double)raw * (lsb / pga)); // calculate the voltage and return it
-		return (voltage);
+        return voltage;
 	}
 }
 
@@ -240,7 +239,6 @@ void ADCDifferentialPi::set_pga(uint8_t gain)
 		break;
 	default:
 		throw std::out_of_range("set_pga() gain out of range: 1, 2, 4, 8");
-		break;
 	}
 
 	write_byte(i2caddress1, config1);
@@ -281,7 +279,6 @@ void ADCDifferentialPi::set_bit_rate(uint8_t rate)
 		break;
 	default:
 		throw std::out_of_range("set_bit_rate() rate out of range: 12, 14, 16, 18");
-		break;
 	}
 
 	write_byte(i2caddress1, config1);
@@ -373,7 +370,7 @@ void ADCDifferentialPi::read_byte_array(uint8_t address, uint8_t reg, uint8_t le
 	close(i2cbus);
 }
 
-char ADCDifferentialPi::update_byte(uint8_t byte, uint8_t mask, uint8_t value)
+uint8_t ADCDifferentialPi::update_byte(uint8_t byte, uint8_t mask, uint8_t value)
 {
 	/**
 	* private method for setting the value of bits within a byte
@@ -395,18 +392,20 @@ void ADCDifferentialPi::set_channel(uint8_t channel)
 			currentchannel1 = channel;
 			switch (channel)
 			{
-			case 1:
-				config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x00);
-				break;
-			case 2:
-				config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x20);
-				break;
-			case 3:
-				config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x40);
-				break;
-			case 4:
-				config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x60);
-				break;
+                case 1:
+                    config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x00);
+                    break;
+                case 2:
+                    config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x20);
+                    break;
+                case 3:
+                    config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x40);
+                    break;
+                case 4:
+                    config1 = update_byte(config1, (uint8_t)0x9F, (uint8_t)0x60);
+                    break;
+                default:
+                    break;
 			}
 		}
 	}
@@ -417,18 +416,20 @@ void ADCDifferentialPi::set_channel(uint8_t channel)
 			currentchannel2 = channel;
 			switch (channel)
 			{
-			case 5:
-				config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x00);
-				break;
-			case 6:
-				config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x20);
-				break;
-			case 7:
-				config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x40);
-				break;
-			case 8:
-				config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x60);
-				break;
+                case 5:
+                    config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x00);
+                    break;
+                case 6:
+                    config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x20);
+                    break;
+                case 7:
+                    config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x40);
+                    break;
+                case 8:
+                    config2 = update_byte(config2, (uint8_t)0x9F, (uint8_t)0x60);
+                    break;
+                default:
+                    break;
 			}
 		}
 	}

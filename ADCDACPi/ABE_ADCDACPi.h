@@ -90,7 +90,7 @@ void set_dac_gain(uint8_t gain);
 
 private:
 // private variables
-uint8_t mode; // SPI_MODE_0
+uint8_t spi_mode; // SPI_MODE_0
 uint32_t adcspeed; // SPI ADC bus speed.
 uint32_t dacspeed; // SPI DAC bus speed.
 

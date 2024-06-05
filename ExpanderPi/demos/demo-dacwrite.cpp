@@ -1,30 +1,27 @@
 /*
  * demo-dacwrite.cpp
  *
- *  Version 1.1 Updated 21/04/2020
+ *  Version 1.2 Updated 28/05/2024
  *
  *      compile with "g++ demo-dacwrite.cpp ../ABE_ExpanderPi.cpp -Wall -Wextra -Wpedantic -Woverflow -o demo-dacwrite"
  *      run with "./demo-dacwrite"
  */
 
-#include <stdint.h>
-#include <stdio.h>
+#include <cstdio>
 #include <stdexcept>
-#include <time.h>
-#include <unistd.h>
-#include <iostream>
+#include <ctime>
 
 #include "../ABE_ExpanderPi.h"
 
 using namespace ABElectronics_CPP_Libraries;
 
-void clearscreen ()
+void clear_screen ()
 {
     printf("\033[2J\033[1;1H");
 }
 
 int main(int argc, char **argv){
-	setvbuf (stdout, NULL, _IONBF, 0); // needed to print to the command line
+	setvbuf (stdout, nullptr, _IONBF, 0); // needed to print to the command line
 
 	ExpanderPi expi;
 
